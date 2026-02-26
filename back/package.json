@@ -1,0 +1,48 @@
+{
+  "name": "auth-api-template",
+  "version": "1.0.0",
+  "description": "Express + TypeScript auth API starter (JWT + SQLite + Prisma)",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch --preserveWatchOutput\" \"nodemon dist/index.js\"",
+    "build": "tsc",
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^25.3.1",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "globals": "^17.3.0",
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.2",
+    "supertest": "^7.1.4",
+    "typescript": "^5.1.6",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "overrides": {
+    "tar": "^7.5.9"
+  }
+}

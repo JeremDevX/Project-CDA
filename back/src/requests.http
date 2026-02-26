@@ -1,0 +1,44 @@
+@host = http://localhost:1337
+@baseUrl = {{host}}/api
+@token = REPLACE_WITH_TOKEN
+
+### Healthcheck
+GET {{baseUrl}}/health
+
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "email": "demo@example.com",
+  "password": "password123"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@example.com",
+  "password": "password123"
+}
+
+### Current user
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Change password
+POST {{baseUrl}}/auth/change-password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "currentPassword": "password123",
+  "newPassword": "password456",
+  "confirmPassword": "password456"
+}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{token}}
