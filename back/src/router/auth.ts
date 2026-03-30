@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { User as PrismaUser } from "@prisma/client";
+import type { User as PrismaUser } from "../generated/prisma/client";
 
 import { prisma } from "../database";
 import { requireAuth } from "../middlewares/requireAuth";
