@@ -6,7 +6,7 @@
     "back"
   ],
   "scripts": {
-    "prepare": "husky",
+    "prepare": "node scripts/prepare-husky.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test:run --workspaces --if-present",
