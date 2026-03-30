@@ -1,4 +1,4 @@
-name: Front E2E
+name: Tests
 
 on:
   push:
@@ -8,12 +8,8 @@ on:
   pull_request:
 
 jobs:
-  playwright:
+  tests:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: front
 
     steps:
       - name: Checkout repository
@@ -27,12 +23,18 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             front/package-lock.json
+            back/package-lock.json
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
 
       - name: Install Playwright browsers
+        working-directory: front
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
+        working-directory: front
         run: npm run test:e2e
