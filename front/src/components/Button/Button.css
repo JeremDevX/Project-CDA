@@ -1,0 +1,113 @@
+.app-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-xs) + var(--space-sm));
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  min-height: var(--button-min-height);
+  padding: var(--button-padding);
+  border-radius: var(--radius-md);
+  border: var(--border-width-sm) solid transparent;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.app-button-full-width {
+  width: 100%;
+}
+
+.app-button-label {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.app-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-button:hover {
+  transform: translateY(-1px);
+}
+
+.app-button:focus-visible {
+  outline: var(--focus-ring-width) solid
+    color-mix(in srgb, white 75%, var(--accent2));
+  outline-offset: 3px;
+}
+
+.app-button:disabled,
+.app-button[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.app-button-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: var(--text-contrast);
+  box-shadow: 0 10px 22px rgba(62, 207, 176, 0.18);
+}
+
+.app-button-primary:hover {
+  opacity: 0.94;
+  box-shadow: 0 14px 28px rgba(62, 207, 176, 0.22);
+}
+
+.app-button-secondary {
+  background-color: transparent;
+  color: var(--text-tertiary);
+  border-color: var(--border);
+}
+
+.app-button-secondary:hover {
+  background-color: color-mix(in srgb, var(--accent3) 10%, transparent);
+  border-color: var(--accent3);
+  color: var(--accent3);
+}
+
+.app-button-cta {
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.app-button-cta:hover {
+  background-color: var(--accent);
+  color: var(--text-contrast);
+}
+
+.app-button-color-green.app-button-cta {
+  background-color: color-mix(in srgb, var(--accent2) 15%, transparent);
+  color: var(--accent2);
+  border-color: var(--accent2);
+}
+
+.app-button-color-green.app-button-cta:hover {
+  background-color: var(--accent2);
+  color: var(--text-contrast-strong);
+}
+
+.app-button-color-gold.app-button-cta {
+  background-color: color-mix(in srgb, var(--accent3) 15%, transparent);
+  color: var(--accent3);
+  border-color: var(--accent3);
+}
+
+.app-button-color-gold.app-button-cta:hover {
+  background-color: var(--accent3);
+  color: var(--text-contrast-strong);
+}
