@@ -1,0 +1,37 @@
+.info-card {
+  flex: 1 1 16rem;
+  min-width: 0;
+  background-color: var(--surface);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--card-padding);
+}
+
+.info-card-icon {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+.info-card-icon-purple {
+  color: var(--accent);
+}
+
+.info-card-icon-teal {
+  color: var(--accent2);
+}
+
+.info-card-icon-orange {
+  color: var(--accent3);
+}
+
+.info-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.info-card-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
