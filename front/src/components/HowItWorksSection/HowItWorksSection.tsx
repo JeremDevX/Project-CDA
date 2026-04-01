@@ -28,7 +28,7 @@ export default function HowItWorksSection() {
   const activeStep = steps[activeStepIndex];
 
   return (
-    <section className="how-it-works">
+    <section className="how-it-works" id="protocol">
       <h2 className="section-title">Comment ça fonctionne</h2>
       <div className="how-it-works-layout">
         <div className="how-it-works-list">

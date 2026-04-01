@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router";
 import "./Button.css";
 
 interface ButtonProps {
@@ -46,6 +47,14 @@ export default function Button(props: ButtonProps) {
   );
 
   if (props.href) {
+    if (props.href.startsWith("/")) {
+      return (
+        <Link className={className} to={props.href}>
+          {content}
+        </Link>
+      );
+    }
+
     return (
       <a className={className} href={props.href}>
         {content}
