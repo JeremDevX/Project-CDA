@@ -61,7 +61,9 @@ describe("POST /api/auth/register", () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe("username, email and password are required");
+    expect(response.body.message).toBe(
+      "username, email and password are required",
+    );
   });
 
   it("returns 400 when password is too short", async () => {
@@ -72,7 +74,9 @@ describe("POST /api/auth/register", () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe("password must be at least 6 characters");
+    expect(response.body.message).toBe(
+      "password must be at least 6 characters",
+    );
   });
 
   it.todo("returns 400 when email format is invalid");
