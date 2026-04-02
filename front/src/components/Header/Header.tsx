@@ -12,7 +12,7 @@ export default function Header() {
       </Link>
       <div className="header-actions">
         <Button type="secondary" href="/login" label="Se connecter" />
-        <Button type="primary" href="/login" label="Inscription" />
+        <Button type="primary" href="/register" label="Inscription" />
       </div>
     </header>
   );

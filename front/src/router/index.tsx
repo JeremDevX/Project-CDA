@@ -18,6 +18,10 @@ export const appRouter = createBrowserRouter([
         element: <LoginPage />,
       },
       {
+        path: "register",
+        element: <LoginPage />,
+      },
+      {
         path: "*",
         element: null,
       },
