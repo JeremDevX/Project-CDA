@@ -1,0 +1,82 @@
+.auth-card {
+  width: 100%;
+  max-width: 34rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--card-padding);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--surface);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.auth-tab {
+  flex: 1;
+  min-height: var(--button-min-height);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.auth-tab-active {
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.auth-title {
+  margin: 0;
+}
+
+.auth-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.auth-field input {
+  min-height: var(--button-min-height);
+  padding: 0 var(--space-md);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in srgb, white 2%, var(--surface));
+  color: var(--text-primary);
+}
+
+.auth-error {
+  margin: 0;
+  color: #ff8e8e;
+}
+
+.auth-submit {
+  min-height: var(--button-min-height);
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: var(--text-contrast);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

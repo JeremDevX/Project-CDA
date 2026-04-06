@@ -4,3 +4,5 @@ dist
 src/generated
 prisma/*.db
 prisma/*.db-journal
+
+/src/generated/prisma
