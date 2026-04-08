@@ -7,6 +7,11 @@ export interface RegisterPayload {
   confirmPassword: string;
 }
 
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
 export interface AuthUser {
   id: number;
   username: string;
@@ -16,6 +21,11 @@ export interface AuthUser {
 }
 
 export interface RegisterResponse {
+  token: string;
+  user: AuthUser;
+}
+
+export interface AuthResponse {
   token: string;
   user: AuthUser;
 }
@@ -34,7 +44,24 @@ export async function registerUser(
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message ?? "Failed to register user");
+    throw new Error(data.message ?? "Échec lors de l'inscription");
+  }
+  return data;
+}
+
+export async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? "Échec lors de la connexion");
   }
   return data;
 }

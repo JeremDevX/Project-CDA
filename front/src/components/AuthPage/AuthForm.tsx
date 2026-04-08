@@ -3,17 +3,22 @@ import { useLocation, useNavigate } from "react-router";
 
 import "./AuthForm.css";
 import { useUserState, type UserState } from "../../store/useAppStore";
-import { registerUser } from "../../api/auth";
+import { loginUser, registerUser } from "../../api/auth";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function getErrorMessage(error: unknown): string {
+  if (!(error instanceof Error)) {
+    return "Une erreur est survenue. Veuillez réessayer.";
+  }
+  return error.message;
+}
+
 export default function AuthForm() {
   const location = useLocation();
-
   const navigate = useNavigate();
-
   const setAuth = useUserState((state: UserState) => state.setAuthData);
 
   const activeTab = location.pathname === "/register" ? "register" : "login";
@@ -70,6 +75,34 @@ export default function AuthForm() {
       } else {
         setErrorMessage("Une erreur est survenue.");
       }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleLoginSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage("");
+
+    if (!email || !password) {
+      setErrorMessage("Tous les champs sont obligatoires.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setErrorMessage("L'adresse email n'est pas valide.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const response = await loginUser({ email, password });
+
+      setAuth(response.token, response.user);
+      navigate("/dashboard");
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -152,7 +185,39 @@ export default function AuthForm() {
       ) : (
         <>
           <h1 className="auth-title">Se connecter</h1>
-          <p className="auth-subtitle">WIP</p>
+          <p className="auth-subtitle">
+            Connectez-vous pour accéder à votre espace personnel.
+          </p>
+
+          <form className="auth-form" onSubmit={handleLoginSubmit}>
+            <label className="auth-field">
+              <span>Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </label>
+
+            <label className="auth-field">
+              <span>Mot de passe</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
+
+            {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
+
+            <button
+              type="submit"
+              className="auth-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Connexion en cours..." : "Me connecter"}
+            </button>
+          </form>
         </>
       )}
     </div>

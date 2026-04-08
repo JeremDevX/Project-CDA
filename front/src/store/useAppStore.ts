@@ -8,9 +8,24 @@ export type UserState = {
   clearAuthData: () => void;
 };
 
+function getStoredUser(): AuthUser | null {
+  const storedUser = localStorage.getItem("auth_user");
+
+  if (!storedUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedUser) as AuthUser;
+  } catch (error) {
+    console.error("Failed to parse stored user data:", error);
+    return null;
+  }
+}
+
 export const useUserState = create<UserState>((set) => ({
-  token: null,
-  user: null,
+  token: localStorage.getItem("auth_token"),
+  user: getStoredUser(),
   setAuthData: (token, user) => {
     localStorage.setItem("auth_token", token);
     localStorage.setItem("auth_user", JSON.stringify(user));
