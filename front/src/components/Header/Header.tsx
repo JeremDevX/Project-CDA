@@ -39,14 +39,14 @@ export default function Header() {
 
   return (
     <header className="header">
-      <Link className="header-brand" to="/">
-        <Gift className="logo-icon" size={24} />
-        <span className="logo-text">LegacyGift</span>
+      <Link className="header__brand" to="/">
+        <Gift className="header__brand-icon" size={24} />
+        <span className="header__brand-text">LegacyGift</span>
       </Link>
-      <div className="header-actions">
+      <div className="header__actions">
         {user ? (
           <>
-            <p>Bienvenue, {user.username}! </p>
+            <p className="header__welcome">Bienvenue, {user.username}!</p>
             <Button type="primary" href="/dashboard" label="Mon espace" />
             <Button type="primary" href="/account" label="Mon compte" />
             <Button
@@ -63,7 +63,7 @@ export default function Header() {
           </>
         )}
 
-        {logoutError && <p className="error-message">{logoutError}</p>}
+        {logoutError && <p className="header__error">{logoutError}</p>}
       </div>
     </header>
   );

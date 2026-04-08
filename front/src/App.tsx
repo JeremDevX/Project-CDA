@@ -4,7 +4,7 @@ import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <div className="landing-container">
+    <div className="app">
       <Header />
       <Outlet />
       <Footer />

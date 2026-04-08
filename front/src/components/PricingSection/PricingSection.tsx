@@ -47,28 +47,30 @@ const pricingPlans = [
 export default function PricingSection() {
   return (
     <section className="pricing">
-      <h2 className="section-title">Tarification</h2>
-      <div className="pricing-list">
+      <h2 className="pricing__title">Tarification</h2>
+      <div className="pricing__list">
         {pricingPlans.map((plan) => (
           <div
             key={plan.title}
             className={[
-              "pricing-card",
-              plan.isPopular ? "pricing-card-featured" : "",
+              "pricing__card",
+              plan.isPopular ? "pricing__card--featured" : "",
             ]
               .filter(Boolean)
               .join(" ")}
           >
-            <div className="pricing-card-header">
+            <div className="pricing__card-header">
               {plan.isPopular ? (
-                <span className="pricing-popular">La plus populaire</span>
+                <span className="pricing__popular">La plus populaire</span>
               ) : null}
-              <div className="pricing-price">{plan.price}</div>
-              <h3 className="pricing-title">{plan.title}</h3>
+              <div className="pricing__price">{plan.price}</div>
+              <h3 className="pricing__plan-title">{plan.title}</h3>
               <span
                 className={[
-                  "pricing-badge",
-                  plan.badgeColor !== "default" ? plan.badgeColor : "",
+                  "pricing__badge",
+                  plan.badgeColor !== "default"
+                    ? `pricing__badge--${plan.badgeColor}`
+                    : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -77,10 +79,10 @@ export default function PricingSection() {
               </span>
             </div>
 
-            <ul className="pricing-features">
+            <ul className="pricing__features">
               {plan.features.map((feature) => (
-                <li key={feature} className="pricing-feature">
-                  <Check className="pricing-feature-icon" size={16} />
+                <li key={feature} className="pricing__feature">
+                  <Check className="pricing__feature-icon" size={16} />
                   <span>{feature}</span>
                 </li>
               ))}
