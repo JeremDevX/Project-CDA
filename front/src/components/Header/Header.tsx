@@ -18,8 +18,9 @@ export default function Header() {
         <div className="header-actions">
           {user ? (
             <>
-              <Button type="secondary" href="/dashboard" label="Mon espace" />
               <p>Bienvenue, {user.username}! </p>
+              <Button type="primary" href="/dashboard" label="Mon espace" />
+              <Button type="secondary" href="/logout" label="Se déconnecter" />
             </>
           ) : (
             <>
