@@ -30,6 +30,10 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
+export interface LougoutResponse {
+  message: string;
+}
+
 export async function registerUser(
   payload: RegisterPayload,
 ): Promise<RegisterResponse> {
@@ -62,6 +66,23 @@ export async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
 
   if (!response.ok) {
     throw new Error(data.message ?? "Échec lors de la connexion");
+  }
+  return data;
+}
+
+export async function logoutUser(token: string): Promise<LougoutResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? "Échec lors de la déconnexion");
   }
   return data;
 }
