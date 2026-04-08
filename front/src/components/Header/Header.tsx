@@ -48,6 +48,7 @@ export default function Header() {
           <>
             <p>Bienvenue, {user.username}! </p>
             <Button type="primary" href="/dashboard" label="Mon espace" />
+            <Button type="primary" href="/account" label="Mon compte" />
             <Button
               type="secondary"
               onClick={handleLogout}
