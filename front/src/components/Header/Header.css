@@ -55,3 +55,11 @@
     width: 100%;
   }
 }
+
+.error-message {
+  position: absolute;
+  bottom: -0.75rem;
+  margin-top: var(--space-sm);
+  color: var(--error);
+  font-size: 0.875rem;
+}

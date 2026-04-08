@@ -4,16 +4,10 @@ import { useLocation, useNavigate } from "react-router";
 import "./AuthForm.css";
 import { useUserState, type UserState } from "../../store/useAppStore";
 import { loginUser, registerUser } from "../../api/auth";
+import { getErrorMessage } from "../../helpers/helpers";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function getErrorMessage(error: unknown): string {
-  if (!(error instanceof Error)) {
-    return "Une erreur est survenue. Veuillez réessayer.";
-  }
-  return error.message;
 }
 
 export default function AuthForm() {
@@ -68,7 +62,7 @@ export default function AuthForm() {
 
       setAuth(response.token, response.user);
 
-      navigate("/login");
+      navigate("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
