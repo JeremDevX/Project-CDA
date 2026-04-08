@@ -29,6 +29,7 @@ export const useUserState = create<UserState>((set) => ({
   setAuthData: (token, user) => {
     localStorage.setItem("auth_token", token);
     localStorage.setItem("auth_user", JSON.stringify(user));
+    set({ token, user });
   },
   clearAuthData: () => {
     localStorage.removeItem("auth_token");
