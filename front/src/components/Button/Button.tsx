@@ -16,7 +16,7 @@ interface ButtonProps {
 }
 
 function renderIcon(icon: ReactNode, shouldRender: boolean) {
-  return shouldRender ? <span className="app-button-icon">{icon}</span> : null;
+  return shouldRender ? <span className="app-button__icon">{icon}</span> : null;
 }
 
 export default function Button(props: ButtonProps) {
@@ -24,9 +24,9 @@ export default function Button(props: ButtonProps) {
   const color = props.color ?? "default";
   const className = [
     "app-button",
-    `app-button-${variant}`,
-    `app-button-color-${color}`,
-    props.fullWidth ? "app-button-full-width" : "",
+    `app-button--${variant}`,
+    `app-button--color-${color}`,
+    props.fullWidth ? "app-button--full-width" : "",
     props.className ?? "",
   ]
     .filter(Boolean)
@@ -38,7 +38,7 @@ export default function Button(props: ButtonProps) {
         props.icon,
         props.iconPosition === "left" || props.iconPosition === "both",
       )}
-      <span className="app-button-label">{props.label}</span>
+      <span className="app-button__label">{props.label}</span>
       {renderIcon(
         props.icon,
         props.iconPosition === "right" || props.iconPosition === "both",

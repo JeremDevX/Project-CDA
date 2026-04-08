@@ -2,9 +2,15 @@ import "./Footer.css";
 export default function Footer() {
   return (
     <footer className="footer">
-      <a href="#legal">Légal</a>
-      <a href="#privacy">Confidentialité</a>
-      <a href="#contact">Contact</a>
+      <a className="footer__link" href="#legal">
+        Légal
+      </a>
+      <a className="footer__link" href="#privacy">
+        Confidentialité
+      </a>
+      <a className="footer__link" href="#contact">
+        Contact
+      </a>
     </footer>
   );
 }

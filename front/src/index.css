@@ -33,7 +33,7 @@
   --space-lg: 16px;
   --space-xl: 24px;
   --space-2xl: 40px;
-  --container-max-width: 1200px;
+  --container-max-width: 1440px;
   --card-padding: calc(var(--space-lg) * 2) var(--space-xl);
   --button-padding: var(--space-md) var(--space-xl);
   --button-min-height: 48px;
@@ -52,4 +52,16 @@ body,
   margin: 0;
   min-width: 320px;
   min-height: 100%;
+}
+
+.app {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+@media (max-width: 767px) {
+  .app {
+    padding: 0 var(--space-lg);
+  }
 }
