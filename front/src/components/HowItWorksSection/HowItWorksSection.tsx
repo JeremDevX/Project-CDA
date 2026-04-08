@@ -29,35 +29,35 @@ export default function HowItWorksSection() {
 
   return (
     <section className="how-it-works" id="protocol">
-      <h2 className="section-title">Comment ça fonctionne</h2>
-      <div className="how-it-works-layout">
-        <div className="how-it-works-list">
+      <h2 className="how-it-works__title">Comment ça fonctionne</h2>
+      <div className="how-it-works__layout">
+        <div className="how-it-works__list">
           {steps.map((step, index) => {
             const isActive = index === activeStepIndex;
 
             return (
               <button
                 key={step.title}
-                className={`step ${isActive ? "step-active" : ""}`}
+                className={`how-it-works__step ${isActive ? "how-it-works__step--active" : ""}`}
                 type="button"
                 onClick={() => setActiveStepIndex(index)}
               >
                 <div
-                  className={`step-number ${isActive ? "" : "step-number-inactive"}`}
+                  className={`how-it-works__step-number ${isActive ? "" : "how-it-works__step-number--inactive"}`}
                 >
                   {index + 1}
                 </div>
-                <div className="step-content">
-                  <span className="step-label">Étape {index + 1}</span>
-                  <span className="step-title">{step.title}</span>
+                <div className="how-it-works__step-content">
+                  <span className="how-it-works__step-label">Étape {index + 1}</span>
+                  <span className="how-it-works__step-title">{step.title}</span>
                 </div>
               </button>
             );
           })}
         </div>
-        <div className="vp-card preview-card">
-          <div className="preview-image-placeholder">Image WIP</div>
-          <p className="preview-detail">{activeStep.detail}</p>
+        <div className="how-it-works__preview">
+          <div className="how-it-works__preview-image-placeholder">Image WIP</div>
+          <p className="how-it-works__preview-detail">{activeStep.detail}</p>
         </div>
       </div>
     </section>

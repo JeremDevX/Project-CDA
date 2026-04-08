@@ -7,30 +7,30 @@
   padding: var(--card-padding);
 }
 
-.info-card-icon {
+.info-card__icon {
   color: var(--text-secondary);
   margin-bottom: var(--space-xl);
 }
 
-.info-card-icon-purple {
+.info-card__icon--purple {
   color: var(--accent);
 }
 
-.info-card-icon-teal {
+.info-card__icon--teal {
   color: var(--accent2);
 }
 
-.info-card-icon-orange {
+.info-card__icon--orange {
   color: var(--accent3);
 }
 
-.info-card-title {
+.info-card__title {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: var(--space-md);
 }
 
-.info-card-text {
+.info-card__text {
   color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.5;

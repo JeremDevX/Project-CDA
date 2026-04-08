@@ -13,9 +13,12 @@ export default function InfoCard(props: InfoCardProps) {
 
   return (
     <div className="info-card">
-      <Icon className={`info-card-icon info-card-icon-${props.iconTone}`} size={24} />
-      <h3 className="info-card-title">{props.title}</h3>
-      <p className="info-card-text">{props.text}</p>
+      <Icon
+        className={`info-card__icon info-card__icon--${props.iconTone}`}
+        size={24}
+      />
+      <h3 className="info-card__title">{props.title}</h3>
+      <p className="info-card__text">{props.text}</p>
     </div>
   );
 }

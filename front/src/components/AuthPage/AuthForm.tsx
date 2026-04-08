@@ -104,17 +104,17 @@ export default function AuthForm() {
 
   return (
     <div className="auth-card">
-      <div className="auth-tabs">
+      <div className="auth-card__tabs">
         <button
           type="button"
-          className={`auth-tab ${activeTab === "login" ? "auth-tab-active" : ""}`}
+          className={`auth-card__tab ${activeTab === "login" ? "auth-card__tab--active" : ""}`}
           onClick={() => navigate("/login")}
         >
           Connexion
         </button>
         <button
           type="button"
-          className={`auth-tab ${activeTab === "register" ? "auth-tab-active" : ""}`}
+          className={`auth-card__tab ${activeTab === "register" ? "auth-card__tab--active" : ""}`}
           onClick={() => navigate("/register")}
         >
           Inscription
@@ -123,53 +123,57 @@ export default function AuthForm() {
 
       {activeTab === "register" ? (
         <>
-          <h1 className="auth-title">Créer un compte</h1>
-          <p className="auth-subtitle">
+          <h1 className="auth-card__title">Créer un compte</h1>
+          <p className="auth-card__subtitle">
             Créez votre espace personnel pour accéder à l'application.
           </p>
 
-          <form className="auth-form" onSubmit={handleRegisterSubmit}>
-            <label className="auth-field">
+          <form className="auth-card__form" onSubmit={handleRegisterSubmit}>
+            <label className="auth-card__field">
               <span>Nom d'utilisateur</span>
               <input
+                className="auth-card__input"
                 type="text"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
               />
             </label>
 
-            <label className="auth-field">
+            <label className="auth-card__field">
               <span>Email</span>
               <input
+                className="auth-card__input"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
             </label>
 
-            <label className="auth-field">
+            <label className="auth-card__field">
               <span>Mot de passe</span>
               <input
+                className="auth-card__input"
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
             </label>
 
-            <label className="auth-field">
+            <label className="auth-card__field">
               <span>Confirmer le mot de passe</span>
               <input
+                className="auth-card__input"
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
               />
             </label>
 
-            {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
+            {errorMessage ? <p className="auth-card__error">{errorMessage}</p> : null}
 
             <button
               type="submit"
-              className="auth-submit"
+              className="auth-card__submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Création en cours..." : "Créer mon compte"}
@@ -178,35 +182,37 @@ export default function AuthForm() {
         </>
       ) : (
         <>
-          <h1 className="auth-title">Se connecter</h1>
-          <p className="auth-subtitle">
+          <h1 className="auth-card__title">Se connecter</h1>
+          <p className="auth-card__subtitle">
             Connectez-vous pour accéder à votre espace personnel.
           </p>
 
-          <form className="auth-form" onSubmit={handleLoginSubmit}>
-            <label className="auth-field">
+          <form className="auth-card__form" onSubmit={handleLoginSubmit}>
+            <label className="auth-card__field">
               <span>Email</span>
               <input
+                className="auth-card__input"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
             </label>
 
-            <label className="auth-field">
+            <label className="auth-card__field">
               <span>Mot de passe</span>
               <input
+                className="auth-card__input"
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
             </label>
 
-            {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
+            {errorMessage ? <p className="auth-card__error">{errorMessage}</p> : null}
 
             <button
               type="submit"
-              className="auth-submit"
+              className="auth-card__submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Connexion en cours..." : "Me connecter"}

@@ -51,16 +51,16 @@ export default function LandingPage() {
   return (
     <>
       <section className="hero">
-        <div className="hero-content">
-          <h1 className="hero-title">
+        <div className="hero__content">
+          <h1 className="hero__title">
             Vos derniers mots, au moment où ils comptent le plus.
           </h1>
-          <p className="hero-subtitle">
+          <p className="hero__subtitle">
             Préparez des messages et des souvenirs à transmettre à vos proches
             après votre départ. Un système de validation par tiers de confiance
             garantit une livraison maîtrisée et humaine.
           </p>
-          <div className="hero-cta">
+          <div className="hero__actions">
             <Button type="primary" href="/login" label="Commencer mon héritage" />
             <Button
               type="secondary"
@@ -69,13 +69,13 @@ export default function LandingPage() {
             />
           </div>
         </div>
-        <div className="hero-visual">
-          <div className="hero-glow"></div>
-          <div className="hero-glow-secondary"></div>
-          <div className="hero-visual-card">
-            <Gift className="logo-icon hero-card-icon" size={24} />
-            <h3 className="visual-card-title">Message personnel</h3>
-            <p className="visual-card-text">
+        <div className="hero__visual">
+          <div className="hero__glow"></div>
+          <div className="hero__glow hero__glow--secondary"></div>
+          <div className="hero__card">
+            <Gift className="hero__card-icon" size={24} />
+            <h3 className="hero__card-title">Message personnel</h3>
+            <p className="hero__card-text">
               Une parole importante, écrite aujourd'hui, préservée et transmise
               avec attention demain.
             </p>
@@ -83,8 +83,8 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="value-prop">
-        <h2 className="section-title">Proposition de valeur</h2>
-        <div className="value-prop-list">
+        <h2 className="value-prop__title">Proposition de valeur</h2>
+        <div className="value-prop__list">
           {valueProps.map((item) => (
             <InfoCard
               key={item.title}
@@ -102,8 +102,8 @@ export default function LandingPage() {
       <PricingSection />
 
       <section className="value-prop">
-        <h2 className="section-title">Confiance et sécurité</h2>
-        <div className="value-prop-list">
+        <h2 className="value-prop__title">Confiance et sécurité</h2>
+        <div className="value-prop__list">
           {trustItems.map((item) => (
             <InfoCard
               key={item.title}
@@ -117,11 +117,11 @@ export default function LandingPage() {
       </section>
 
       <section className="final-cta">
-        <span className="final-cta-kicker">Prêt à commencer</span>
-        <h1 className="final-cta-title">
+        <span className="final-cta__kicker">Prêt à commencer</span>
+        <h1 className="final-cta__title">
           Préparez l'avenir, libérez votre présent.
         </h1>
-        <p className="final-cta-text">
+        <p className="final-cta__text">
           Commencez simplement avec un premier message, puis faites évoluer le à
           votre rythme.
         </p>
@@ -129,7 +129,7 @@ export default function LandingPage() {
           type="primary"
           href="/login"
           label="Créer mon premier message"
-          className="final-cta-button"
+          className="final-cta__button"
         />
       </section>
     </>
