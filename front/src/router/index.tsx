@@ -5,6 +5,7 @@ import LandingPage from "../LandingPage";
 import LoginPage from "../LoginPage";
 import RequireAuth from "./RequireAuth";
 import DashboardPage from "../DashboardPage";
+import AccountPage from "../AccountPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ export const appRouter = createBrowserRouter([
             path: "dashboard",
             element: <DashboardPage />,
           },
+          { path: "account", element: <AccountPage /> },
         ],
       },
       {
