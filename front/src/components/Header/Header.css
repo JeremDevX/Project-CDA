@@ -18,7 +18,6 @@
   gap: var(--space-md);
   min-width: 0;
   color: inherit;
-  text-decoration: none;
 }
 .header__actions {
   display: flex;
