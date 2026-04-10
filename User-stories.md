@@ -123,6 +123,18 @@ En tant qu’utilisateur, je veux pouvoir voir mes gifts actifs ainsi que mes br
 
 ---
 
+### FIX 01 — Ajouter un reset CSS et lisser les styles existants
+
+En tant qu’équipe produit, je veux ajouter un reset CSS global et harmoniser les règles CSS déjà présentes afin de réduire les doublons, normaliser les styles de base et faciliter la maintenance de l’interface.  
+**Charge (SP) : 1**
+
+**Critères d’acceptation**
+
+- Un reset CSS global est ajouté et chargé dans l’application.
+- Les règles CSS de type reset déjà dispersées dans les fichiers existants sont retirées lorsqu’elles font doublon avec le reset global.
+
+---
+
 ### US-10 — Voir la date de suppression automatique des brouillons
 
 En tant qu’utilisateur, je veux disposer d’un retour visuel sur mes brouillons afin de savoir à quel moment ils seront supprimés automatiquement après 30 jours.  

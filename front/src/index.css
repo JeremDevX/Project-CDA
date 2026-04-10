@@ -40,12 +40,6 @@
   --transition-fast: 0.2s ease;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 html,
 body,
 #root {
