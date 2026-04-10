@@ -35,6 +35,15 @@
   color: var(--text-secondary);
 }
 
+.dashboard-page__gift-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  margin-left: var(--space-lg);
+}
+
 .dashboard-page__empty-state {
   padding: var(--space-2xl);
   border: var(--border-width-sm) dashed
@@ -51,7 +60,7 @@
 .dashboard-page__empty-title {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   font-weight: 700;
 }
 

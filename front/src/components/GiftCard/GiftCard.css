@@ -1,0 +1,198 @@
+.gift-card {
+  flex: 0 0 calc(33.333% - var(--space-lg));
+  min-width: 280px;
+  max-width: 320px;
+  padding: var(--space-xl);
+  border: var(--border-width-sm) solid
+    color-mix(in srgb, white 6%, var(--border));
+  border-radius: var(--radius-2xl);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent),
+    color-mix(in srgb, white 2%, var(--surface));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.gift-card__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.gift-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.gift-card--draft .gift-card__badge {
+  background-color: color-mix(in srgb, var(--accent3) 18%, transparent);
+  color: var(--accent3);
+  border: var(--border-width-sm) solid
+    color-mix(in srgb, var(--accent3) 42%, transparent);
+}
+
+.gift-card--active .gift-card__badge {
+  background-color: color-mix(in srgb, var(--accent2) 18%, transparent);
+  color: var(--accent2);
+  border: var(--border-width-sm) solid
+    color-mix(in srgb, var(--accent2) 42%, transparent);
+}
+
+.gift-card__menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.gift-card__menu-button:hover {
+  background-color: color-mix(in srgb, white 5%, var(--surface));
+  color: var(--text-primary);
+}
+
+.gift-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.gift-card__title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.gift-card__meta,
+.gift-card__stat,
+.gift-card__progress-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.gift-card__meta {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.gift-card__progress-header {
+  justify-content: space-between;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.gift-card__progress-label,
+.gift-card__progress-value {
+  display: flex;
+}
+
+.gift-card__progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background-color: color-mix(in srgb, white 7%, var(--surface));
+  display: flex;
+}
+
+.gift-card__progress-fill {
+  display: flex;
+}
+
+.gift-card--draft .gift-card__progress-fill {
+  background: linear-gradient(90deg, var(--accent3) 0%, var(--accent) 100%);
+}
+
+.gift-card--active .gift-card__progress-fill {
+  background: linear-gradient(90deg, var(--accent2) 0%, var(--accent) 100%);
+}
+
+.gift-card__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  padding-top: var(--space-sm);
+  border-top: var(--border-width-sm) solid
+    color-mix(in srgb, white 5%, var(--border));
+}
+
+.gift-card__stat {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.gift-card__action {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-lg);
+  border: var(--border-width-sm) solid
+    color-mix(in srgb, white 8%, var(--border));
+  border-radius: var(--radius-lg);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.gift-card__action:hover {
+  transform: translateY(-1px);
+}
+
+.gift-card--draft .gift-card__action:hover {
+  border-color: var(--accent3);
+  color: var(--accent3);
+  background-color: color-mix(in srgb, var(--accent3) 8%, transparent);
+}
+
+.gift-card--active .gift-card__action:hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
+  background-color: color-mix(in srgb, var(--accent2) 8%, transparent);
+}
+
+@media (max-width: 767px) {
+  .gift-card {
+    min-width: 0;
+    width: 100%;
+    padding: var(--space-lg);
+  }
+
+  .gift-card__stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+}
