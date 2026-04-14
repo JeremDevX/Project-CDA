@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 
 import { config } from "./config";
 import { authRouter } from "./router/auth";
+import { giftsRouter } from "./router/gifts";
 
 function resolveCorsOrigin() {
   if (!config.corsOrigin || config.corsOrigin === "*") {
@@ -30,7 +31,7 @@ export function createApp() {
   });
 
   app.use("/api/auth", authRouter);
-
+  app.use("/api/gifts", giftsRouter);
   app.use((_req: Request, res: Response) => {
     res.status(404).json({ message: "Route not found" });
   });

@@ -15,6 +15,7 @@ model User {
   username  String
   email     String   @unique
   password  String
+  gifts     Gift[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,4 +28,16 @@ model TokenBlacklist {
   createdAt DateTime @default(now())
 
   @@map("token_blacklist")
+}
+
+model Gift {
+  id        Int      @id @default(autoincrement())
+  title     String   @default("Nouveau gift")
+  status    String   @default("brouillon")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("gifts")
 }
