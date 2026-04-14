@@ -30,6 +30,7 @@
 .app-button__label {
   display: block;
   overflow-wrap: anywhere;
+  font-size: 1rem;
 }
 
 .app-button__icon {

@@ -25,6 +25,12 @@
   flex-wrap: wrap;
 }
 
+.dashboard-page__error {
+  margin: 0;
+  color: var(--error);
+  font-weight: 700;
+}
+
 .dashboard-page__section-title {
   margin: 0;
   color: var(--text-primary);
