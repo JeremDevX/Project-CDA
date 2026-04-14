@@ -1,0 +1,22 @@
+.gift-pricing-page {
+  padding: var(--space-2xl) 0;
+}
+
+.gift-pricing-page__error {
+  margin: var(--space-lg) 0 0;
+  color: var(--error);
+  font-weight: 700;
+}
+
+.gift-pricing-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+@media (max-width: 640px) {
+  .gift-pricing-page__actions {
+    flex-direction: column-reverse;
+  }
+}
