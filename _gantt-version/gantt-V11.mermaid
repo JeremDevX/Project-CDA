@@ -1,0 +1,76 @@
+gantt
+    title Planification agile réajustée selon l'avancement — LegacyGift MVP (V11)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d/%m
+    todayMarker off
+
+    %% Réalisé
+    section Avancement réel
+    US-01 — Accéder à la landing page                                  :done, us01, 2026-03-30, 1d
+    Pause / aucun développement                                        :done, pause01, 2026-03-31, 1d
+    US-02 — Consulter les informations importantes                     :done, us02, 2026-04-01, 1d
+    US-03 — Consulter les offres tarifaires                            :done, us03, 2026-04-01, 1d
+    Point d'avancement — EPIC découverte validé                        :milestone, m0, 2026-04-01, 0d
+    US-04 — Créer un compte                                            :done, us04, 2026-04-06, 1d
+    US-05 — Se connecter                                               :done, us05, 2026-04-08, 1d
+    US-06 — Se déconnecter                                             :done, us06, 2026-04-08, 1d
+    US-07 — Consulter les informations du compte                       :done, us07, 2026-04-08, 1d
+    US-08 — Accéder au dashboard                                       :done, us08, 2026-04-08, 1d
+    US-09 — Voir les gifts actifs et les brouillons                    :done, us09, 2026-04-10, 1d
+    FIX 01 — Ajout d'un reset CSS et lissage du CSS                    :done, fix01, 2026-04-10, 1d
+    Point d'avancement — EPIC Dashboard et gestion générale validé     :milestone, m1, 2026-04-10, 0d
+    US-10 — Créer un nouveau gift                                      :done, us10, 2026-04-14, 1d
+    US-11 + US-12 — Voir, comparer et sélectionner une offre           :done, us11_12, 2026-04-14, 1d
+
+    %% Prévisionnel mis à jour selon le rythme observé :
+    %% SP 1 = 1 jour
+    %% SP 2 = 1 jour
+    %% SP 3 = 2 jours
+    %% SP 5 = 3 jours
+    %%
+    %% Note de suivi :
+    %% US-12 est fusionnée dans US-11 car les possibilités incluses
+    %% sont affichées et sélectionnées sur le même écran que les offres.
+    %% Les numéros des US suivantes sont conservés pour garder la traçabilité
+    %% avec le backlog et les documents de progression.
+
+    section Création et configuration initiale
+    US-13 — Choisir le mode de création                              :us13, after us11_12, 1d
+    US-14 — Donner un titre au gift                                  :us14, after us13, 1d
+    US-15 — Rédiger le message principal                             :us15, after us14, 1d
+    US-16 — Sauvegarde automatique                                   :us16, after us15, 3d
+    US-17 — Afficher la date de suppression automatique des brouillons:us17, after us16, 2d
+    US-18 — Naviguer entre les étapes                                :us18, after us17, 2d
+    US-19 — Voir l’étape en cours                                    :us19, after us18, 1d
+
+    section Médias et prévisualisation
+    US-20 — Adapter automatiquement les emplacements disponibles     :us20, after us19, 2d
+    US-21 — Ajouter des images selon l’offre                         :us21, after us20, 2d
+    US-22 — Prévisualiser le gift                                    :us22, after us21, 2d
+
+    section Destinataires et tiers de confiance
+    US-23 — Définir les destinataires                                :us23, after us22, 2d
+    US-24 — Définir les tiers de confiance                           :us24, after us23, 2d
+    US-25 — Renseigner les informations nécessaires pour chaque tiers:us25, after us24, 2d
+
+    section Confirmations, paiement et activation
+    US-26 — Valider les dernières confirmations                      :us26, after us25, 1d
+    US-27 — Consulter le récapitulatif                               :us27, after us26, 1d
+    US-28 — Choisir un mode de paiement                              :us28, after us27, 1d
+    US-29 — Payer le gift                                            :us29, after us28, 3d
+    US-30 — Accéder à une facture ou confirmation de paiement        :us30, after us29, 1d
+    US-31 — Voir l’écran de remerciement après activation            :us31, after us30, 1d
+
+    section Édition après création
+    US-32 — Modifier le gift gratuitement pendant 30 jours           :us32, after us31, 2d
+    US-33 — Modifier le gift au-delà de 30 jours via une option payante:us33, after us32, 3d
+
+    section Déclenchement, check-in et escalade
+    US-34 — Détecter un retard de check-in                           :us34, after us33, 2d
+    US-35 — Relancer l’utilisateur en cas de non-réponse             :us35, after us34, 2d
+    US-36 — Escalader vers les tiers de confiance                    :us36, after us35, 3d
+    US-37 — Enregistrer la réponse des tiers de confiance            :us37, after us36, 2d
+    US-38 — Déclencher l’envoi du gift après validation              :us38, after us37, 3d
+
+    section Jalons
+    MVP LegacyGift — Backlog fonctionnel implémenté                    :milestone, m3, after us38, 0d

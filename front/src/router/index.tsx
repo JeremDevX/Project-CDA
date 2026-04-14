@@ -6,6 +6,7 @@ import LoginPage from "../LoginPage";
 import RequireAuth from "./RequireAuth";
 import DashboardPage from "../DashboardPage";
 import AccountPage from "../AccountPage";
+import GiftPricingPage from "../GiftPricingPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const appRouter = createBrowserRouter([
             element: <DashboardPage />,
           },
           { path: "account", element: <AccountPage /> },
+          {
+            path: "gifts/:giftId/pricing",
+            element: <GiftPricingPage />,
+          },
         ],
       },
       {

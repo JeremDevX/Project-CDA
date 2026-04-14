@@ -150,29 +150,30 @@ En tant qu’utilisateur, je veux pouvoir créer un nouveau gift afin de prépar
 
 ---
 
-### US-11 — Voir les offres disponibles
+### US-11 — Voir et comparer les offres disponibles
 
-En tant qu’utilisateur, je veux pouvoir voir les différentes offres disponibles afin de choisir celle qui correspond à mon besoin.  
-**Charge (SP) : 1**
+En tant qu’utilisateur, je veux pouvoir voir les différentes offres disponibles et comprendre ce qu’elles incluent afin de choisir celle qui correspond à mon besoin.  
+**Charge (SP) : 2**
 
 **Critères d’acceptation**
 
 - Les offres sont consultables pendant le parcours de création.
+- Les fonctionnalités ou limites liées à chaque offre sont présentées clairement.
+- L’utilisateur peut comparer les principales différences entre offres.
 - L’utilisateur peut sélectionner une offre.
+- Les restrictions fonctionnelles sont cohérentes avec l’offre sélectionnée.
 - L’offre choisie est reprise dans le récapitulatif.
 
 ---
 
-### US-12 — Comprendre les possibilités incluses
+### US-12 — Fusionnée dans l’US-11
 
-En tant qu’utilisateur, je veux voir les possibilités incluses dans chaque offre afin de comprendre ce que je peux configurer dans mon gift.  
-**Charge (SP) : 1**
+Cette user story est fusionnée avec l’US-11, car les offres disponibles et les possibilités incluses sont affichées et sélectionnées sur le même écran du parcours de création.  
+**Charge (SP) : 0**
 
 **Critères d’acceptation**
 
-- Les fonctionnalités ou limites liées à chaque offre sont présentées clairement.
-- L’utilisateur peut comparer les principales différences entre offres.
-- Les restrictions fonctionnelles sont cohérentes avec l’offre sélectionnée.
+- Voir l’US-11.
 
 ---
 
