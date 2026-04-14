@@ -13,7 +13,6 @@
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
-  text-decoration: none;
   cursor: pointer;
   transition:
     transform var(--transition-fast),

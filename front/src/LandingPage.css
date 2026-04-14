@@ -1,13 +1,7 @@
 body {
-  margin: 0;
-  padding: 0;
   font-family: inherit;
   background-color: var(--bg);
   color: var(--text-primary);
-}
-
-* {
-  box-sizing: border-box;
 }
 
 /* Hero Section */
@@ -35,7 +29,7 @@ body {
 }
 
 .hero__title {
-  font-size: clamp(2.4rem, 7vw, 3.5rem);
+  font-size: clamp(2.375rem, 7vw, 3.5rem);
   line-height: 1.1;
   font-weight: 700;
   margin-bottom: var(--space-xl);
@@ -212,7 +206,7 @@ body {
 }
 
 .final-cta__kicker {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
