@@ -32,3 +32,23 @@ giftsRouter.post("/", requireAuth, async (req, res) => {
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });
+
+giftsRouter.get("/", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    const gifts = await prisma.gift.findMany({
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return res.json({ gifts });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des gifts:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});

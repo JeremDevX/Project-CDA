@@ -1,3 +1,5 @@
+import { getApiErrorMessage } from "../helpers/helpers";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export type Gift = {
@@ -13,15 +15,6 @@ type CreateGiftResponse = {
   gift: Gift;
 };
 
-async function parseApiError(response: Response) {
-  try {
-    const data = (await response.json()) as { message?: string };
-    return data.message || "Une erreur est survenue. Veuillez réessayer.";
-  } catch {
-    return "Une erreur est survenue. Veuillez réessayer.";
-  }
-}
-
 export async function createGift(token: string, title?: string) {
   const response = await fetch(`${API_BASE_URL}/gifts`, {
     method: "POST",
@@ -33,7 +26,22 @@ export async function createGift(token: string, title?: string) {
   });
 
   if (!response.ok) {
-    throw new Error(await parseApiError(response));
+    throw new Error(await getApiErrorMessage(response));
   }
   return response.json() as Promise<CreateGiftResponse>;
+}
+
+export async function getGifts(token: string) {
+  const response = await fetch(`${API_BASE_URL}/gifts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(response, "Impossible de récupérer les gifts"),
+    );
+  }
+  return response.json() as Promise<{ gifts: Gift[] }>;
 }
