@@ -4,12 +4,13 @@ import { requireAuth } from "../middlewares/requireAuth";
 
 export const giftsRouter = Router();
 
+const MAX_GIFT_TITLE_LENGTH = 120;
+const allowedOffers = ["essentiel", "standard", "premium"] as const;
+const allowedCreationModes = ["free"] as const;
+
 function normalizeTitle(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
-
-const allowedOffers = ["essentiel", "standard", "premium"] as const;
-const allowedCreationModes = ["free"] as const;
 
 function isAllowedOffer(value: unknown) {
   return typeof value === "string" && allowedOffers.includes(value as never);
@@ -18,6 +19,15 @@ function isAllowedOffer(value: unknown) {
 function isAllowedCreationMode(value: unknown) {
   return (
     typeof value === "string" && allowedCreationModes.includes(value as never)
+  );
+}
+
+function isValidGiftTitle(value: unknown) {
+  const normalizedTitle = normalizeTitle(value);
+
+  return (
+    normalizedTitle.length > 0 &&
+    normalizedTitle.length <= MAX_GIFT_TITLE_LENGTH
   );
 }
 
@@ -149,6 +159,84 @@ giftsRouter.patch("/:giftId/creation-mode", requireAuth, async (req, res) => {
     return res.json({ gift });
   } catch (error) {
     console.error("Erreur lors du choix du mode de création:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    return res.json({ gift });
+  } catch (error) {
+    console.error("Erreur lors de la récupération du gift:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.patch("/:giftId/title", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+    const title = normalizeTitle(req.body?.title);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    if (!isValidGiftTitle(title)) {
+      return res.status(400).json({
+        message: "Le titre doit contenir entre 1 et 120 caractères",
+      });
+    }
+
+    const existingGift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+    });
+
+    if (!existingGift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    const gift = await prisma.gift.update({
+      where: {
+        id: giftId,
+      },
+      data: {
+        title,
+      },
+    });
+
+    return res.json({ gift });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du titre:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });

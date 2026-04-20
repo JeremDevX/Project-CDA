@@ -91,6 +91,7 @@ export default function DashboardPage() {
           {gifts.map((gift) => (
             <GiftCard
               key={gift.id}
+              id={gift.id}
               title={gift.title}
               status={gift.status === "active" ? "active" : "draft"}
               updatedLabel={`Mis à jour le ${new Date(
