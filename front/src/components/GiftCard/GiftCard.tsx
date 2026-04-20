@@ -1,9 +1,11 @@
 import { ChevronRight, Clock3, Ellipsis, ImageIcon, Users } from "lucide-react";
+import { Link } from "react-router";
 import "./GiftCard.css";
 
 type GiftStatus = "draft" | "active";
 
 interface GiftCardProps {
+  id: number;
   title: string;
   status: GiftStatus;
   updatedLabel: string;
@@ -30,6 +32,7 @@ function getCardCopy(status: GiftStatus) {
 
 export default function GiftCard(props: GiftCardProps) {
   const cardCopy = getCardCopy(props.status);
+  const editPath = `/gifts/${props.id}/pricing`;
 
   return (
     <article
@@ -87,10 +90,17 @@ export default function GiftCard(props: GiftCardProps) {
         </div>
       </div>
 
-      <button type="button" className="gift-card__action">
-        <span>{cardCopy.action}</span>
-        <ChevronRight size={16} />
-      </button>
+      {props.status === "draft" ? (
+        <Link className="gift-card__action" to={editPath}>
+          <span>{cardCopy.action}</span>
+          <ChevronRight size={16} />
+        </Link>
+      ) : (
+        <button type="button" className="gift-card__action">
+          <span>{cardCopy.action}</span>
+          <ChevronRight size={16} />
+        </button>
+      )}
     </article>
   );
 }
