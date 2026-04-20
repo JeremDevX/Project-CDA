@@ -1,0 +1,39 @@
+.gift-creation-mode-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2xl) 0;
+}
+
+.gift-creation-mode-page__error {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: var(--space-lg) 0 0;
+  color: var(--error);
+  font-weight: 700;
+}
+
+.gift-creation-mode-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: var(--border-width-sm) solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .gift-creation-mode-page {
+    align-items: stretch;
+  }
+
+  .gift-creation-mode-page__actions {
+    flex-direction: column-reverse;
+  }
+
+  .gift-creation-mode-page__actions .app-button {
+    width: 100%;
+  }
+}

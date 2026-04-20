@@ -7,6 +7,7 @@ import RequireAuth from "./RequireAuth";
 import DashboardPage from "../DashboardPage";
 import AccountPage from "../AccountPage";
 import GiftPricingPage from "../GiftPricingPage";
+import GiftCreationModePage from "../GiftCreationModePage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const appRouter = createBrowserRouter([
           {
             path: "gifts/:giftId/pricing",
             element: <GiftPricingPage />,
+          },
+          {
+            path: "gifts/:giftId/creation-mode",
+            element: <GiftCreationModePage />,
           },
         ],
       },
