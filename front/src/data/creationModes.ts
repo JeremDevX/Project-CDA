@@ -1,6 +1,6 @@
 import { BookOpenIcon, PenLineIcon, type LucideIcon } from "lucide-react";
 
-export type CreationModeId = "free-writing" | "inspiration-guide";
+export type CreationModeId = "free" | "inspiration-guide";
 
 export type CreationMode = {
   id: CreationModeId;
@@ -14,7 +14,7 @@ export type CreationMode = {
 
 export const creationModes: CreationMode[] = [
   {
-    id: "free-writing",
+    id: "free",
     title: "Écriture libre",
     label: "Populaire",
     description:

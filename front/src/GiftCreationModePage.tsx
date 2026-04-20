@@ -13,8 +13,7 @@ export default function GiftCreationModePage() {
   const navigate = useNavigate();
   const { giftId } = useParams();
   const token = useUserState((state) => state.token);
-  const [selectedMode, setSelectedMode] =
-    useState<CreationModeId>("free-writing");
+  const [selectedMode, setSelectedMode] = useState<CreationModeId>("free");
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
