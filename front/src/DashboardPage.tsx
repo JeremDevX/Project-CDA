@@ -102,7 +102,7 @@ export default function DashboardPage() {
             />
           ))}
         </div>
-        {gifts.length === 0 && isLoadingGifts && (
+        {gifts.length === 0 && !isLoadingGifts && (
           <div className="dashboard-page__empty-state">
             <p className="dashboard-page__empty-title">
               Aucun gift pour le moment
