@@ -27,6 +27,14 @@ type UpdateGiftCreationModeResponse = {
   gift: Gift;
 };
 
+type GetGiftByIdResponse = {
+  gift: Gift;
+};
+
+type UpdateGiftTitleResponse = {
+  gift: Gift;
+};
+
 export async function createGift(token: string, title?: string) {
   const response = await fetch(`${API_BASE_URL}/gifts`, {
     method: "POST",
@@ -108,4 +116,46 @@ export async function updateGiftCreationMode(
   }
 
   return response.json() as Promise<UpdateGiftCreationModeResponse>;
+}
+
+export async function getGiftById(token: string, giftId: number) {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(response, "Impossible de récupérer le gift"),
+    );
+  }
+
+  return response.json() as Promise<GetGiftByIdResponse>;
+}
+
+export async function updateGiftTitle(
+  token: string,
+  giftId: number,
+  title: string,
+) {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/title`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible d'enregistrer le titre du gift",
+      ),
+    );
+  }
+
+  return response.json() as Promise<UpdateGiftTitleResponse>;
 }

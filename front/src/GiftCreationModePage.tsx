@@ -32,7 +32,7 @@ export default function GiftCreationModePage() {
 
     try {
       await updateGiftCreationMode(token, numericGiftId, selectedMode);
-      navigate(`/gifts/${numericGiftId}/title`);
+      navigate(`/gifts/${numericGiftId}/composition`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
