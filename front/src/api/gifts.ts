@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "../helpers/helpers";
 import type { OfferPlanId } from "../data/offerPlans";
+import type { CreationModeId } from "../data/creationModes";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -8,6 +9,7 @@ export type Gift = {
   title: string;
   status: string;
   offer?: OfferPlanId | null;
+  creationMode?: CreationModeId | null;
   userId: number;
   createdAt: string;
   updatedAt: string;
@@ -18,6 +20,10 @@ type CreateGiftResponse = {
 };
 
 type UpdateGiftOfferResponse = {
+  gift: Gift;
+};
+
+type UpdateGiftCreationModeResponse = {
   gift: Gift;
 };
 
@@ -73,4 +79,33 @@ export async function updateGiftOffer(
   }
 
   return response.json() as Promise<UpdateGiftOfferResponse>;
+}
+
+export async function updateGiftCreationMode(
+  token: string,
+  giftId: number,
+  creationMode: CreationModeId,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/gifts/${giftId}/creation-mode`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ creationMode }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible d'enregistrer le mode de création",
+      ),
+    );
+  }
+
+  return response.json() as Promise<UpdateGiftCreationModeResponse>;
 }

@@ -9,9 +9,16 @@ function normalizeTitle(value: unknown) {
 }
 
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
+const allowedCreationModes = ["free"] as const;
 
 function isAllowedOffer(value: unknown) {
   return typeof value === "string" && allowedOffers.includes(value as never);
+}
+
+function isAllowedCreationMode(value: unknown) {
+  return (
+    typeof value === "string" && allowedCreationModes.includes(value as never)
+  );
 }
 
 giftsRouter.post("/", requireAuth, async (req, res) => {
@@ -97,6 +104,51 @@ giftsRouter.get("/", requireAuth, async (req, res) => {
     return res.json({ gifts });
   } catch (error) {
     console.error("Erreur lors de la récupération des gifts:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.patch("/:giftId/creation-mode", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+    const creationMode = req.body?.creationMode;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    if (!isAllowedCreationMode(creationMode)) {
+      return res.status(400).json({ message: "Mode de création invalide" });
+    }
+
+    const existingGift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+    });
+
+    if (!existingGift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    const gift = await prisma.gift.update({
+      where: {
+        id: giftId,
+      },
+      data: {
+        creationMode,
+      },
+    });
+
+    return res.json({ gift });
+  } catch (error) {
+    console.error("Erreur lors du choix du mode de création:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });

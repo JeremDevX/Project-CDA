@@ -1,0 +1,196 @@
+.creation-mode-selection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: var(--container-max-width);
+}
+
+.creation-mode-selection__header {
+  max-width: 760px;
+}
+
+.creation-mode-selection__header h1 {
+  margin: 0 0 var(--space-md);
+  color: var(--text-primary);
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.creation-mode-selection__header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.creation-mode-selection__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xl);
+}
+
+.creation-mode-selection__card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 calc(50% - var(--space-md));
+  gap: var(--space-xl);
+  min-width: 0;
+  min-height: 248px;
+  padding: var(--space-xl);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.creation-mode-selection__card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent2) 55%, var(--border));
+}
+
+.creation-mode-selection__card:focus-visible {
+  outline: var(--focus-ring-width) solid
+    color-mix(in srgb, white 75%, var(--accent2));
+  outline-offset: 3px;
+}
+
+.creation-mode-selection__card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.creation-mode-selection__card--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.creation-mode-selection__card--disabled:hover {
+  transform: none;
+  border-color: var(--border);
+}
+
+.creation-mode-selection__card-top,
+.creation-mode-selection__status {
+  display: flex;
+  align-items: center;
+}
+
+.creation-mode-selection__card-top {
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.creation-mode-selection__status {
+  gap: var(--space-sm);
+}
+
+.creation-mode-selection__icon,
+.creation-mode-selection__check,
+.creation-mode-selection__notice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.creation-mode-selection__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+}
+
+.creation-mode-selection__card--disabled .creation-mode-selection__icon {
+  background: color-mix(in srgb, white 6%, transparent);
+  color: var(--text-secondary);
+}
+
+.creation-mode-selection__badge {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--accent2) 15%, transparent);
+  color: var(--accent2);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.creation-mode-selection__card--disabled .creation-mode-selection__badge {
+  background: color-mix(in srgb, white 6%, transparent);
+  color: var(--text-secondary);
+}
+
+.creation-mode-selection__check {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--text-contrast);
+}
+
+.creation-mode-selection__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.creation-mode-selection__content strong {
+  font-size: 1.125rem;
+}
+
+.creation-mode-selection__content span {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.creation-mode-selection__content small {
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.creation-mode-selection__card--disabled
+  .creation-mode-selection__content
+  small {
+  color: var(--text-secondary);
+}
+
+.creation-mode-selection__notice {
+  display: flex;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, white 3%, var(--surface));
+}
+
+.creation-mode-selection__notice-icon {
+  width: 32px;
+  height: 32px;
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+}
+
+.creation-mode-selection__notice strong {
+  color: var(--text-primary);
+}
+
+.creation-mode-selection__notice p {
+  margin: var(--space-xs) 0 0;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .creation-mode-selection__card {
+    flex-basis: 100%;
+  }
+}
