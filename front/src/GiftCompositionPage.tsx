@@ -10,7 +10,7 @@ import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftCompositionPage.css";
 
-const MAX_GIFT_TITLE_LENGTH = 120;
+const MAX_GIFT_TITLE_LENGTH = 250;
 
 export default function GiftCompositionPage() {
   const navigate = useNavigate();

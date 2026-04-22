@@ -1,4 +1,4 @@
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
   BoldIcon,
@@ -31,6 +31,29 @@ export default function GiftMessageEditor({
     },
   });
 
+  const editorState = useEditorState({
+    editor,
+    selector: ({ editor }) => {
+      if (!editor) {
+        return {
+          isBold: false,
+          isItalic: false,
+          isBulletList: false,
+          isOrderedList: false,
+          isBlockquote: false,
+        };
+      }
+
+      return {
+        isBold: editor.isActive("bold"),
+        isItalic: editor.isActive("italic"),
+        isBulletList: editor.isActive("bulletList"),
+        isOrderedList: editor.isActive("orderedList"),
+        isBlockquote: editor.isActive("blockquote"),
+      };
+    },
+  });
+
   useEffect(() => {
     if (!editor) {
       return;
@@ -59,7 +82,7 @@ export default function GiftMessageEditor({
           <button
             type="button"
             aria-label="Gras"
-            className={editor?.isActive("bold") ? "is-active" : ""}
+            className={editorState?.isBold ? "is-active" : ""}
             disabled={disabled}
             onClick={() => editor?.chain().focus().toggleBold().run()}
           >
@@ -68,7 +91,7 @@ export default function GiftMessageEditor({
           <button
             type="button"
             aria-label="Italique"
-            className={editor?.isActive("italic") ? "is-active" : ""}
+            className={editorState?.isItalic ? "is-active" : ""}
             disabled={disabled}
             onClick={() => editor?.chain().focus().toggleItalic().run()}
           >
@@ -77,7 +100,7 @@ export default function GiftMessageEditor({
           <button
             type="button"
             aria-label="Liste à puces"
-            className={editor?.isActive("bulletList") ? "is-active" : ""}
+            className={editorState?.isBulletList ? "is-active" : ""}
             disabled={disabled}
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
           >
@@ -86,7 +109,7 @@ export default function GiftMessageEditor({
           <button
             type="button"
             aria-label="Liste numérotée"
-            className={editor?.isActive("orderedList") ? "is-active" : ""}
+            className={editorState?.isOrderedList ? "is-active" : ""}
             disabled={disabled}
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
           >
@@ -95,7 +118,7 @@ export default function GiftMessageEditor({
           <button
             type="button"
             aria-label="Citation"
-            className={editor?.isActive("blockquote") ? "is-active" : ""}
+            className={editorState?.isBlockquote ? "is-active" : ""}
             disabled={disabled}
             onClick={() => editor?.chain().focus().toggleBlockquote().run()}
           >
