@@ -25,6 +25,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
+    "@types/sanitize-html": "^2.16.1",
     "@types/supertest": "^6.0.3",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
@@ -46,7 +47,8 @@
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "sanitize-html": "^2.17.3"
   },
   "overrides": {
     "tar": "^7.5.9"
