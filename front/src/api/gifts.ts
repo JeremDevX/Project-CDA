@@ -6,7 +6,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export type Gift = {
   id: number;
-  title: string;
+  title?: string;
+  message?: string;
   status: string;
   offer?: OfferPlanId | null;
   creationMode?: CreationModeId | null;
@@ -15,24 +16,13 @@ export type Gift = {
   updatedAt: string;
 };
 
-type CreateGiftResponse = {
+type GiftResponse = {
   gift: Gift;
 };
 
-type UpdateGiftOfferResponse = {
-  gift: Gift;
-};
-
-type UpdateGiftCreationModeResponse = {
-  gift: Gift;
-};
-
-type GetGiftByIdResponse = {
-  gift: Gift;
-};
-
-type UpdateGiftTitleResponse = {
-  gift: Gift;
+type UpdateGiftMessagePayload = {
+  title?: string;
+  message?: string;
 };
 
 export async function createGift(token: string, title?: string) {
@@ -48,7 +38,7 @@ export async function createGift(token: string, title?: string) {
   if (!response.ok) {
     throw new Error(await getApiErrorMessage(response));
   }
-  return response.json() as Promise<CreateGiftResponse>;
+  return response.json() as Promise<GiftResponse>;
 }
 
 export async function getGifts(token: string) {
@@ -86,7 +76,7 @@ export async function updateGiftOffer(
     );
   }
 
-  return response.json() as Promise<UpdateGiftOfferResponse>;
+  return response.json() as Promise<GiftResponse>;
 }
 
 export async function updateGiftCreationMode(
@@ -115,7 +105,7 @@ export async function updateGiftCreationMode(
     );
   }
 
-  return response.json() as Promise<UpdateGiftCreationModeResponse>;
+  return response.json() as Promise<GiftResponse>;
 }
 
 export async function getGiftById(token: string, giftId: number) {
@@ -131,31 +121,31 @@ export async function getGiftById(token: string, giftId: number) {
     );
   }
 
-  return response.json() as Promise<GetGiftByIdResponse>;
+  return response.json() as Promise<GiftResponse>;
 }
 
-export async function updateGiftTitle(
+export async function updateGiftMessage(
   token: string,
   giftId: number,
-  title: string,
+  payload: UpdateGiftMessagePayload,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/title`, {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/message`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     throw new Error(
       await getApiErrorMessage(
         response,
-        "Impossible d'enregistrer le titre du gift",
+        "Impossible d'enregistrer le message du gift",
       ),
     );
   }
 
-  return response.json() as Promise<UpdateGiftTitleResponse>;
+  return response.json() as Promise<GiftResponse>;
 }

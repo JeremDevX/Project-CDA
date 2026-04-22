@@ -2,9 +2,10 @@ import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { getGiftById, updateGiftTitle } from "./api/gifts";
+import { getGiftById, updateGiftMessage } from "./api/gifts";
 import Button from "./components/Button/Button";
 import GiftTitleForm from "./components/GiftTitleForm/GiftTitleForm";
+import GiftMessageEditor from "./components/GiftMessageEditor/GiftMessageEditor";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftCompositionPage.css";
@@ -17,6 +18,7 @@ export default function GiftCompositionPage() {
   const token = useUserState((state) => state.token);
 
   const [titleValue, setTitleValue] = useState("");
+  const [messageValue, setMessageValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -37,6 +39,7 @@ export default function GiftCompositionPage() {
       try {
         const response = await getGiftById(token, numericGiftId);
         setTitleValue(response.gift.title ?? "");
+        setMessageValue(response.gift.message ?? "");
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
       } finally {
@@ -56,17 +59,25 @@ export default function GiftCompositionPage() {
     setErrorMessage("");
 
     try {
-      await updateGiftTitle(token, numericGiftId, titleValue);
-      navigate(`/gifts/${numericGiftId}/message`);
+      await updateGiftMessage(token, numericGiftId, {
+        title: titleValue,
+        message: messageValue,
+      });
+      navigate(`/gifts/${numericGiftId}/images`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
       setIsSaving(false);
     }
   }
+  const isMessageEmpty =
+    messageValue
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim().length === 0;
 
   const isSubmitDisabled =
-    isLoading || isSaving || titleValue.trim().length === 0;
+    isLoading || isSaving || titleValue.trim().length === 0 || isMessageEmpty;
 
   return (
     <section className="gift-composition-page">
@@ -84,6 +95,11 @@ export default function GiftCompositionPage() {
           titleValue={titleValue}
           onTitleChange={setTitleValue}
           maxLength={MAX_GIFT_TITLE_LENGTH}
+          disabled={isLoading || isSaving}
+        />
+        <GiftMessageEditor
+          value={messageValue}
+          onChange={setMessageValue}
           disabled={isLoading || isSaving}
         />
 
