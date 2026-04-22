@@ -1,14 +1,16 @@
 import { Router } from "express";
 import { prisma } from "../database";
 import { requireAuth } from "../middlewares/requireAuth";
+import sanitizeHtml from "sanitize-html";
 
 export const giftsRouter = Router();
 
-const MAX_GIFT_TITLE_LENGTH = 120;
+const MAX_GIFT_TITLE_LENGTH = 250;
+const MAX_GIFT_MESSAGE_LENGTH = 25000;
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
 const allowedCreationModes = ["free"] as const;
 
-function normalizeTitle(value: unknown) {
+function normalizeTextInput(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
@@ -22,13 +24,26 @@ function isAllowedCreationMode(value: unknown) {
   );
 }
 
-function isValidGiftTitle(value: unknown) {
-  const normalizedTitle = normalizeTitle(value);
+function hasField(body: unknown, field: string) {
+  return typeof body === "object" && body !== null && field in body;
+}
 
-  return (
-    normalizedTitle.length > 0 &&
-    normalizedTitle.length <= MAX_GIFT_TITLE_LENGTH
-  );
+function sanitizeGiftMessageHtml(value: string) {
+  return sanitizeHtml(value, {
+    allowedTags: [
+      "p",
+      "strong",
+      "em",
+      "b",
+      "i",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "br",
+    ],
+    allowedAttributes: {},
+  });
 }
 
 giftsRouter.post("/", requireAuth, async (req, res) => {
@@ -39,7 +54,7 @@ giftsRouter.post("/", requireAuth, async (req, res) => {
       return res.status(401).json({ message: "Non autorisé" });
     }
 
-    const title = normalizeTitle(req.body?.title || "Nouveau gift");
+    const title = normalizeTextInput(req.body?.title || "Nouveau gift");
 
     const gift = await prisma.gift.create({
       data: {
@@ -194,11 +209,10 @@ giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.patch("/:giftId/title", requireAuth, async (req, res) => {
+giftsRouter.patch("/:giftId/message", requireAuth, async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
-    const title = normalizeTitle(req.body?.title);
 
     if (!userId) {
       return res.status(401).json({ message: "Non autorisé" });
@@ -208,9 +222,41 @@ giftsRouter.patch("/:giftId/title", requireAuth, async (req, res) => {
       return res.status(400).json({ message: "Gift invalide" });
     }
 
-    if (!isValidGiftTitle(title)) {
+    const dataToUpdate: {
+      title?: string;
+      message?: string;
+    } = {};
+
+    if (hasField(req.body, "title")) {
+      const title = normalizeTextInput(req.body.title);
+
+      if (title.length > MAX_GIFT_TITLE_LENGTH) {
+        return res.status(400).json({
+          message: "Le titre est trop long. Merci de le raccourcir légèrement.",
+        });
+      }
+
+      dataToUpdate.title = title;
+    }
+
+    if (hasField(req.body, "message")) {
+      const message = sanitizeGiftMessageHtml(
+        normalizeTextInput(req.body.message),
+      );
+
+      if (message.length > MAX_GIFT_MESSAGE_LENGTH) {
+        return res.status(400).json({
+          message:
+            "Le message est trop long. Merci de le raccourcir légèrement.",
+        });
+      }
+
+      dataToUpdate.message = message;
+    }
+
+    if (Object.keys(dataToUpdate).length === 0) {
       return res.status(400).json({
-        message: "Le titre doit contenir entre 1 et 120 caractères",
+        message: "Aucune donnée à mettre à jour",
       });
     }
 
@@ -229,14 +275,12 @@ giftsRouter.patch("/:giftId/title", requireAuth, async (req, res) => {
       where: {
         id: giftId,
       },
-      data: {
-        title,
-      },
+      data: dataToUpdate,
     });
 
     return res.json({ gift });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du titre:", error);
+    console.error("Erreur lors de la mise à jour du message:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });

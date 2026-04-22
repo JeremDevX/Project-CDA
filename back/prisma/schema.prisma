@@ -33,6 +33,7 @@ model TokenBlacklist {
 model Gift {
   id           Int      @id @default(autoincrement())
   title        String   @default("Nouveau gift")
+  message      String?
   status       String   @default("brouillon")
   offer        String?
   creationMode String?

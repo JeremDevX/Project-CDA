@@ -92,7 +92,7 @@ export default function DashboardPage() {
             <GiftCard
               key={gift.id}
               id={gift.id}
-              title={gift.title}
+              title={gift.title ?? "Sans titre"}
               status={gift.status === "active" ? "active" : "draft"}
               updatedLabel={`Mis à jour le ${new Date(
                 gift.updatedAt,
