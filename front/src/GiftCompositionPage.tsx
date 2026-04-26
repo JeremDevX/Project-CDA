@@ -2,7 +2,7 @@ import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { getGiftById, updateGiftMessage } from "./api/gifts";
+import { getGiftById, updateGift } from "./api/gifts";
 import Button from "./components/Button/Button";
 import GiftTitleForm from "./components/GiftTitleForm/GiftTitleForm";
 import GiftMessageEditor from "./components/GiftMessageEditor/GiftMessageEditor";
@@ -59,7 +59,7 @@ export default function GiftCompositionPage() {
     setErrorMessage("");
 
     try {
-      await updateGiftMessage(token, numericGiftId, {
+      await updateGift(token, numericGiftId, {
         title: titleValue,
         message: messageValue,
       });

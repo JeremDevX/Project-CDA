@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { updateGiftCreationMode } from "./api/gifts";
+import { updateGift } from "./api/gifts";
 import Button from "./components/Button/Button";
 import CreationModeSelection from "./components/CreationModeSelection/CreationModeSelection";
 import type { CreationModeId } from "./data/creationModes";
@@ -31,7 +31,7 @@ export default function GiftCreationModePage() {
     setErrorMessage("");
 
     try {
-      await updateGiftCreationMode(token, numericGiftId, selectedMode);
+      await updateGift(token, numericGiftId, { creationMode: selectedMode });
       navigate(`/gifts/${numericGiftId}/composition`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
