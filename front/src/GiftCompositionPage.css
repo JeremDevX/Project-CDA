@@ -88,6 +88,13 @@
   border-top: var(--border-width-sm) solid var(--border);
 }
 
+.gift-composition-page__autosave {
+  display: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 @media (max-width: 640px) {
   .gift-composition-page {
     align-items: stretch;
