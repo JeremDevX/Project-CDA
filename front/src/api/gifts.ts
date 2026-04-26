@@ -20,7 +20,9 @@ type GiftResponse = {
   gift: Gift;
 };
 
-type UpdateGiftMessagePayload = {
+type UpdateGiftPayload = {
+  offer?: OfferPlanId;
+  creationMode?: CreationModeId;
   title?: string;
   message?: string;
 };
@@ -56,52 +58,23 @@ export async function getGifts(token: string) {
   return response.json() as Promise<{ gifts: Gift[] }>;
 }
 
-export async function updateGiftOffer(
+export async function updateGift(
   token: string,
   giftId: number,
-  offer: OfferPlanId,
+  payload: UpdateGiftPayload,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/offer`, {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ offer }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     throw new Error(
-      await getApiErrorMessage(response, "Impossible d'enregistrer l'offre"),
-    );
-  }
-
-  return response.json() as Promise<GiftResponse>;
-}
-
-export async function updateGiftCreationMode(
-  token: string,
-  giftId: number,
-  creationMode: CreationModeId,
-) {
-  const response = await fetch(
-    `${API_BASE_URL}/gifts/${giftId}/creation-mode`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ creationMode }),
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      await getApiErrorMessage(
-        response,
-        "Impossible d'enregistrer le mode de création",
-      ),
+      await getApiErrorMessage(response, "Impossible d'enregistrer le gift"),
     );
   }
 
@@ -118,32 +91,6 @@ export async function getGiftById(token: string, giftId: number) {
   if (!response.ok) {
     throw new Error(
       await getApiErrorMessage(response, "Impossible de récupérer le gift"),
-    );
-  }
-
-  return response.json() as Promise<GiftResponse>;
-}
-
-export async function updateGiftMessage(
-  token: string,
-  giftId: number,
-  payload: UpdateGiftMessagePayload,
-) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/message`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      await getApiErrorMessage(
-        response,
-        "Impossible d'enregistrer le message du gift",
-      ),
     );
   }
 

@@ -71,48 +71,6 @@ giftsRouter.post("/", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.patch("/:giftId/offer", requireAuth, async (req, res) => {
-  try {
-    const userId = req.authUser?.id;
-    const giftId = Number(req.params.giftId);
-    const offer = req.body?.offer;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Non autorisé" });
-    }
-    if (!Number(giftId)) {
-      return res.status(400).json({ message: "Gift invalide" });
-    }
-    if (!isAllowedOffer(offer)) {
-      return res.status(400).json({ message: "Offre invalide" });
-    }
-
-    const existingGift = await prisma.gift.findFirst({
-      where: {
-        id: giftId,
-        userId,
-      },
-    });
-    if (!existingGift) {
-      return res.status(400).json({ message: "Gift introuvable" });
-    }
-
-    const gift = await prisma.gift.update({
-      where: {
-        id: giftId,
-      },
-      data: {
-        offer,
-      },
-    });
-
-    return res.json({ gift });
-  } catch (error) {
-    console.error("Erreur lors du choix de l'offre", error);
-    return res.status(500).json({ message: "Erreur interne de serveur" });
-  }
-});
-
 giftsRouter.get("/", requireAuth, async (req, res) => {
   try {
     const userId = req.authUser?.id;
@@ -133,83 +91,7 @@ giftsRouter.get("/", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.patch("/:giftId/creation-mode", requireAuth, async (req, res) => {
-  try {
-    const userId = req.authUser?.id;
-    const giftId = Number(req.params.giftId);
-    const creationMode = req.body?.creationMode;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Non autorisé" });
-    }
-
-    if (!Number.isInteger(giftId)) {
-      return res.status(400).json({ message: "Gift invalide" });
-    }
-
-    if (!isAllowedCreationMode(creationMode)) {
-      return res.status(400).json({ message: "Mode de création invalide" });
-    }
-
-    const existingGift = await prisma.gift.findFirst({
-      where: {
-        id: giftId,
-        userId,
-      },
-    });
-
-    if (!existingGift) {
-      return res.status(404).json({ message: "Gift introuvable" });
-    }
-
-    const gift = await prisma.gift.update({
-      where: {
-        id: giftId,
-      },
-      data: {
-        creationMode,
-      },
-    });
-
-    return res.json({ gift });
-  } catch (error) {
-    console.error("Erreur lors du choix du mode de création:", error);
-    return res.status(500).json({ message: "Erreur interne de serveur" });
-  }
-});
-
-giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
-  try {
-    const userId = req.authUser?.id;
-    const giftId = Number(req.params.giftId);
-
-    if (!userId) {
-      return res.status(401).json({ message: "Non autorisé" });
-    }
-
-    if (!Number.isInteger(giftId)) {
-      return res.status(400).json({ message: "Gift invalide" });
-    }
-
-    const gift = await prisma.gift.findFirst({
-      where: {
-        id: giftId,
-        userId,
-      },
-    });
-
-    if (!gift) {
-      return res.status(404).json({ message: "Gift introuvable" });
-    }
-
-    return res.json({ gift });
-  } catch (error) {
-    console.error("Erreur lors de la récupération du gift:", error);
-    return res.status(500).json({ message: "Erreur interne de serveur" });
-  }
-});
-
-giftsRouter.patch("/:giftId/message", requireAuth, async (req, res) => {
+giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -223,9 +105,31 @@ giftsRouter.patch("/:giftId/message", requireAuth, async (req, res) => {
     }
 
     const dataToUpdate: {
+      offer?: string;
+      creationMode?: string;
       title?: string;
       message?: string;
     } = {};
+
+    if (hasField(req.body, "offer")) {
+      const offer = req.body.offer;
+
+      if (!isAllowedOffer(offer)) {
+        return res.status(400).json({ message: "Offre invalide" });
+      }
+
+      dataToUpdate.offer = offer;
+    }
+
+    if (hasField(req.body, "creationMode")) {
+      const creationMode = req.body.creationMode;
+
+      if (!isAllowedCreationMode(creationMode)) {
+        return res.status(400).json({ message: "Mode de création invalide" });
+      }
+
+      dataToUpdate.creationMode = creationMode;
+    }
 
     if (hasField(req.body, "title")) {
       const title = normalizeTextInput(req.body.title);
@@ -280,7 +184,38 @@ giftsRouter.patch("/:giftId/message", requireAuth, async (req, res) => {
 
     return res.json({ gift });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du message:", error);
+    console.error("Erreur lors de la mise à jour du gift:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    return res.json({ gift });
+  } catch (error) {
+    console.error("Erreur lors de la récupération du gift:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });

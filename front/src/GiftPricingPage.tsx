@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { updateGiftOffer } from "./api/gifts";
+import { getGiftById, updateGift } from "./api/gifts";
 import Button from "./components/Button/Button";
 import OfferSelection from "./components/OfferSelection/OfferSelection";
 import type { OfferPlanId } from "./data/offerPlans";
@@ -14,10 +14,32 @@ export default function GiftPricingPage() {
   const { giftId } = useParams();
   const token = useUserState((state) => state.token);
   const [selectedOffer, setSelectedOffer] = useState<OfferPlanId | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const numericGiftId = Number(giftId);
+
+  useEffect(() => {
+    async function loadGift() {
+      if (!token || !Number.isInteger(numericGiftId)) {
+        setIsLoading(false);
+        setErrorMessage("Gift introuvable");
+        return;
+      }
+
+      try {
+        const response = await getGiftById(token, numericGiftId);
+        setSelectedOffer(response.gift.offer ?? null);
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    void loadGift();
+  }, [token, numericGiftId]);
 
   async function handleStart() {
     if (!token || !selectedOffer || !Number.isInteger(numericGiftId)) {
@@ -28,7 +50,7 @@ export default function GiftPricingPage() {
     setErrorMessage("");
 
     try {
-      await updateGiftOffer(token, numericGiftId, selectedOffer);
+      await updateGift(token, numericGiftId, { offer: selectedOffer });
       navigate(`/gifts/${numericGiftId}/creation-mode`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -54,7 +76,7 @@ export default function GiftPricingPage() {
           type="primary"
           label={isSaving ? "Enregistrement" : "Commencer"}
           onClick={handleStart}
-          disabled={!selectedOffer || isSaving}
+          disabled={!selectedOffer || isLoading || isSaving}
         />
       </div>
     </section>
