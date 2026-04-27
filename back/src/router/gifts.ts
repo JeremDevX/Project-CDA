@@ -9,6 +9,8 @@ const MAX_GIFT_TITLE_LENGTH = 250;
 const MAX_GIFT_MESSAGE_LENGTH = 25000;
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
 const allowedCreationModes = ["free"] as const;
+const DRAFT_EXPIRATION_DAYS = 30;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function normalizeTextInput(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -46,6 +48,10 @@ function sanitizeGiftMessageHtml(value: string) {
   });
 }
 
+function draftExpirationDate(createdAt = new Date()) {
+  return new Date(createdAt.getTime() + DRAFT_EXPIRATION_DAYS * DAY_IN_MS);
+}
+
 giftsRouter.post("/", requireAuth, async (req, res) => {
   try {
     const userId = req.authUser?.id;
@@ -55,11 +61,14 @@ giftsRouter.post("/", requireAuth, async (req, res) => {
     }
 
     const title = normalizeTextInput(req.body?.title || "Nouveau gift");
+    const now = new Date();
 
     const gift = await prisma.gift.create({
       data: {
         title,
         status: "brouillon",
+        createdAt: now,
+        draftExpiresAt: draftExpirationDate(now),
         userId,
       },
     });

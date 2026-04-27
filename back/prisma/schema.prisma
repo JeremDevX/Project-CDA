@@ -31,16 +31,18 @@ model TokenBlacklist {
 }
 
 model Gift {
-  id           Int      @id @default(autoincrement())
-  title        String   @default("Nouveau gift")
-  message      String?
-  status       String   @default("brouillon")
-  offer        String?
-  creationMode String?
-  userId       Int
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int       @id @default(autoincrement())
+  title          String    @default("Nouveau gift")
+  message        String?
+  status         String    @default("brouillon")
+  offer          String?
+  creationMode   String?
+  draftExpiresAt DateTime?
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
+  @@index([status, draftExpiresAt])
   @@map("gifts")
 }
