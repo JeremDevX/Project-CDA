@@ -84,6 +84,9 @@
   .dashboard-page__panel-header {
     align-items: stretch;
   }
+  .dashboard-page__gift-list {
+    flex-direction: column;
+  }
 
   .dashboard-page__panel-header .app-button,
   .dashboard-page__empty-state .app-button {
