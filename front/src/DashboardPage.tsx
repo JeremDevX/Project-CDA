@@ -6,7 +6,7 @@ import GiftCard from "./components/GiftCard/GiftCard";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createGift, getGifts, type Gift } from "./api/gifts";
-import { getErrorMessage } from "./helpers/helpers";
+import { getErrorMessage, getDraftExpirationMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 
 export default function DashboardPage() {
@@ -88,20 +88,26 @@ export default function DashboardPage() {
           <p className="dashboard-page__error">{createGiftError}</p>
         )}
         <div className="dashboard-page__gift-list">
-          {gifts.map((gift) => (
-            <GiftCard
-              key={gift.id}
-              id={gift.id}
-              title={gift.title ?? "Sans titre"}
-              status={gift.status === "active" ? "active" : "draft"}
-              updatedLabel={`Mis à jour le ${new Date(
-                gift.updatedAt,
-              ).toLocaleDateString("fr-FR")}`}
-              completion={gift.status === "active" ? 100 : 0}
-              recipientCount={0}
-              imageCount={0}
-            />
-          ))}
+          {gifts.map((gift) => {
+            const isActive = gift.status === "active";
+            const isDraft = !isActive;
+            return (
+              <GiftCard
+                key={gift.id}
+                id={gift.id}
+                title={gift.title ?? "Sans titre"}
+                status={gift.status === "active" ? "active" : "draft"}
+                completion={gift.status === "active" ? 100 : 0}
+                recipientCount={0}
+                imageCount={0}
+                draftExpirationMessage={
+                  isDraft
+                    ? getDraftExpirationMessage(gift.draftExpiresAt ?? null)
+                    : undefined
+                }
+              />
+            );
+          })}
         </div>
         {gifts.length === 0 && !isLoadingGifts && (
           <div className="dashboard-page__empty-state">

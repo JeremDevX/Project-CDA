@@ -95,6 +95,12 @@
   font-size: 1rem;
 }
 
+.gift-card__meta--warning {
+  color: var(--accent3);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
 .gift-card__progress-header {
   justify-content: space-between;
   color: var(--text-tertiary);

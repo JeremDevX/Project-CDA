@@ -11,6 +11,7 @@ export type Gift = {
   status: string;
   offer?: OfferPlanId | null;
   creationMode?: CreationModeId | null;
+  draftExpiresAt?: string | null;
   userId: number;
   createdAt: string;
   updatedAt: string;

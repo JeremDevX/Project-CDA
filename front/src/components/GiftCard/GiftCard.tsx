@@ -8,10 +8,10 @@ interface GiftCardProps {
   id: number;
   title: string;
   status: GiftStatus;
-  updatedLabel: string;
   completion: number;
   recipientCount: number;
   imageCount?: number;
+  draftExpirationMessage?: string;
 }
 
 function getCardCopy(status: GiftStatus) {
@@ -52,10 +52,12 @@ export default function GiftCard(props: GiftCardProps) {
       <div className="gift-card__content">
         <h3 className="gift-card__title">{props.title}</h3>
 
-        <p className="gift-card__meta">
-          <Clock3 size={14} />
-          <span>{props.updatedLabel}</span>
-        </p>
+        {props.status === "draft" && props.draftExpirationMessage ? (
+          <p className="gift-card__meta gift-card__meta--warning">
+            <Clock3 size={14} />
+            <span>{props.draftExpirationMessage}</span>
+          </p>
+        ) : null}
 
         <div className="gift-card__progress-header">
           <span className="gift-card__progress-label">Complétion</span>
