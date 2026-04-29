@@ -42,12 +42,11 @@
 }
 
 .dashboard-page__gift-list {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
+  align-items: stretch;
+  justify-content: start;
   gap: var(--space-lg);
-  margin-left: var(--space-lg);
 }
 
 .dashboard-page__empty-state {
@@ -84,8 +83,9 @@
   .dashboard-page__panel-header {
     align-items: stretch;
   }
+
   .dashboard-page__gift-list {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .dashboard-page__panel-header .app-button,
