@@ -1,4 +1,11 @@
-import { ChevronRight, Clock3, Ellipsis, ImageIcon, Users } from "lucide-react";
+import {
+  ChevronRight,
+  Clock3,
+  Ellipsis,
+  ImageIcon,
+  Users,
+  Video,
+} from "lucide-react";
 import { Link } from "react-router";
 import "./GiftCard.css";
 
@@ -11,7 +18,11 @@ interface GiftCardProps {
   completion: number;
   recipientCount: number;
   imageCount?: number;
+  videoCount?: number;
   draftExpirationMessage?: string;
+  recipientLimit?: number | null;
+  imageLimit?: number | null;
+  videoLimit?: number;
 }
 
 function getCardCopy(status: GiftStatus) {
@@ -30,9 +41,59 @@ function getCardCopy(status: GiftStatus) {
   };
 }
 
+function formatUsageLabel(
+  count: number,
+  limit: number | null,
+  singular: string,
+  plural: string,
+) {
+  const limitLabel = limit === null ? "∞" : limit;
+  const unit = limit === 1 || count === 1 ? singular : plural;
+
+  return {
+    countLabel: `${count}/${limitLabel}`,
+    unitLabel: unit,
+  };
+}
+
 export default function GiftCard(props: GiftCardProps) {
   const cardCopy = getCardCopy(props.status);
   const editPath = `/gifts/${props.id}/pricing`;
+  const recipientStat =
+    props.recipientLimit !== undefined
+      ? formatUsageLabel(
+          props.recipientCount,
+          props.recipientLimit,
+          "destinataire",
+          "destinataires",
+        )
+      : {
+          countLabel: String(props.recipientCount),
+          unitLabel: `destinataire${props.recipientCount > 1 ? "s" : ""}`,
+        };
+  const imageStat =
+    props.imageLimit !== undefined
+      ? formatUsageLabel(
+          props.imageCount ?? 0,
+          props.imageLimit,
+          "image",
+          "images",
+        )
+      : props.imageCount
+        ? {
+            countLabel: String(props.imageCount),
+            unitLabel: `image${props.imageCount > 1 ? "s" : ""}`,
+          }
+        : null;
+  const videoStat =
+    props.videoLimit !== undefined
+      ? formatUsageLabel(
+          props.videoCount ?? 0,
+          props.videoLimit,
+          "vidéo",
+          "vidéos",
+        )
+      : null;
 
   return (
     <article
@@ -74,21 +135,31 @@ export default function GiftCard(props: GiftCardProps) {
         <div className="gift-card__stats">
           <p className="gift-card__stat">
             <Users size={14} />
-            <span>
-              {props.recipientCount} destinataire
-              {props.recipientCount > 1 ? "s" : ""}
+            <span className="gift-card__stat-copy">
+              <strong>{recipientStat.countLabel}</strong>
+              <small>{recipientStat.unitLabel}</small>
             </span>
           </p>
 
-          {props.imageCount && (
+          {imageStat ? (
             <p className="gift-card__stat">
               <ImageIcon size={14} />
-              <span>
-                {props.imageCount} image
-                {props.imageCount > 1 ? "s" : ""}
+              <span className="gift-card__stat-copy">
+                <strong>{imageStat.countLabel}</strong>
+                <small>{imageStat.unitLabel}</small>
               </span>
             </p>
-          )}
+          ) : null}
+
+          {videoStat ? (
+            <p className="gift-card__stat">
+              <Video size={14} />
+              <span className="gift-card__stat-copy">
+                <strong>{videoStat.countLabel}</strong>
+                <small>{videoStat.unitLabel}</small>
+              </span>
+            </p>
+          ) : null}
         </div>
       </div>
 

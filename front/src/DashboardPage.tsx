@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createGift, getGifts, type Gift } from "./api/gifts";
 import { getErrorMessage, getDraftExpirationMessage } from "./helpers/helpers";
+import { getGiftSlotSummary } from "./helpers/offerLimits";
 import { useUserState } from "./store/useAppStore";
 
 export default function DashboardPage() {
@@ -91,6 +92,8 @@ export default function DashboardPage() {
           {gifts.map((gift) => {
             const isActive = gift.status === "active";
             const isDraft = !isActive;
+            const slotSummary = getGiftSlotSummary(gift.offer);
+
             return (
               <GiftCard
                 key={gift.id}
@@ -100,6 +103,10 @@ export default function DashboardPage() {
                 completion={gift.status === "active" ? 100 : 0}
                 recipientCount={0}
                 imageCount={0}
+                videoCount={0}
+                recipientLimit={slotSummary?.recipientLimit}
+                imageLimit={slotSummary?.imageLimit}
+                videoLimit={slotSummary?.videoLimit}
                 draftExpirationMessage={
                   isDraft
                     ? getDraftExpirationMessage(gift.draftExpiresAt ?? null)
