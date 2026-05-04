@@ -1,0 +1,74 @@
+import { getApiErrorMessage } from "../helpers/helpers";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+export type GiftMediaType = "image" | "video";
+
+export type GiftMedia = {
+  id: number;
+  type: GiftMediaType;
+  url: string | null;
+  originalName?: string | null;
+  mimeType: string;
+  sizeBytes: number;
+  createdAt: string;
+};
+
+export async function getGiftMedias(token: string, giftId: number) {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/media`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await getApiErrorMessage(response));
+  }
+
+  return response.json() as Promise<{ medias: GiftMedia[] }>;
+}
+
+export async function uploadGiftMedia(
+  token: string,
+  giftId: number,
+  type: GiftMediaType,
+  file: File,
+) {
+  const formData = new FormData();
+  formData.append("type", type);
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/media`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(await getApiErrorMessage(response));
+  }
+
+  return response.json() as Promise<{ media: GiftMedia }>;
+}
+
+export async function deleteGiftMedia(
+  token: string,
+  giftId: number,
+  mediaId: number,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/gifts/${giftId}/media/${mediaId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await getApiErrorMessage(response));
+  }
+}

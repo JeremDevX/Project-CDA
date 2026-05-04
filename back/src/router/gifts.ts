@@ -91,9 +91,20 @@ giftsRouter.get("/", requireAuth, async (req, res) => {
     const gifts = await prisma.gift.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
+      include: {
+        medias: {
+          select: { type: true },
+        },
+      },
     });
 
-    return res.json({ gifts });
+    const giftsWithMediaCounts = gifts.map(({ medias, ...gift }) => ({
+      ...gift,
+      imageCount: medias.filter((media) => media.type === "image").length,
+      videoCount: medias.filter((media) => media.type === "video").length,
+    }));
+
+    return res.json({ gifts: giftsWithMediaCounts });
   } catch (error) {
     console.error("Erreur lors de la récupération des gifts:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });

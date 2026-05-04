@@ -102,8 +102,8 @@ export default function DashboardPage() {
                 status={gift.status === "active" ? "active" : "draft"}
                 completion={gift.status === "active" ? 100 : 0}
                 recipientCount={0}
-                imageCount={0}
-                videoCount={0}
+                imageCount={gift.imageCount ?? 0}
+                videoCount={gift.videoCount ?? 0}
                 recipientLimit={slotSummary?.recipientLimit}
                 imageLimit={slotSummary?.imageLimit}
                 videoLimit={slotSummary?.videoLimit}

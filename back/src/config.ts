@@ -20,4 +20,20 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET ?? "change-me-in-production",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
+  supabaseUrl: process.env.SUPABASE_URL ?? "",
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  supabaseStorageBucket: process.env.SUPABASE_STORAGE_BUCKET ?? "gift-media",
+  supabaseStorageEndpoint:
+    process.env.SUPABASE_STORAGE_ENDPOINT ?? process.env.SUPABASE_URL ?? "",
+  supabaseS3Region: process.env.SUPABASE_S3_REGION ?? "eu-west-1",
+  supabaseS3AccessKeyId:
+    process.env.SUPABASE_S3_ACCESS_KEY_ID ?? process.env.ACCESS_KEY_ID ?? "",
+  supabaseS3SecretAccessKey:
+    process.env.SUPABASE_S3_SECRET_ACCESS_KEY ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    "",
+  mediaMaxFileSizeBytes: readNumberEnv(
+    "MEDIA_MAX_FILE_SIZE_BYTES",
+    5 * 1024 * 1024,
+  ),
 } as const;
