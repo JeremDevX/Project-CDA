@@ -15,6 +15,8 @@ export type Gift = {
   userId: number;
   createdAt: string;
   updatedAt: string;
+  imageCount?: number;
+  videoCount?: number;
 };
 
 type GiftResponse = {
