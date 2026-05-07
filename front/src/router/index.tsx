@@ -10,6 +10,7 @@ import GiftPricingPage from "../GiftPricingPage";
 import GiftCreationModePage from "../GiftCreationModePage";
 import GiftCompositionPage from "../GiftCompositionPage";
 import GiftMediaPage from "../GiftMediaPage";
+import GiftPreviewPage from "../GiftPreviewPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ export const appRouter = createBrowserRouter([
           {
             path: "gifts/:giftId/images",
             element: <GiftMediaPage />,
+          },
+          {
+            path: "gifts/:giftId/preview",
+            element: <GiftPreviewPage />,
           },
         ],
       },
