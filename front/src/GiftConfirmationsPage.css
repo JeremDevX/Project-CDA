@@ -1,0 +1,192 @@
+.gift-confirmations-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2xl) 0;
+}
+
+.gift-confirmations-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: 760px;
+}
+
+.gift-confirmations-page__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gift-confirmations-page__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: var(--space-lg);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+.gift-confirmations-page__header h1 {
+  margin: 0 0 var(--space-md);
+  color: var(--text-primary);
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.gift-confirmations-page__header p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.gift-confirmations-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.gift-confirmations-page__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.gift-confirmations-page__item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gift-confirmations-page__checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: var(--border-width-sm) solid var(--text-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-contrast);
+}
+
+.gift-confirmations-page__checkbox::after {
+  width: 0.45rem;
+  height: 0.75rem;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  content: "";
+  opacity: 0;
+  transform: rotate(45deg);
+}
+
+.gift-confirmations-page__item input:checked + .gift-confirmations-page__checkbox {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.gift-confirmations-page__item input:checked + .gift-confirmations-page__checkbox::after {
+  opacity: 1;
+}
+
+.gift-confirmations-page__item input:focus-visible + .gift-confirmations-page__checkbox {
+  outline: var(--focus-ring-width) solid
+    color-mix(in srgb, white 75%, var(--accent2));
+  outline-offset: 3px;
+}
+
+.gift-confirmations-page__item strong {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.gift-confirmations-page__item small {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.gift-confirmations-page__notice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, white 3%, var(--surface));
+  color: var(--text-secondary);
+}
+
+.gift-confirmations-page__notice p {
+  margin: 0;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.gift-confirmations-page__status,
+.gift-confirmations-page__error {
+  margin: 0;
+  font-weight: 700;
+}
+
+.gift-confirmations-page__status {
+  color: var(--text-secondary);
+}
+
+.gift-confirmations-page__error {
+  color: var(--error);
+}
+
+.gift-confirmations-page__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 760px;
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: var(--border-width-sm) solid var(--border);
+}
+
+@media (max-width: 760px) {
+  .gift-confirmations-page {
+    align-items: stretch;
+  }
+
+  .gift-confirmations-page__content,
+  .gift-confirmations-page__footer {
+    max-width: none;
+  }
+
+  .gift-confirmations-page__header {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .gift-confirmations-page__item {
+    padding: var(--space-lg);
+  }
+
+  .gift-confirmations-page__footer {
+    flex-direction: column-reverse;
+  }
+
+  .gift-confirmations-page__footer .app-button {
+    width: 100%;
+  }
+}

@@ -12,6 +12,7 @@ export type Gift = {
   offer?: OfferPlanId | null;
   creationMode?: CreationModeId | null;
   draftExpiresAt?: string | null;
+  finalConfirmationsAt?: string | null;
   userId: number;
   createdAt: string;
   updatedAt: string;
@@ -29,6 +30,10 @@ type UpdateGiftPayload = {
   creationMode?: CreationModeId;
   title?: string;
   message?: string;
+};
+
+type ConfirmGiftPayload = {
+  finalConfirmationsAccepted: boolean;
 };
 
 export async function createGift(token: string, title?: string) {
@@ -95,6 +100,32 @@ export async function getGiftById(token: string, giftId: number) {
   if (!response.ok) {
     throw new Error(
       await getApiErrorMessage(response, "Impossible de récupérer le gift"),
+    );
+  }
+
+  return response.json() as Promise<GiftResponse>;
+}
+
+export async function confirmGift(
+  token: string,
+  giftId: number,
+  payload: ConfirmGiftPayload,
+) {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/confirmations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible d'enregistrer les confirmations",
+      ),
     );
   }
 
