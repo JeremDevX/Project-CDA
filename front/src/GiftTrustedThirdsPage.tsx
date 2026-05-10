@@ -136,7 +136,7 @@ export default function GiftTrustedThirdsPage() {
     try {
       setErrorMessage("");
       await validateGiftTrustedThirds(token, numericGiftId);
-      navigate("/dashboard");
+      navigate(`/gifts/${numericGiftId}/confirmations`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     }

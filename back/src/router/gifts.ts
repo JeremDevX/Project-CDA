@@ -215,6 +215,72 @@ giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
   }
 });
 
+giftsRouter.post("/:giftId/confirmations", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    if (req.body?.finalConfirmationsAccepted !== true) {
+      return res.status(400).json({
+        message: "Toutes les confirmations sont requises",
+      });
+    }
+
+    const existingGift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+      include: {
+        _count: {
+          select: {
+            recipients: true,
+            trustedThirds: true,
+          },
+        },
+      },
+    });
+
+    if (!existingGift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    if (existingGift._count.recipients === 0) {
+      return res.status(400).json({
+        message: "Au moins un destinataire est requis",
+      });
+    }
+
+    if (existingGift._count.trustedThirds !== 3) {
+      return res.status(400).json({
+        message: "Exactement 3 tiers de confiance sont requis",
+      });
+    }
+
+    const gift = await prisma.gift.update({
+      where: {
+        id: giftId,
+      },
+      data: {
+        finalConfirmationsAt: new Date(),
+      },
+    });
+
+    return res.json({ gift });
+  } catch (error) {
+    console.error("Erreur lors de la confirmation du gift:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
 giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
   try {
     const userId = req.authUser?.id;
