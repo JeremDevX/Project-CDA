@@ -44,6 +44,7 @@ model Gift {
   updatedAt      DateTime        @updatedAt
   medias         GiftMedia[]
   recipients     GiftRecipient[]
+  trustedThirds  GiftTrustedThird[]
 
   @@index([status, draftExpiresAt])
   @@map("gifts")
@@ -76,4 +77,19 @@ model GiftRecipient {
 
   @@index([giftId])
   @@map("gift_recipients")
+}
+
+model GiftTrustedThird {
+  id        Int      @id @default(autoincrement())
+  giftId    Int
+  gift      Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  fullName  String
+  email     String
+  phone     String
+  relation  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([giftId])
+  @@map("gift_trusted_thirds")
 }

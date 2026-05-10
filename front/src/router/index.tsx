@@ -12,6 +12,7 @@ import GiftCompositionPage from "../GiftCompositionPage";
 import GiftMediaPage from "../GiftMediaPage";
 import GiftPreviewPage from "../GiftPreviewPage";
 import GiftRecipientsPage from "../GiftRecipientsPage";
+import GiftTrustedThirdsPage from "../GiftTrustedThirdsPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ export const appRouter = createBrowserRouter([
           {
             path: "gifts/:giftId/recipients",
             element: <GiftRecipientsPage />,
+          },
+          {
+            path: "gifts/:giftId/trusted-thirds",
+            element: <GiftTrustedThirdsPage />,
           },
         ],
       },
