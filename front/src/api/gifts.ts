@@ -15,6 +15,7 @@ export type Gift = {
   userId: number;
   createdAt: string;
   updatedAt: string;
+  recipientCount?: number;
   imageCount?: number;
   videoCount?: number;
 };

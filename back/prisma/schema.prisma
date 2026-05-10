@@ -31,18 +31,19 @@ model TokenBlacklist {
 }
 
 model Gift {
-  id             Int         @id @default(autoincrement())
-  title          String      @default("Nouveau gift")
+  id             Int             @id @default(autoincrement())
+  title          String          @default("Nouveau gift")
   message        String?
-  status         String      @default("brouillon")
+  status         String          @default("brouillon")
   offer          String?
   creationMode   String?
   draftExpiresAt DateTime?
   userId         Int
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   medias         GiftMedia[]
+  recipients     GiftRecipient[]
 
   @@index([status, draftExpiresAt])
   @@map("gifts")
@@ -61,4 +62,18 @@ model GiftMedia {
 
   @@index([giftId, type])
   @@map("gift_media")
+}
+
+model GiftRecipient {
+  id        Int      @id @default(autoincrement())
+  giftId    Int
+  gift      Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  fullName  String
+  email     String
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([giftId])
+  @@map("gift_recipients")
 }

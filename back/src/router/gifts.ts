@@ -95,14 +95,20 @@ giftsRouter.get("/", requireAuth, async (req, res) => {
         medias: {
           select: { type: true },
         },
+        recipients: {
+          select: { id: true },
+        },
       },
     });
 
-    const giftsWithMediaCounts = gifts.map(({ medias, ...gift }) => ({
-      ...gift,
-      imageCount: medias.filter((media) => media.type === "image").length,
-      videoCount: medias.filter((media) => media.type === "video").length,
-    }));
+    const giftsWithMediaCounts = gifts.map(
+      ({ medias, recipients, ...gift }) => ({
+        ...gift,
+        imageCount: medias.filter((media) => media.type === "image").length,
+        videoCount: medias.filter((media) => media.type === "video").length,
+        recipientCount: recipients.length,
+      }),
+    );
 
     return res.json({ gifts: giftsWithMediaCounts });
   } catch (error) {
