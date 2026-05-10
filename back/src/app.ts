@@ -6,6 +6,7 @@ import { authRouter } from "./router/auth";
 import { giftsRouter } from "./router/gifts";
 import { giftMediaRouter } from "./router/giftMedia";
 import { giftRecipientsRouter } from "./router/giftRecipients";
+import { giftTrustedThirdsRouter } from "./router/giftTrustedThirds";
 
 function resolveCorsOrigin() {
   if (!config.corsOrigin || config.corsOrigin === "*") {
@@ -36,6 +37,7 @@ export function createApp() {
   app.use("/api/gifts", giftsRouter);
   app.use("/api/gifts", giftMediaRouter);
   app.use("/api/gifts", giftRecipientsRouter);
+  app.use("/api/gifts", giftTrustedThirdsRouter);
   app.use((_req: Request, res: Response) => {
     res.status(404).json({ message: "Route not found" });
   });

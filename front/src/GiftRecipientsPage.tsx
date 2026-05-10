@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   createGiftRecipient,
@@ -91,7 +91,7 @@ export default function GiftRecipientsPage() {
     }));
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!token || !Number.isInteger(numericGiftId) || !canAddRecipient) {
@@ -296,7 +296,7 @@ export default function GiftRecipientsPage() {
         <Button
           type="primary"
           label="Suivant"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(`/gifts/${numericGiftId}/trusted-thirds`)}
           icon={<ChevronRight size={16} />}
           iconPosition="right"
           disabled={isLoading || recipients.length === 0}

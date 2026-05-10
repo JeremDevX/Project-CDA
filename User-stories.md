@@ -304,6 +304,10 @@ En tant qu’utilisateur, je veux pouvoir définir les destinataires de mon gift
 En tant qu’utilisateur, je veux pouvoir définir les tiers de confiance afin de participer au processus de validation du déclenchement.  
 **Charge (SP) : 3**
 
+**Mise à jour**
+
+- US-22 fusionnée avec US-23 : la page de définition des tiers permet aussi de renseigner et valider leurs informations obligatoires.
+
 **Critères d’acceptation**
 
 - L’utilisateur peut ajouter les tiers de confiance prévus par le parcours.
@@ -316,6 +320,11 @@ En tant qu’utilisateur, je veux pouvoir définir les tiers de confiance afin d
 
 En tant qu’utilisateur, je veux pouvoir renseigner les informations nécessaires pour chaque tiers de confiance afin de permettre leur prise en compte dans le dispositif.  
 **Charge (SP) : 3**
+
+**Mise à jour**
+
+- US-23 couverte par l’implémentation de l’US-22.
+- Pas d’écran séparé : les champs nécessaires sont directement intégrés à la page des tiers de confiance.
 
 **Critères d’acceptation**
 
