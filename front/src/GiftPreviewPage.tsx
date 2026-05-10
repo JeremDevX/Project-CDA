@@ -180,7 +180,7 @@ export default function GiftPreviewPage() {
         <Button
           type="primary"
           label="Tout est correct"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(`/gifts/${numericGiftId}/recipients`)}
           icon={<Check size={18} />}
           iconPosition="right"
           disabled={isLoading || !gift}
