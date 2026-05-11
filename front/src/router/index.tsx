@@ -14,6 +14,7 @@ import GiftPreviewPage from "../GiftPreviewPage";
 import GiftRecipientsPage from "../GiftRecipientsPage";
 import GiftTrustedThirdsPage from "../GiftTrustedThirdsPage";
 import GiftConfirmationsPage from "../GiftConfirmationsPage";
+import GiftSummaryPage from "../GiftSummaryPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -71,6 +72,10 @@ export const appRouter = createBrowserRouter([
           {
             path: "gifts/:giftId/confirmations",
             element: <GiftConfirmationsPage />,
+          },
+          {
+            path: "gifts/:giftId/summary",
+            element: <GiftSummaryPage />,
           },
         ],
       },
