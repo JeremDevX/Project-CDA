@@ -101,7 +101,7 @@ export default function GiftConfirmationsPage() {
       await confirmGift(token, numericGiftId, {
         finalConfirmationsAccepted: true,
       });
-      navigate("/dashboard");
+      navigate(`/gifts/${numericGiftId}/summary`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {

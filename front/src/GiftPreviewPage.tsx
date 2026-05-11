@@ -1,16 +1,10 @@
-import {
-  Check,
-  CircleHelp,
-  ImageIcon,
-  Maximize2,
-  Pencil,
-  PlayCircle,
-} from "lucide-react";
+import { Check, CircleHelp, Maximize2, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getGiftById, type Gift } from "./api/gifts";
 import { getGiftMedias, type GiftMedia } from "./api/giftMedia";
 import Button from "./components/Button/Button";
+import GiftPreviewPlayer from "./components/GiftPreviewPlayer/GiftPreviewPlayer";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftPreviewPage.css";
@@ -32,14 +26,6 @@ const previewInfoItems = [
     text: "Une question sur le rendu ou besoin d'aide pour la mise en forme ? Notre équipe vous accompagne à chaque étape de votre création.",
   },
 ];
-
-function getMessageHtml(message?: string) {
-  if (!message || message.replace(/<[^>]*>/g, "").trim().length === 0) {
-    return "<p>Aucun message renseigné.</p>";
-  }
-
-  return message;
-}
 
 export default function GiftPreviewPage() {
   const navigate = useNavigate();
@@ -78,8 +64,6 @@ export default function GiftPreviewPage() {
     loadPreview();
   }, [token, numericGiftId]);
 
-  const hasMedias = medias.length > 0;
-
   return (
     <section className="gift-preview-page">
       <div className="gift-preview-page__content">
@@ -104,52 +88,11 @@ export default function GiftPreviewPage() {
         ) : null}
 
         {!isLoading && gift ? (
-          <article className="gift-preview-page__player">
-            <div className="gift-preview-page__player-bar">
-              <span aria-hidden="true"></span>
-              <strong>LegacyGift preview</strong>
-            </div>
-
-            <div className="gift-preview-page__player-body">
-              <h2>{gift.title || "Gift sans titre"}</h2>
-
-              <div
-                className="gift-preview-page__message"
-                dangerouslySetInnerHTML={{
-                  __html: getMessageHtml(gift.message),
-                }}
-              />
-
-              {hasMedias ? (
-                <section className="gift-preview-page__gallery">
-                  {medias.map((media) => (
-                    <figure key={media.id} className="gift-preview-page__media">
-                      {media.type === "image" && media.url ? (
-                        <img
-                          src={media.url}
-                          alt={media.originalName ?? "Souvenir"}
-                        />
-                      ) : null}
-
-                      {media.type === "video" && media.url ? (
-                        <video src={media.url} controls />
-                      ) : null}
-
-                      {!media.url ? (
-                        <span>
-                          {media.type === "video" ? (
-                            <PlayCircle size={24} />
-                          ) : (
-                            <ImageIcon size={24} />
-                          )}
-                        </span>
-                      ) : null}
-                    </figure>
-                  ))}
-                </section>
-              ) : null}
-            </div>
-          </article>
+          <GiftPreviewPlayer
+            title={gift.title}
+            message={gift.message}
+            medias={medias}
+          />
         ) : null}
 
         {!isLoading && gift ? (
