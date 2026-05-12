@@ -50,7 +50,10 @@ export default function GiftPricingPage() {
     setErrorMessage("");
 
     try {
-      await updateGift(token, numericGiftId, { offer: selectedOffer });
+      await updateGift(token, numericGiftId, {
+        offer: selectedOffer,
+        lastEditionStep: "creation-mode",
+      });
       navigate(`/gifts/${numericGiftId}/creation-mode`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));

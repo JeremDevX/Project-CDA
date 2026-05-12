@@ -16,6 +16,7 @@ interface GiftCardProps {
   title: string;
   status: GiftStatus;
   completion: number;
+  editPath: string;
   recipientCount: number;
   imageCount?: number;
   videoCount?: number;
@@ -58,7 +59,6 @@ function formatUsageLabel(
 
 export default function GiftCard(props: GiftCardProps) {
   const cardCopy = getCardCopy(props.status);
-  const editPath = `/gifts/${props.id}/pricing`;
   const recipientStat =
     props.recipientLimit !== undefined
       ? formatUsageLabel(
@@ -164,7 +164,7 @@ export default function GiftCard(props: GiftCardProps) {
       </div>
 
       {props.status === "draft" ? (
-        <Link className="gift-card__action" to={editPath}>
+        <Link className="gift-card__action" to={props.editPath}>
           <span>{cardCopy.action}</span>
           <ChevronRight size={16} />
         </Link>

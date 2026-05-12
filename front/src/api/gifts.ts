@@ -11,6 +11,7 @@ export type Gift = {
   status: string;
   offer?: OfferPlanId | null;
   creationMode?: CreationModeId | null;
+  lastEditionStep?: GiftEditionStep | null;
   draftExpiresAt?: string | null;
   finalConfirmationsAt?: string | null;
   userId: number;
@@ -28,9 +29,20 @@ type GiftResponse = {
 type UpdateGiftPayload = {
   offer?: OfferPlanId;
   creationMode?: CreationModeId;
+  lastEditionStep?: GiftEditionStep;
   title?: string;
   message?: string;
 };
+
+export type GiftEditionStep =
+  | "creation-mode"
+  | "composition"
+  | "images"
+  | "preview"
+  | "recipients"
+  | "trusted-thirds"
+  | "confirmations"
+  | "summary";
 
 type ConfirmGiftPayload = {
   finalConfirmationsAccepted: boolean;

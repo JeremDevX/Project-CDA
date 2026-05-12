@@ -2,10 +2,11 @@ import { InfoIcon } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
-import { getGiftById, updateGift } from "./api/gifts";
+import { getGiftById, updateGift, type GiftEditionStep } from "./api/gifts";
 import Button from "./components/Button/Button";
 import GiftTitleForm from "./components/GiftTitleForm/GiftTitleForm";
 import GiftMessageEditor from "./components/GiftMessageEditor/GiftMessageEditor";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftCompositionPage.css";
@@ -24,6 +25,8 @@ export default function GiftCompositionPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [autosaveMessage, setAutosaveMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
   const hasLoadedGiftRef = useRef(false);
   const latestDraftRef = useRef({
     title: "",
@@ -56,6 +59,7 @@ export default function GiftCompositionPage() {
         latestDraftRef.current = loadedDraft;
         setTitleValue(loadedDraft.title);
         setMessageValue(loadedDraft.message);
+        setLastEditionStep(response.gift.lastEditionStep ?? null);
         hasLoadedGiftRef.current = true;
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
@@ -68,7 +72,11 @@ export default function GiftCompositionPage() {
   }, [token, numericGiftId]);
 
   const saveGiftComposition = useCallback(
-    async (nextTitle: string, nextMessage: string) => {
+    async (
+      nextTitle: string,
+      nextMessage: string,
+      nextLastEditionStep?: GiftEditionStep,
+    ) => {
       if (!token || !Number.isInteger(numericGiftId)) {
         return;
       }
@@ -76,6 +84,9 @@ export default function GiftCompositionPage() {
       await updateGift(token, numericGiftId, {
         title: nextTitle,
         message: nextMessage,
+        ...(nextLastEditionStep
+          ? { lastEditionStep: nextLastEditionStep }
+          : {}),
       });
     },
     [token, numericGiftId],
@@ -167,6 +178,7 @@ export default function GiftCompositionPage() {
       await saveGiftComposition(
         latestDraftRef.current.title,
         latestDraftRef.current.message,
+        "images",
       );
       navigate(`/gifts/${numericGiftId}/images`);
     } catch (error) {
@@ -186,6 +198,14 @@ export default function GiftCompositionPage() {
 
   return (
     <section className="gift-composition-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="composition"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-composition-page__content">
         <header className="gift-composition-page__header">
           <h1>Composition du message</h1>
