@@ -13,6 +13,7 @@ import { getGiftMedias, type GiftMedia } from "./api/giftMedia";
 import { getGiftById, type Gift } from "./api/gifts";
 import Button from "./components/Button/Button";
 import GiftPreviewPlayer from "./components/GiftPreviewPlayer/GiftPreviewPlayer";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { offerPlans } from "./data/offerPlans";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
@@ -78,6 +79,14 @@ export default function GiftSummaryPage() {
   const selectedOffer = offerPlans.find((offer) => offer.id === gift?.offer);
   return (
     <section className="gift-summary-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="summary"
+          lastEditionStep={gift?.lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-summary-page__grid">
         <div className="gift-summary-page__main">
           <header className="gift-summary-page__header">

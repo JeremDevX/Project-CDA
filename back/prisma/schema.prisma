@@ -37,6 +37,7 @@ model Gift {
   status         String          @default("brouillon")
   offer          String?
   creationMode   String?
+  lastEditionStep String?
   draftExpiresAt DateTime?
   finalConfirmationsAt DateTime?
   userId         Int

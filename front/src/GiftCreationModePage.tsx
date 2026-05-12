@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { updateGift } from "./api/gifts";
+import { getGiftById, updateGift, type GiftEditionStep } from "./api/gifts";
 import Button from "./components/Button/Button";
 import CreationModeSelection from "./components/CreationModeSelection/CreationModeSelection";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import type { CreationModeId } from "./data/creationModes";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
@@ -14,6 +15,8 @@ export default function GiftCreationModePage() {
   const { giftId } = useParams();
   const token = useUserState((state) => state.token);
   const [selectedMode, setSelectedMode] = useState<CreationModeId>("free");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -21,6 +24,23 @@ export default function GiftCreationModePage() {
   const previousStepPath = Number.isInteger(numericGiftId)
     ? `/gifts/${numericGiftId}/pricing`
     : "/dashboard";
+
+  useEffect(() => {
+    async function loadGift() {
+      if (!token || !Number.isInteger(numericGiftId)) {
+        return;
+      }
+
+      try {
+        const response = await getGiftById(token, numericGiftId);
+        setLastEditionStep(response.gift.lastEditionStep ?? null);
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error));
+      }
+    }
+
+    void loadGift();
+  }, [token, numericGiftId]);
 
   async function handleNext() {
     if (!token || !Number.isInteger(numericGiftId)) {
@@ -31,7 +51,10 @@ export default function GiftCreationModePage() {
     setErrorMessage("");
 
     try {
-      await updateGift(token, numericGiftId, { creationMode: selectedMode });
+      await updateGift(token, numericGiftId, {
+        creationMode: selectedMode,
+        lastEditionStep: "composition",
+      });
       navigate(`/gifts/${numericGiftId}/composition`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -42,6 +65,14 @@ export default function GiftCreationModePage() {
 
   return (
     <section className="gift-creation-mode-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="creation-mode"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <CreationModeSelection
         selectedMode={selectedMode}
         onSelectMode={setSelectedMode}

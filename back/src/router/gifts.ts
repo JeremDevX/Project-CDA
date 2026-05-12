@@ -9,6 +9,16 @@ const MAX_GIFT_TITLE_LENGTH = 250;
 const MAX_GIFT_MESSAGE_LENGTH = 25000;
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
 const allowedCreationModes = ["free"] as const;
+const allowedEditionSteps = [
+  "creation-mode",
+  "composition",
+  "images",
+  "preview",
+  "recipients",
+  "trusted-thirds",
+  "confirmations",
+  "summary",
+] as const;
 const DRAFT_EXPIRATION_DAYS = 30;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -23,6 +33,12 @@ function isAllowedOffer(value: unknown) {
 function isAllowedCreationMode(value: unknown) {
   return (
     typeof value === "string" && allowedCreationModes.includes(value as never)
+  );
+}
+
+function isAllowedEditionStep(value: unknown) {
+  return (
+    typeof value === "string" && allowedEditionSteps.includes(value as never)
   );
 }
 
@@ -133,6 +149,7 @@ giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
     const dataToUpdate: {
       offer?: string;
       creationMode?: string;
+      lastEditionStep?: string;
       title?: string;
       message?: string;
     } = {};
@@ -155,6 +172,16 @@ giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
       }
 
       dataToUpdate.creationMode = creationMode;
+    }
+
+    if (hasField(req.body, "lastEditionStep")) {
+      const lastEditionStep = req.body.lastEditionStep;
+
+      if (!isAllowedEditionStep(lastEditionStep)) {
+        return res.status(400).json({ message: "Étape invalide" });
+      }
+
+      dataToUpdate.lastEditionStep = lastEditionStep;
     }
 
     if (hasField(req.body, "title")) {
@@ -271,6 +298,7 @@ giftsRouter.post("/:giftId/confirmations", requireAuth, async (req, res) => {
       },
       data: {
         finalConfirmationsAt: new Date(),
+        lastEditionStep: "summary",
       },
     });
 

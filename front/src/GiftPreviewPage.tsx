@@ -1,9 +1,15 @@
 import { Check, CircleHelp, Maximize2, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getGiftById, type Gift } from "./api/gifts";
+import {
+  getGiftById,
+  updateGift,
+  type Gift,
+  type GiftEditionStep,
+} from "./api/gifts";
 import { getGiftMedias, type GiftMedia } from "./api/giftMedia";
 import Button from "./components/Button/Button";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import GiftPreviewPlayer from "./components/GiftPreviewPlayer/GiftPreviewPlayer";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
@@ -36,7 +42,10 @@ export default function GiftPreviewPage() {
   const [gift, setGift] = useState<Gift | null>(null);
   const [medias, setMedias] = useState<GiftMedia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSavingStep, setIsSavingStep] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
 
   useEffect(() => {
     async function loadPreview() {
@@ -53,6 +62,7 @@ export default function GiftPreviewPage() {
         ]);
 
         setGift(giftResponse.gift);
+        setLastEditionStep(giftResponse.gift.lastEditionStep ?? null);
         setMedias(mediaResponse.medias);
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
@@ -64,8 +74,34 @@ export default function GiftPreviewPage() {
     loadPreview();
   }, [token, numericGiftId]);
 
+  async function handleNext() {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      return;
+    }
+
+    setIsSavingStep(true);
+    setErrorMessage("");
+
+    try {
+      await updateGift(token, numericGiftId, { lastEditionStep: "recipients" });
+      navigate(`/gifts/${numericGiftId}/recipients`);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSavingStep(false);
+    }
+  }
+
   return (
     <section className="gift-preview-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="preview"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-preview-page__content">
         <header className="gift-preview-page__header">
           <span className="gift-preview-page__kicker">
@@ -122,11 +158,11 @@ export default function GiftPreviewPage() {
         />
         <Button
           type="primary"
-          label="Tout est correct"
-          onClick={() => navigate(`/gifts/${numericGiftId}/recipients`)}
+          label={isSavingStep ? "Enregistrement" : "Tout est correct"}
+          onClick={handleNext}
           icon={<Check size={18} />}
           iconPosition="right"
-          disabled={isLoading || !gift}
+          disabled={isLoading || isSavingStep || !gift}
         />
       </div>
     </section>

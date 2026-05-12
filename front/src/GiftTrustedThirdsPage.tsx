@@ -19,7 +19,9 @@ import {
   type GiftTrustedThird,
   validateGiftTrustedThirds,
 } from "./api/giftTrustedThirds";
+import { getGiftById, updateGift, type GiftEditionStep } from "./api/gifts";
 import Button from "./components/Button/Button";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftTrustedThirdsPage.css";
@@ -43,7 +45,10 @@ export default function GiftTrustedThirdsPage() {
   const [formData, setFormData] = useState(emptyForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingStep, setIsSavingStep] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
 
   useEffect(() => {
     async function loadTrustedThirds() {
@@ -54,8 +59,12 @@ export default function GiftTrustedThirdsPage() {
       }
 
       try {
-        const response = await getGiftTrustedThirds(token, numericGiftId);
-        setTrustedThirds(response.trustedThirds);
+        const [giftResponse, trustedThirdsResponse] = await Promise.all([
+          getGiftById(token, numericGiftId),
+          getGiftTrustedThirds(token, numericGiftId),
+        ]);
+        setLastEditionStep(giftResponse.gift.lastEditionStep ?? null);
+        setTrustedThirds(trustedThirdsResponse.trustedThirds);
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
       } finally {
@@ -134,16 +143,30 @@ export default function GiftTrustedThirdsPage() {
     }
 
     try {
+      setIsSavingStep(true);
       setErrorMessage("");
       await validateGiftTrustedThirds(token, numericGiftId);
+      await updateGift(token, numericGiftId, {
+        lastEditionStep: "confirmations",
+      });
       navigate(`/gifts/${numericGiftId}/confirmations`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSavingStep(false);
     }
   }
 
   return (
     <section className="gift-trusted-thirds-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="trusted-thirds"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-trusted-thirds-page__content">
         <header className="gift-trusted-thirds-page__header">
           <h1>Désignez vos tiers de confiance</h1>
@@ -316,12 +339,14 @@ export default function GiftTrustedThirdsPage() {
         />
         <Button
           type="primary"
-          label="Suivant"
+          label={isSavingStep ? "Enregistrement" : "Suivant"}
           onClick={handleContinue}
           icon={<ChevronRight size={16} />}
           iconPosition="right"
           disabled={
-            isLoading || trustedThirds.length !== REQUIRED_TRUSTED_THIRD_COUNT
+            isLoading ||
+            isSavingStep ||
+            trustedThirds.length !== REQUIRED_TRUSTED_THIRD_COUNT
           }
         />
       </div>

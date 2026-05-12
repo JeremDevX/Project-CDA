@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createGift, getGifts, type Gift } from "./api/gifts";
 import { getErrorMessage, getDraftExpirationMessage } from "./helpers/helpers";
+import {
+  getGiftProgressPercent,
+  getLastGiftEditionPath,
+} from "./helpers/giftProgress";
 import { getGiftSlotSummary } from "./helpers/offerLimits";
 import { useUserState } from "./store/useAppStore";
 
@@ -100,7 +104,15 @@ export default function DashboardPage() {
                 id={gift.id}
                 title={gift.title ?? "Sans titre"}
                 status={gift.status === "active" ? "active" : "draft"}
-                completion={gift.status === "active" ? 100 : 0}
+                completion={
+                  gift.status === "active"
+                    ? 100
+                    : getGiftProgressPercent(gift.lastEditionStep)
+                }
+                editPath={getLastGiftEditionPath(
+                  gift.id,
+                  gift.lastEditionStep,
+                )}
                 recipientCount={gift.recipientCount ?? 0}
                 imageCount={gift.imageCount ?? 0}
                 videoCount={gift.videoCount ?? 0}

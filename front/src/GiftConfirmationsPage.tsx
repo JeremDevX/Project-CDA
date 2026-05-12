@@ -1,8 +1,9 @@
 import { ChevronLeft, ChevronRight, Info, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { confirmGift, getGiftById } from "./api/gifts";
+import { confirmGift, getGiftById, type GiftEditionStep } from "./api/gifts";
 import Button from "./components/Button/Button";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { useUserState } from "./store/useAppStore";
 import "./GiftConfirmationsPage.css";
@@ -50,6 +51,8 @@ export default function GiftConfirmationsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
 
   useEffect(() => {
     async function loadGift() {
@@ -62,6 +65,7 @@ export default function GiftConfirmationsPage() {
       try {
         const response = await getGiftById(token, numericGiftId);
         const hasConfirmed = Boolean(response.gift.finalConfirmationsAt);
+        setLastEditionStep(response.gift.lastEditionStep ?? null);
         setConfirmations({
           respectAndKindnessConfirmed: hasConfirmed,
           contactDetailsConfirmed: hasConfirmed,
@@ -111,6 +115,14 @@ export default function GiftConfirmationsPage() {
 
   return (
     <section className="gift-confirmations-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="confirmations"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-confirmations-page__content">
         <header className="gift-confirmations-page__header">
           <span className="gift-confirmations-page__icon">

@@ -1,7 +1,12 @@
 import { FileImage, ImageIcon, Info, Trash2, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getGiftById, type Gift } from "./api/gifts";
+import {
+  getGiftById,
+  updateGift,
+  type Gift,
+  type GiftEditionStep,
+} from "./api/gifts";
 import {
   deleteGiftMedia,
   getGiftMedias,
@@ -10,6 +15,7 @@ import {
   type GiftMediaType,
 } from "./api/giftMedia";
 import Button from "./components/Button/Button";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { getGiftSlotSummary } from "./helpers/offerLimits";
 import { useUserState } from "./store/useAppStore";
@@ -32,8 +38,11 @@ export default function GiftMediaPage() {
   const [medias, setMedias] = useState<GiftMedia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSavingStep, setIsSavingStep] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -50,6 +59,7 @@ export default function GiftMediaPage() {
         ]);
 
         setGift(giftResponse.gift);
+        setLastEditionStep(giftResponse.gift.lastEditionStep ?? null);
         setMedias(mediaResponse.medias);
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
@@ -171,8 +181,34 @@ export default function GiftMediaPage() {
     }
   }
 
+  async function handleNext() {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      return;
+    }
+
+    setIsSavingStep(true);
+    setErrorMessage("");
+
+    try {
+      await updateGift(token, numericGiftId, { lastEditionStep: "preview" });
+      navigate(`/gifts/${numericGiftId}/preview`);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSavingStep(false);
+    }
+  }
+
   return (
     <section className="gift-media-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="images"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-media-page__content">
         <header className="gift-media-page__header">
           <h1>Illustrez votre message</h1>
@@ -331,8 +367,9 @@ export default function GiftMediaPage() {
         />
         <Button
           type="primary"
-          label="Suivant"
-          onClick={() => navigate(`/gifts/${numericGiftId}/preview`)}
+          label={isSavingStep ? "Enregistrement" : "Suivant"}
+          onClick={handleNext}
+          disabled={isSavingStep}
         />
       </div>
     </section>

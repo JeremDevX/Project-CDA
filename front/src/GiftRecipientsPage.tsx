@@ -18,8 +18,14 @@ import {
   getGiftRecipients,
   type GiftRecipient,
 } from "./api/giftRecipients";
-import { getGiftById, type Gift } from "./api/gifts";
+import {
+  getGiftById,
+  updateGift,
+  type Gift,
+  type GiftEditionStep,
+} from "./api/gifts";
 import Button from "./components/Button/Button";
+import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { getGiftSlotSummary } from "./helpers/offerLimits";
 import { useUserState } from "./store/useAppStore";
@@ -42,7 +48,10 @@ export default function GiftRecipientsPage() {
   const [formData, setFormData] = useState(emptyForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingStep, setIsSavingStep] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [lastEditionStep, setLastEditionStep] =
+    useState<GiftEditionStep | null>(null);
 
   useEffect(() => {
     async function loadRecipients() {
@@ -59,6 +68,7 @@ export default function GiftRecipientsPage() {
         ]);
 
         setGift(giftResponse.gift);
+        setLastEditionStep(giftResponse.gift.lastEditionStep ?? null);
         setRecipients(recipientsResponse.recipients);
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
@@ -135,8 +145,36 @@ export default function GiftRecipientsPage() {
     }
   }
 
+  async function handleNext() {
+    if (!token || !Number.isInteger(numericGiftId) || recipients.length === 0) {
+      return;
+    }
+
+    setIsSavingStep(true);
+    setErrorMessage("");
+
+    try {
+      await updateGift(token, numericGiftId, {
+        lastEditionStep: "trusted-thirds",
+      });
+      navigate(`/gifts/${numericGiftId}/trusted-thirds`);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSavingStep(false);
+    }
+  }
+
   return (
     <section className="gift-recipients-page">
+      {Number.isInteger(numericGiftId) ? (
+        <GiftStepNav
+          giftId={numericGiftId}
+          currentStep="recipients"
+          lastEditionStep={lastEditionStep}
+        />
+      ) : null}
+
       <div className="gift-recipients-page__content">
         <header className="gift-recipients-page__header">
           <h1>À qui souhaitez-vous transmettre ce message ?</h1>
@@ -295,11 +333,11 @@ export default function GiftRecipientsPage() {
         />
         <Button
           type="primary"
-          label="Suivant"
-          onClick={() => navigate(`/gifts/${numericGiftId}/trusted-thirds`)}
+          label={isSavingStep ? "Enregistrement" : "Suivant"}
+          onClick={handleNext}
           icon={<ChevronRight size={16} />}
           iconPosition="right"
-          disabled={isLoading || recipients.length === 0}
+          disabled={isLoading || isSavingStep || recipients.length === 0}
         />
       </div>
     </section>
