@@ -1,6 +1,6 @@
 import { Check, CreditCard, ShieldCheck, UserRound, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import {
   getGiftRecipients,
   type GiftRecipient,
@@ -10,7 +10,12 @@ import {
   type GiftTrustedThird,
 } from "./api/giftTrustedThirds";
 import { getGiftMedias, type GiftMedia } from "./api/giftMedia";
-import { getGiftById, type Gift } from "./api/gifts";
+import {
+  createGiftCheckoutSession,
+  getGiftById,
+  validateGiftPayment,
+  type Gift,
+} from "./api/gifts";
 import Button from "./components/Button/Button";
 import GiftPreviewPlayer from "./components/GiftPreviewPlayer/GiftPreviewPlayer";
 import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
@@ -31,15 +36,20 @@ function getInitials(fullName: string) {
 
 export default function GiftSummaryPage() {
   const { giftId } = useParams();
+  const [searchParams] = useSearchParams();
   const token = useUserState((state) => state.token);
   const numericGiftId = Number(giftId);
+  const paymentStatus = searchParams.get("payment");
+  const checkoutSessionId = searchParams.get("session_id");
 
   const [gift, setGift] = useState<Gift | null>(null);
   const [medias, setMedias] = useState<GiftMedia[]>([]);
   const [recipients, setRecipients] = useState<GiftRecipient[]>([]);
   const [trustedThirds, setTrustedThirds] = useState<GiftTrustedThird[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   useEffect(() => {
     async function loadSummary() {
@@ -76,7 +86,63 @@ export default function GiftSummaryPage() {
     loadSummary();
   }, [token, numericGiftId]);
 
+  useEffect(() => {
+    async function validateReturnedPayment() {
+      if (!token || !Number.isInteger(numericGiftId)) {
+        return;
+      }
+
+      if (paymentStatus === "cancel") {
+        setPaymentMessage("Paiement annulé. Votre gift reste en brouillon.");
+        return;
+      }
+
+      if (paymentStatus !== "success" || !checkoutSessionId) {
+        return;
+      }
+
+      try {
+        setIsPaymentLoading(true);
+        const response = await validateGiftPayment(
+          token,
+          numericGiftId,
+          checkoutSessionId,
+        );
+
+        setGift(response.gift);
+        setPaymentMessage("Paiement validé. Votre gift est activé.");
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error));
+      } finally {
+        setIsPaymentLoading(false);
+      }
+    }
+
+    validateReturnedPayment();
+  }, [token, numericGiftId, paymentStatus, checkoutSessionId]);
+
+  async function handleStartPayment() {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      setErrorMessage("Gift introuvable");
+      return;
+    }
+
+    try {
+      setErrorMessage("");
+      setPaymentMessage("");
+      setIsPaymentLoading(true);
+      const response = await createGiftCheckoutSession(token, numericGiftId);
+
+      window.location.assign(response.url);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+      setIsPaymentLoading(false);
+    }
+  }
+
   const selectedOffer = offerPlans.find((offer) => offer.id === gift?.offer);
+  const isGiftActive = gift?.status === "active";
+
   return (
     <section className="gift-summary-page">
       {Number.isInteger(numericGiftId) ? (
@@ -103,6 +169,10 @@ export default function GiftSummaryPage() {
 
           {errorMessage ? (
             <p className="gift-summary-page__error">{errorMessage}</p>
+          ) : null}
+
+          {paymentMessage ? (
+            <p className="gift-summary-page__success">{paymentMessage}</p>
           ) : null}
 
           {!isLoading && gift ? (
@@ -223,11 +293,24 @@ export default function GiftSummaryPage() {
 
           <Button
             type="primary"
-            label="Paiement WIP"
-            disabled
+            label={
+              isGiftActive
+                ? "Gift activé"
+                : isPaymentLoading
+                  ? "Paiement..."
+                  : "Payer avec Stripe"
+            }
+            disabled={
+              isLoading ||
+              isPaymentLoading ||
+              !gift ||
+              !selectedOffer ||
+              isGiftActive
+            }
             fullWidth
             icon={<CreditCard size={17} />}
             iconPosition="left"
+            onClick={handleStartPayment}
           />
 
           <p className="gift-summary-page__secure">

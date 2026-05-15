@@ -1,0 +1,2 @@
+ALTER TABLE "gifts"
+ADD COLUMN "paidAt" TIMESTAMP(3);

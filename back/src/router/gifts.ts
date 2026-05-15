@@ -1,4 +1,6 @@
 import { Router } from "express";
+import Stripe from "stripe";
+import { config } from "../config";
 import { prisma } from "../database";
 import { requireAuth } from "../middlewares/requireAuth";
 import sanitizeHtml from "sanitize-html";
@@ -8,6 +10,7 @@ export const giftsRouter = Router();
 const MAX_GIFT_TITLE_LENGTH = 250;
 const MAX_GIFT_MESSAGE_LENGTH = 25000;
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
+type AllowedOffer = (typeof allowedOffers)[number];
 const allowedCreationModes = ["free"] as const;
 const allowedEditionSteps = [
   "creation-mode",
@@ -21,12 +24,34 @@ const allowedEditionSteps = [
 ] as const;
 const DRAFT_EXPIRATION_DAYS = 30;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const offerPrices = {
+  essentiel: {
+    name: "Gift Essentiel",
+    amount: 1900,
+  },
+  standard: {
+    name: "Gift Standard",
+    amount: 3900,
+  },
+  premium: {
+    name: "Gift Premium",
+    amount: 4900,
+  },
+} as const;
+
+function getStripeClient() {
+  if (!config.stripeSecretKey) {
+    return null;
+  }
+
+  return new Stripe(config.stripeSecretKey);
+}
 
 function normalizeTextInput(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function isAllowedOffer(value: unknown) {
+function isAllowedOffer(value: unknown): value is AllowedOffer {
   return typeof value === "string" && allowedOffers.includes(value as never);
 }
 
@@ -305,6 +330,174 @@ giftsRouter.post("/:giftId/confirmations", requireAuth, async (req, res) => {
     return res.json({ gift });
   } catch (error) {
     console.error("Erreur lors de la confirmation du gift:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.post("/:giftId/checkout-session", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+    const stripe = getStripeClient();
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    if (!stripe) {
+      return res.status(500).json({ message: "Stripe n'est pas configuré" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    if (gift.status === "active") {
+      return res.status(400).json({ message: "Gift déjà activé" });
+    }
+
+    if (!gift.finalConfirmationsAt) {
+      return res.status(400).json({
+        message: "Les confirmations finales sont requises avant paiement",
+      });
+    }
+
+    if (!isAllowedOffer(gift.offer)) {
+      return res.status(400).json({ message: "Offre invalide" });
+    }
+
+    const selectedOffer = offerPrices[gift.offer];
+    const appBaseUrl = config.appBaseUrl.replace(/\/$/, "");
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: gift.user.email,
+      client_reference_id: String(gift.id),
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: selectedOffer.name,
+              description: gift.title,
+            },
+            unit_amount: selectedOffer.amount,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        giftId: String(gift.id),
+        userId: String(userId),
+      },
+      success_url: `${appBaseUrl}/gifts/${gift.id}/summary?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appBaseUrl}/gifts/${gift.id}/summary?payment=cancel`,
+    });
+
+    if (!session.url) {
+      return res.status(500).json({ message: "Session Stripe invalide" });
+    }
+
+    return res.status(201).json({ url: session.url });
+  } catch (error) {
+    console.error("Erreur lors de la création de session Stripe:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+    const sessionId = normalizeTextInput(req.body?.sessionId);
+    const stripe = getStripeClient();
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    if (!sessionId) {
+      return res.status(400).json({ message: "Session Stripe manquante" });
+    }
+
+    if (!stripe) {
+      return res.status(500).json({ message: "Stripe n'est pas configuré" });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (
+      session.metadata?.giftId !== String(giftId) ||
+      session.metadata?.userId !== String(userId)
+    ) {
+      return res.status(400).json({ message: "Session Stripe invalide" });
+    }
+
+    if (session.payment_status !== "paid") {
+      return res.status(400).json({ message: "Paiement non validé" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: {
+        id: giftId,
+        userId,
+      },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    if (!isAllowedOffer(gift.offer)) {
+      return res.status(400).json({ message: "Offre invalide" });
+    }
+
+    const selectedOffer = offerPrices[gift.offer];
+
+    if (
+      session.currency !== "eur" ||
+      session.amount_total !== selectedOffer.amount
+    ) {
+      return res.status(400).json({ message: "Montant Stripe invalide" });
+    }
+
+    const updatedGift = await prisma.gift.update({
+      where: {
+        id: giftId,
+      },
+      data: {
+        status: "active",
+        draftExpiresAt: null,
+        paidAt: new Date(),
+        lastEditionStep: "summary",
+      },
+    });
+
+    return res.json({ gift: updatedGift });
+  } catch (error) {
+    console.error("Erreur lors de la validation du paiement Stripe:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });

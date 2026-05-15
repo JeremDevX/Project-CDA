@@ -14,6 +14,7 @@ export type Gift = {
   lastEditionStep?: GiftEditionStep | null;
   draftExpiresAt?: string | null;
   finalConfirmationsAt?: string | null;
+  paidAt?: string | null;
   userId: number;
   createdAt: string;
   updatedAt: string;
@@ -24,6 +25,10 @@ export type Gift = {
 
 type GiftResponse = {
   gift: Gift;
+};
+
+type StripeCheckoutResponse = {
+  url: string;
 };
 
 type UpdateGiftPayload = {
@@ -138,6 +143,52 @@ export async function confirmGift(
         response,
         "Impossible d'enregistrer les confirmations",
       ),
+    );
+  }
+
+  return response.json() as Promise<GiftResponse>;
+}
+
+export async function createGiftCheckoutSession(token: string, giftId: number) {
+  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/checkout-session`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible de lancer le paiement Stripe",
+      ),
+    );
+  }
+
+  return response.json() as Promise<StripeCheckoutResponse>;
+}
+
+export async function validateGiftPayment(
+  token: string,
+  giftId: number,
+  sessionId: string,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/gifts/${giftId}/payment-confirmation`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sessionId }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(response, "Impossible de valider le paiement"),
     );
   }
 
