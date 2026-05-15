@@ -163,17 +163,10 @@ export default function GiftCard(props: GiftCardProps) {
         </div>
       </div>
 
-      {props.status === "draft" ? (
-        <Link className="gift-card__action" to={props.editPath}>
-          <span>{cardCopy.action}</span>
-          <ChevronRight size={16} />
-        </Link>
-      ) : (
-        <button type="button" className="gift-card__action">
-          <span>{cardCopy.action}</span>
-          <ChevronRight size={16} />
-        </button>
-      )}
+      <Link className="gift-card__action" to={props.editPath}>
+        <span>{cardCopy.action}</span>
+        <ChevronRight size={16} />
+      </Link>
     </article>
   );
 }

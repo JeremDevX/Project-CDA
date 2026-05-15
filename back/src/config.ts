@@ -20,6 +20,8 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET ?? "change-me-in-production",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
+  appBaseUrl: process.env.APP_BASE_URL ?? "http://localhost:5173",
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   supabaseUrl: process.env.SUPABASE_URL ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   supabaseStorageBucket: process.env.SUPABASE_STORAGE_BUCKET ?? "gift-media",

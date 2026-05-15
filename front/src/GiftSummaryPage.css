@@ -267,6 +267,7 @@
 
 .gift-summary-page__status,
 .gift-summary-page__error,
+.gift-summary-page__success,
 .gift-summary-page__empty {
   margin: 0;
   font-weight: 700;
@@ -279,6 +280,10 @@
 
 .gift-summary-page__error {
   color: var(--error);
+}
+
+.gift-summary-page__success {
+  color: var(--accent2);
 }
 
 @media (max-width: 1100px) {
