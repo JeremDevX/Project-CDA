@@ -113,6 +113,7 @@ export default function DashboardPage() {
                   gift.id,
                   gift.lastEditionStep,
                 )}
+                activePath={`/gifts/${gift.id}/activated`}
                 recipientCount={gift.recipientCount ?? 0}
                 imageCount={gift.imageCount ?? 0}
                 videoCount={gift.videoCount ?? 0}

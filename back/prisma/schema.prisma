@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String
-  email     String   @unique
-  password  String
-  gifts     Gift[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     Int                       @id @default(autoincrement())
+  username               String
+  email                  String                    @unique
+  password               String
+  gifts                  Gift[]
+  paymentConfirmations   GiftPaymentConfirmation[]
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
 
   @@map("users")
 }
@@ -31,26 +32,49 @@ model TokenBlacklist {
 }
 
 model Gift {
-  id             Int             @id @default(autoincrement())
-  title          String          @default("Nouveau gift")
-  message        String?
-  status         String          @default("brouillon")
-  offer          String?
-  creationMode   String?
-  lastEditionStep String?
-  draftExpiresAt DateTime?
-  finalConfirmationsAt DateTime?
-  paidAt         DateTime?
-  userId         Int
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  medias         GiftMedia[]
-  recipients     GiftRecipient[]
-  trustedThirds  GiftTrustedThird[]
+  id                     Int                       @id @default(autoincrement())
+  title                  String                    @default("Nouveau gift")
+  message                String?
+  status                 String                    @default("brouillon")
+  offer                  String?
+  creationMode           String?
+  lastEditionStep        String?
+  draftExpiresAt         DateTime?
+  finalConfirmationsAt   DateTime?
+  paidAt                 DateTime?
+  userId                 Int
+  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+  medias                 GiftMedia[]
+  recipients             GiftRecipient[]
+  trustedThirds          GiftTrustedThird[]
+  paymentConfirmation    GiftPaymentConfirmation?
 
   @@index([status, draftExpiresAt])
   @@map("gifts")
+}
+
+model GiftPaymentConfirmation {
+  id                    Int      @id @default(autoincrement())
+  reference             String   @unique
+  giftId                Int      @unique
+  gift                  Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  userId                Int
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer                 String
+  amountCents           Int
+  currency              String
+  status                String
+  paidAt                DateTime
+  stripeSessionId       String?
+  stripePaymentIntentId String?
+  isSandbox             Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId])
+  @@map("gift_payment_confirmations")
 }
 
 model GiftMedia {
