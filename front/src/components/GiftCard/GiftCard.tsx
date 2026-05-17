@@ -17,6 +17,7 @@ interface GiftCardProps {
   status: GiftStatus;
   completion: number;
   editPath: string;
+  activePath?: string;
   recipientCount: number;
   imageCount?: number;
   videoCount?: number;
@@ -30,7 +31,7 @@ function getCardCopy(status: GiftStatus) {
   if (status === "active") {
     return {
       badge: "Gift actif",
-      action: "Voir le gift",
+      action: "Modifier mon gift",
       progressColorClassName: "gift-card--active",
     };
   }
@@ -163,7 +164,10 @@ export default function GiftCard(props: GiftCardProps) {
         </div>
       </div>
 
-      <Link className="gift-card__action" to={props.editPath}>
+      <Link
+        className="gift-card__action"
+        to={props.status === "active" ? (props.activePath ?? props.editPath) : props.editPath}
+      >
         <span>{cardCopy.action}</span>
         <ChevronRight size={16} />
       </Link>

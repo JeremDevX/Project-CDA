@@ -389,26 +389,23 @@ En tant qu’utilisateur, je veux pouvoir payer mon gift afin de valider sa mise
 
 ---
 
-### US-28 — Accéder à une facture ou confirmation de paiement
+### US-28 — Accéder à une confirmation de paiement et voir l’écran de remerciement
 
-En tant qu’utilisateur ayant payé mon gift, je veux pouvoir accéder à une facture ou à une confirmation de paiement afin de conserver une trace de la transaction.  
-**Charge (SP) : 2**
+En tant qu’utilisateur ayant payé mon gift, je veux voir une confirmation claire après activation et pouvoir conserver une preuve de transaction.  
+**Charge (SP) : 3**
+
+**Mise à jour**
+
+- US-28 fusionnée avec l’ancienne US-29 : la confirmation de paiement et l’écran de remerciement sont affichés dans le même parcours après paiement validé.
+- Le document généré est une confirmation de paiement interne, pas une facture fiscale.
 
 **Critères d’acceptation**
 
 - Après paiement, une preuve de transaction est disponible.
-- L’utilisateur peut consulter cette preuve depuis l’espace concerné.
 - La preuve est liée au bon gift.
-
----
-
-### US-29 — Voir l’écran de remerciement après activation
-
-En tant qu’utilisateur ayant activé mon gift, je veux voir un écran de remerciement afin de comprendre que mon gift est bien finalisé.  
-**Charge (SP) : 1**
-
-**Critères d’acceptation**
-
+- La preuve est liée au bon utilisateur.
+- L’utilisateur peut consulter cette preuve depuis son compte.
+- L’utilisateur peut télécharger cette preuve en PDF.
 - Un écran de confirmation est affiché après activation réussie.
 - L’utilisateur comprend que le gift est finalisé.
 - Une action permet de revenir vers le dashboard ou l’espace de gestion des gifts.
@@ -417,7 +414,7 @@ En tant qu’utilisateur ayant activé mon gift, je veux voir un écran de remer
 
 ## EPIC 8 — Édition après validation
 
-### US-30 — Modifier le gift gratuitement pendant 30 jours
+### US-29 — Modifier le gift gratuitement pendant 30 jours
 
 En tant qu’utilisateur, je veux pouvoir modifier mon gift gratuitement pendant 30 jours après sa création afin d’ajuster son contenu si nécessaire.  
 **Charge (SP) : 3**
@@ -430,7 +427,7 @@ En tant qu’utilisateur, je veux pouvoir modifier mon gift gratuitement pendant
 
 ---
 
-### US-31 — Modifier le gift au-delà de 30 jours via une option payante
+### US-30 — Modifier le gift au-delà de 30 jours via une option payante
 
 En tant qu’utilisateur, je veux pouvoir modifier mon gift après ce délai via une option payante afin de conserver une possibilité d’édition au-delà de la période incluse.  
 **Charge (SP) : 5**
@@ -445,7 +442,7 @@ En tant qu’utilisateur, je veux pouvoir modifier mon gift après ce délai via
 
 ## EPIC 9 — Déclenchement, check-in et escalade
 
-### US-32 — Détecter un retard de check-in
+### US-31 — Détecter un retard de check-in
 
 En tant que système, je veux détecter qu’un utilisateur n’a pas effectué son check-in dans le délai prévu afin d’identifier les gifts à surveiller.
 **Charge (SP) : 3**
@@ -458,7 +455,7 @@ En tant que système, je veux détecter qu’un utilisateur n’a pas effectué 
 
 ---
 
-### US-33 — Relancer l’utilisateur en cas de non-réponse
+### US-32 — Relancer l’utilisateur en cas de non-réponse
 
 En tant que système, je veux relancer l’utilisateur lorsqu’un retard de check-in est détecté afin de lui laisser une possibilité de confirmer sa situation avant toute escalade.
 **Charge (SP) : 3**
@@ -471,7 +468,7 @@ En tant que système, je veux relancer l’utilisateur lorsqu’un retard de che
 
 ---
 
-### US-34 — Escalader vers les tiers de confiance
+### US-33 — Escalader vers les tiers de confiance
 
 En tant que système, je veux notifier les tiers de confiance lorsque l’utilisateur ne répond pas après les relances prévues afin d’engager le processus de validation.
 **Charge (SP) : 5**
@@ -484,7 +481,7 @@ En tant que système, je veux notifier les tiers de confiance lorsque l’utilis
 
 ---
 
-### US-35 — Enregistrer la réponse des tiers de confiance
+### US-34 — Enregistrer la réponse des tiers de confiance
 
 En tant que système, je veux enregistrer la réponse des tiers de confiance afin de suivre l’avancement de la validation du déclenchement.
 **Charge (SP) : 3**
@@ -497,7 +494,7 @@ En tant que système, je veux enregistrer la réponse des tiers de confiance afi
 
 ---
 
-### US-36 — Déclencher l’envoi du gift après validation
+### US-35 — Déclencher l’envoi du gift après validation
 
 En tant que système, je veux déclencher l’envoi du gift lorsque les conditions de validation sont remplies afin de transmettre le contenu aux destinataires.
 **Charge (SP) : 5**

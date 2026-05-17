@@ -46,6 +46,10 @@
   color: var(--text-tertiary);
 }
 
+.account__feedback--error {
+  color: var(--error);
+}
+
 .account__details {
   display: flex;
   flex-direction: column;
@@ -77,6 +81,156 @@
   overflow-wrap: anywhere;
 }
 
+.account__payments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-xl);
+  border-top: var(--border-width-sm) solid var(--border);
+}
+
+.account__payments-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.account__payments h2 {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.account__payments p {
+  margin: var(--space-xs) 0 0;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.account__payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.account__payment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: var(--border-width-sm) solid
+    color-mix(in srgb, var(--accent2) 22%, var(--border));
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent2) 6%, transparent),
+      transparent
+    ),
+    color-mix(in srgb, white 2%, var(--surface));
+}
+
+.account__payment-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.account__payment-icon {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background-color: color-mix(in srgb, var(--accent2) 16%, transparent);
+  color: var(--accent2);
+}
+
+.account__payment-title {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-xs);
+}
+
+.account__payment-title strong,
+.account__payment-title span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.account__payment-title strong {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.account__payment-title span {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.account__payment-amount {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.45rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.account__payment-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin: 0;
+  padding: var(--space-lg) 0;
+  border-top: var(--border-width-sm) solid var(--border);
+  border-bottom: var(--border-width-sm) solid var(--border);
+}
+
+.account__payment-details div {
+  min-width: 0;
+}
+
+.account__payment-details dt,
+.account__payment-details dd {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.account__payment-details dt {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.account__payment-details dd {
+  color: var(--text-primary);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.account__payment-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.account__payment-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 @media (max-width: 767px) {
   .account {
     padding: var(--space-xl) var(--space-lg);
@@ -88,5 +242,36 @@
 
   .account__term {
     flex-basis: auto;
+  }
+
+  .account__payment {
+    padding: var(--space-lg);
+  }
+
+  .account__payment-top,
+  .account__payment-footer {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .account__payment-top {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .account__payment-amount {
+    white-space: normal;
+  }
+
+  .account__payment-details {
+    grid-template-columns: 1fr;
+  }
+
+  .account__payment-footer {
+    flex-direction: column;
+  }
+
+  .account__payment-footer .app-button {
+    width: 100%;
   }
 }

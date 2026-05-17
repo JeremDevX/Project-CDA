@@ -31,6 +31,23 @@ type StripeCheckoutResponse = {
   url: string;
 };
 
+export type GiftPaymentConfirmation = {
+  id: number;
+  reference: string;
+  giftId: number;
+  giftTitle: string;
+  offer: string;
+  amountCents: number;
+  amountPaid: string;
+  currency: string;
+  status: string;
+  paidAt: string;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  isSandbox: boolean;
+  createdAt: string;
+};
+
 type UpdateGiftPayload = {
   offer?: OfferPlanId;
   creationMode?: CreationModeId;
@@ -193,4 +210,50 @@ export async function validateGiftPayment(
   }
 
   return response.json() as Promise<GiftResponse>;
+}
+
+export async function getGiftPaymentConfirmations(token: string) {
+  const response = await fetch(`${API_BASE_URL}/gifts/payment-confirmations`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible de récupérer les confirmations de paiement",
+      ),
+    );
+  }
+
+  return response.json() as Promise<{
+    confirmations: GiftPaymentConfirmation[];
+  }>;
+}
+
+export async function downloadGiftPaymentConfirmationPdf(
+  token: string,
+  giftId: number,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/gifts/${giftId}/payment-confirmation/pdf`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      await getApiErrorMessage(
+        response,
+        "Impossible de télécharger la confirmation de paiement",
+      ),
+    );
+  }
+
+  return response.blob();
 }

@@ -39,6 +39,97 @@ const offerPrices = {
   },
 } as const;
 
+function formatAmount(amountCents: number, currency: string) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amountCents / 100);
+}
+
+function formatDateFr(date: Date) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
+function formatReferenceDate(date: Date) {
+  return [
+    String(date.getDate()).padStart(2, "0"),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    date.getFullYear(),
+  ].join("-");
+}
+
+function buildPaymentReference(username: string, giftId: number, paidAt: Date) {
+  const initial = username.trim().charAt(0).toUpperCase() || "U";
+
+  return `GIFT-${initial}-${giftId}-${formatReferenceDate(paidAt)}`;
+}
+
+function getStripePaymentIntentId(session: {
+  payment_intent?: string | { id: string } | null;
+}) {
+  if (!session.payment_intent) {
+    return null;
+  }
+
+  return typeof session.payment_intent === "string"
+    ? session.payment_intent
+    : session.payment_intent.id;
+}
+
+function normalizePdfText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7E]/g, "");
+}
+
+function escapePdfText(value: string) {
+  return normalizePdfText(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)");
+}
+
+function createPaymentConfirmationPdf(lines: string[]) {
+  let currentY = 790;
+  const contentLines = lines.map((line, index) => {
+    const fontSize = index === 0 ? 18 : 11;
+    const lineY = currentY;
+    currentY -= index === 0 ? 32 : 18;
+
+    return `/F1 ${fontSize} Tf 1 0 0 1 50 ${lineY} Tm (${escapePdfText(line)}) Tj`;
+  });
+  const stream = `BT\n${contentLines.join("\n")}\nET`;
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`,
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+
+  objects.forEach((object, index) => {
+    offsets.push(Buffer.byteLength(pdf));
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+
+  const xrefOffset = Buffer.byteLength(pdf);
+  pdf += `xref\n0 ${objects.length + 1}\n`;
+  pdf += "0000000000 65535 f \n";
+  offsets.slice(1).forEach((offset) => {
+    pdf += `${String(offset).padStart(10, "0")} 00000 n \n`;
+  });
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+  return Buffer.from(pdf, "ascii");
+}
+
 function getStripeClient() {
   if (!config.stripeSecretKey) {
     return null;
@@ -408,7 +499,7 @@ giftsRouter.post("/:giftId/checkout-session", requireAuth, async (req, res) => {
         giftId: String(gift.id),
         userId: String(userId),
       },
-      success_url: `${appBaseUrl}/gifts/${gift.id}/summary?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appBaseUrl}/gifts/${gift.id}/activated?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appBaseUrl}/gifts/${gift.id}/summary?payment=cancel`,
     });
 
@@ -464,6 +555,13 @@ giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) 
         id: giftId,
         userId,
       },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
 
     if (!gift) {
@@ -475,6 +573,10 @@ giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) 
     }
 
     const selectedOffer = offerPrices[gift.offer];
+    const paidAt = gift.paidAt ?? new Date();
+    const reference = buildPaymentReference(gift.user.username, gift.id, paidAt);
+    const stripePaymentIntentId = getStripePaymentIntentId(session);
+    const isSandbox = session.livemode === false;
 
     if (
       session.currency !== "eur" ||
@@ -483,21 +585,159 @@ giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) 
       return res.status(400).json({ message: "Montant Stripe invalide" });
     }
 
-    const updatedGift = await prisma.gift.update({
-      where: {
-        id: giftId,
-      },
-      data: {
-        status: "active",
-        draftExpiresAt: null,
-        paidAt: new Date(),
-        lastEditionStep: "summary",
-      },
-    });
+    const [updatedGift] = await prisma.$transaction([
+      prisma.gift.update({
+        where: {
+          id: giftId,
+        },
+        data: {
+          status: "active",
+          draftExpiresAt: null,
+          paidAt,
+          lastEditionStep: "summary",
+        },
+      }),
+      prisma.giftPaymentConfirmation.upsert({
+        where: {
+          giftId,
+        },
+        create: {
+          reference,
+          giftId,
+          userId,
+          offer: gift.offer,
+          amountCents: selectedOffer.amount,
+          currency: "eur",
+          status: session.payment_status,
+          paidAt,
+          stripeSessionId: session.id,
+          stripePaymentIntentId,
+          isSandbox,
+        },
+        update: {
+          status: session.payment_status,
+          stripeSessionId: session.id,
+          stripePaymentIntentId,
+          isSandbox,
+        },
+      }),
+    ]);
 
     return res.json({ gift: updatedGift });
   } catch (error) {
     console.error("Erreur lors de la validation du paiement Stripe:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.get("/payment-confirmations", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    const confirmations = await prisma.giftPaymentConfirmation.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        paidAt: "desc",
+      },
+      include: {
+        gift: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    return res.json({
+      confirmations: confirmations.map((confirmation) => ({
+        id: confirmation.id,
+        reference: confirmation.reference,
+        giftId: confirmation.giftId,
+        giftTitle: confirmation.gift.title,
+        offer: confirmation.offer,
+        amountCents: confirmation.amountCents,
+        amountPaid: formatAmount(
+          confirmation.amountCents,
+          confirmation.currency,
+        ),
+        currency: confirmation.currency.toUpperCase(),
+        status: confirmation.status,
+        paidAt: confirmation.paidAt,
+        stripeSessionId: confirmation.stripeSessionId,
+        stripePaymentIntentId: confirmation.stripePaymentIntentId,
+        isSandbox: confirmation.isSandbox,
+        createdAt: confirmation.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des confirmations:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftsRouter.get("/:giftId/payment-confirmation/pdf", requireAuth, async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    const paymentConfirmation = await prisma.giftPaymentConfirmation.findFirst({
+      where: {
+        giftId,
+        userId,
+      },
+      include: {
+        gift: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    });
+
+    if (!paymentConfirmation) {
+      return res.status(404).json({ message: "Confirmation introuvable" });
+    }
+
+    const pdf = createPaymentConfirmationPdf([
+      "Confirmation de paiement",
+      "Document interne - preuve de transaction. Ce document n'est pas une facture fiscale.",
+      `Reference interne : ${paymentConfirmation.reference}`,
+      `Gift concerne : ${paymentConfirmation.gift.title}`,
+      `Offre choisie : ${paymentConfirmation.offer}`,
+      `Montant paye : ${formatAmount(paymentConfirmation.amountCents, paymentConfirmation.currency)}`,
+      `Devise : ${paymentConfirmation.currency.toUpperCase()}`,
+      `Statut du paiement : ${paymentConfirmation.status}`,
+      `Date du paiement : ${formatDateFr(paymentConfirmation.paidAt)}`,
+      `Session Stripe : ${paymentConfirmation.stripeSessionId ?? "Non disponible"}`,
+      `Payment Intent Stripe : ${paymentConfirmation.stripePaymentIntentId ?? "Non disponible"}`,
+      paymentConfirmation.isSandbox
+        ? "Mode sandbox : paiement de test, aucun vrai paiement effectue."
+        : "Mode reel.",
+    ]);
+    const filename = `confirmation-paiement-${paymentConfirmation.reference}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Length", String(pdf.length));
+
+    return res.send(pdf);
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de confirmation:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });
