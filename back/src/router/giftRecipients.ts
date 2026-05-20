@@ -1,20 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../database";
 import { getRecipientLimit } from "../helpers/OfferRecipientLimits";
+import { isValidEmail, normalizeEmail, normalizeTextInput } from "../helpers/validation";
 
 export const giftRecipientsRouter = Router();
 
 const MAX_RECIPIENT_NAME_LENGTH = 120;
 const MAX_RECIPIENT_EMAIL_LENGTH = 254;
 const MAX_RECIPIENT_PHONE_LENGTH = 20;
-
-function normalizeTextInput(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
 
 giftRecipientsRouter.get(
   "/:giftId/recipients",
@@ -68,7 +61,7 @@ giftRecipientsRouter.post(
       }
 
       const fullName = normalizeTextInput(req.body?.fullName);
-      const email = normalizeTextInput(req.body?.email).toLowerCase();
+      const email = normalizeEmail(req.body?.email);
       const phone = normalizeTextInput(req.body?.phone);
 
       if (!fullName || !email || !phone) {

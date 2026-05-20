@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../database";
+import { isValidEmail, normalizeEmail, normalizeTextInput } from "../helpers/validation";
 
 export const giftTrustedThirdsRouter = Router();
 
@@ -8,14 +9,6 @@ const MAX_TRUSTED_THIRD_EMAIL_LENGTH = 254;
 const MAX_TRUSTED_THIRD_PHONE_LENGTH = 20;
 const MAX_TRUSTED_THIRD_RELATION_LENGTH = 80;
 const REQUIRED_TRUSTED_THIRD_COUNT = 3;
-
-function normalizeTextInput(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
 
 giftTrustedThirdsRouter.get(
   "/:giftId/trusted-thirds",
@@ -72,7 +65,7 @@ giftTrustedThirdsRouter.post(
       }
 
       const fullName = normalizeTextInput(req.body?.fullName);
-      const email = normalizeTextInput(req.body?.email).toLowerCase();
+      const email = normalizeEmail(req.body?.email);
       const phone = normalizeTextInput(req.body?.phone);
       const relation = normalizeTextInput(req.body?.relation);
 

@@ -31,6 +31,7 @@ export function createApp() {
     }),
   );
   app.use(express.json({ limit: "1mb" }));
+  app.use("/api", apiRouter);
 
   apiRouter.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok" });
@@ -48,7 +49,6 @@ export function createApp() {
     giftTrustedThirdsRouter,
   );
 
-  app.use("/api", apiRouter);
   app.use((_req: Request, res: Response) => {
     res.status(404).json({ message: "Route not found" });
   });

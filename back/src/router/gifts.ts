@@ -2,6 +2,7 @@ import { Router } from "express";
 import Stripe from "stripe";
 import { config } from "../config";
 import { prisma } from "../database";
+import { normalizeTextInput } from "../helpers/validation";
 import sanitizeHtml from "sanitize-html";
 
 export const giftsRouter = Router();
@@ -135,10 +136,6 @@ function getStripeClient() {
   }
 
   return new Stripe(config.stripeSecretKey);
-}
-
-function normalizeTextInput(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
 }
 
 function isAllowedOffer(value: unknown): value is AllowedOffer {

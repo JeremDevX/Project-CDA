@@ -2,19 +2,12 @@ import { Router } from "express";
 import type { User as PrismaUser } from "../generated/prisma/client";
 
 import { prisma } from "../database";
+import { normalizeEmail, normalizeTextInput } from "../helpers/validation";
 import { comparePassword, hashPassword, signAccessToken } from "../utils/auth";
 
 export const authRouter = Router();
 
 const MIN_PASSWORD_LENGTH = 6;
-
-function normalizeEmail(value: unknown) {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
-
-function normalizeString(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function sanitizeUser(user: PrismaUser) {
   const { password: _password, ...safeUser } = user;
@@ -23,7 +16,7 @@ function sanitizeUser(user: PrismaUser) {
 
 authRouter.post("/register", async (req, res) => {
   try {
-    const username = normalizeString(req.body?.username);
+    const username = normalizeTextInput(req.body?.username);
     const email = normalizeEmail(req.body?.email);
     const password =
       typeof req.body?.password === "string" ? req.body.password : "";
