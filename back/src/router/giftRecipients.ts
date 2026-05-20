@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { prisma } from "../database";
-import { requireAuth } from "../middlewares/requireAuth";
 import { getRecipientLimit } from "../helpers/OfferRecipientLimits";
 
 export const giftRecipientsRouter = Router();
@@ -19,7 +18,6 @@ function isValidEmail(value: string) {
 
 giftRecipientsRouter.get(
   "/:giftId/recipients",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;
@@ -56,7 +54,6 @@ giftRecipientsRouter.get(
 
 giftRecipientsRouter.post(
   "/:giftId/recipients",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;
@@ -135,7 +132,6 @@ giftRecipientsRouter.post(
 
 giftRecipientsRouter.delete(
   "/:giftId/recipients/:recipientId",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;

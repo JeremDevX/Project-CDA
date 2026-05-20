@@ -1,12 +1,14 @@
 import cors from "cors";
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 
 import { config } from "./config";
+import { requireAuth } from "./middlewares/requireAuth";
 import { authRouter } from "./router/auth";
 import { giftsRouter } from "./router/gifts";
 import { giftMediaRouter } from "./router/giftMedia";
 import { giftRecipientsRouter } from "./router/giftRecipients";
 import { giftTrustedThirdsRouter } from "./router/giftTrustedThirds";
+import { usersRouter } from "./router/users";
 
 function resolveCorsOrigin() {
   if (!config.corsOrigin || config.corsOrigin === "*") {
@@ -21,6 +23,7 @@ function resolveCorsOrigin() {
 
 export function createApp() {
   const app = express();
+  const apiRouter = Router();
 
   app.use(
     cors({
@@ -29,15 +32,23 @@ export function createApp() {
   );
   app.use(express.json({ limit: "1mb" }));
 
-  app.get("/api/health", (_req: Request, res: Response) => {
+  apiRouter.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok" });
   });
 
-  app.use("/api/auth", authRouter);
-  app.use("/api/gifts", giftsRouter);
-  app.use("/api/gifts", giftMediaRouter);
-  app.use("/api/gifts", giftRecipientsRouter);
-  app.use("/api/gifts", giftTrustedThirdsRouter);
+  apiRouter.use("/auth/logout", requireAuth);
+  apiRouter.use("/auth", authRouter);
+  apiRouter.use("/users", requireAuth, usersRouter);
+  apiRouter.use(
+    "/gifts",
+    requireAuth,
+    giftsRouter,
+    giftMediaRouter,
+    giftRecipientsRouter,
+    giftTrustedThirdsRouter,
+  );
+
+  app.use("/api", apiRouter);
   app.use((_req: Request, res: Response) => {
     res.status(404).json({ message: "Route not found" });
   });

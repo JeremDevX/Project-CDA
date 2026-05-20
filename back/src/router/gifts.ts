@@ -2,7 +2,6 @@ import { Router } from "express";
 import Stripe from "stripe";
 import { config } from "../config";
 import { prisma } from "../database";
-import { requireAuth } from "../middlewares/requireAuth";
 import sanitizeHtml from "sanitize-html";
 
 export const giftsRouter = Router();
@@ -184,7 +183,7 @@ function draftExpirationDate(createdAt = new Date()) {
   return new Date(createdAt.getTime() + DRAFT_EXPIRATION_DAYS * DAY_IN_MS);
 }
 
-giftsRouter.post("/", requireAuth, async (req, res) => {
+giftsRouter.post("/", async (req, res) => {
   try {
     const userId = req.authUser?.id;
 
@@ -212,7 +211,7 @@ giftsRouter.post("/", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.get("/", requireAuth, async (req, res) => {
+giftsRouter.get("/", async (req, res) => {
   try {
     const userId = req.authUser?.id;
 
@@ -249,7 +248,7 @@ giftsRouter.get("/", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
+giftsRouter.patch("/:giftId", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -358,7 +357,7 @@ giftsRouter.patch("/:giftId", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.post("/:giftId/confirmations", requireAuth, async (req, res) => {
+giftsRouter.post("/:giftId/confirmations", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -425,7 +424,7 @@ giftsRouter.post("/:giftId/confirmations", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.post("/:giftId/checkout-session", requireAuth, async (req, res) => {
+giftsRouter.post("/:giftId/checkout-session", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -514,7 +513,7 @@ giftsRouter.post("/:giftId/checkout-session", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) => {
+giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -630,7 +629,7 @@ giftsRouter.post("/:giftId/payment-confirmation", requireAuth, async (req, res) 
   }
 });
 
-giftsRouter.get("/payment-confirmations", requireAuth, async (req, res) => {
+giftsRouter.get("/payment-confirmations", async (req, res) => {
   try {
     const userId = req.authUser?.id;
 
@@ -682,7 +681,7 @@ giftsRouter.get("/payment-confirmations", requireAuth, async (req, res) => {
   }
 });
 
-giftsRouter.get("/:giftId/payment-confirmation/pdf", requireAuth, async (req, res) => {
+giftsRouter.get("/:giftId/payment-confirmation/pdf", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -742,7 +741,7 @@ giftsRouter.get("/:giftId/payment-confirmation/pdf", requireAuth, async (req, re
   }
 });
 
-giftsRouter.get("/:giftId", requireAuth, async (req, res) => {
+giftsRouter.get("/:giftId", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);

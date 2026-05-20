@@ -5,7 +5,6 @@ import multer from "multer";
 import { config } from "../config";
 import { prisma } from "../database";
 import { getMediaLimit, isMediaType } from "../helpers/offerMediaLimits";
-import { requireAuth } from "../middlewares/requireAuth";
 import {
   createSignedStorageUrl,
   removeStorageObjects,
@@ -27,7 +26,7 @@ const allowedMimeTypes = {
   video: ["video/mp4", "video/webm", "video/quicktime"],
 } as const;
 
-giftMediaRouter.get("/:giftId/media", requireAuth, async (req, res) => {
+giftMediaRouter.get("/:giftId/media", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
@@ -76,7 +75,6 @@ giftMediaRouter.get("/:giftId/media", requireAuth, async (req, res) => {
 
 giftMediaRouter.post(
   "/:giftId/media",
-  requireAuth,
   upload.single("file"),
   async (req, res) => {
     let uploadedStoragePath: string | null = null;
@@ -183,7 +181,6 @@ giftMediaRouter.post(
 
 giftMediaRouter.delete(
   "/:giftId/media/:mediaId",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;

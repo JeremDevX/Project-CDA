@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { prisma } from "../database";
-import { requireAuth } from "../middlewares/requireAuth";
 
 export const giftTrustedThirdsRouter = Router();
 
@@ -20,7 +19,6 @@ function isValidEmail(value: string) {
 
 giftTrustedThirdsRouter.get(
   "/:giftId/trusted-thirds",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;
@@ -60,7 +58,6 @@ giftTrustedThirdsRouter.get(
 
 giftTrustedThirdsRouter.post(
   "/:giftId/trusted-thirds",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;
@@ -87,7 +84,10 @@ giftTrustedThirdsRouter.post(
         return res.status(400).json({ message: "Nom trop long" });
       }
 
-      if (email.length > MAX_TRUSTED_THIRD_EMAIL_LENGTH || !isValidEmail(email)) {
+      if (
+        email.length > MAX_TRUSTED_THIRD_EMAIL_LENGTH ||
+        !isValidEmail(email)
+      ) {
         return res.status(400).json({ message: "Email invalide" });
       }
 
@@ -137,7 +137,6 @@ giftTrustedThirdsRouter.post(
 
 giftTrustedThirdsRouter.post(
   "/:giftId/trusted-thirds/validate",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;
@@ -165,7 +164,10 @@ giftTrustedThirdsRouter.post(
 
       if (trustedThirdCount !== REQUIRED_TRUSTED_THIRD_COUNT) {
         return res.status(400).json({
-          message: "Exactement 3 tiers de confiance sont requis",
+          message:
+            "Exactement " +
+            REQUIRED_TRUSTED_THIRD_COUNT +
+            " tiers de confiance sont requis",
         });
       }
 
@@ -182,7 +184,6 @@ giftTrustedThirdsRouter.post(
 
 giftTrustedThirdsRouter.delete(
   "/:giftId/trusted-thirds/:trustedThirdId",
-  requireAuth,
   async (req, res) => {
     try {
       const userId = req.authUser?.id;

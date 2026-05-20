@@ -412,37 +412,22 @@ En tant qu’utilisateur ayant payé mon gift, je veux voir une confirmation cla
 
 ---
 
-## EPIC 8 — Édition après validation
+## Décision de périmètre — Édition après validation
 
-### US-29 — Modifier le gift gratuitement pendant 30 jours
+Les deux user stories liées à la modification d’un gift après activation sont retirées du périmètre CDA.
 
-En tant qu’utilisateur, je veux pouvoir modifier mon gift gratuitement pendant 30 jours après sa création afin d’ajuster son contenu si nécessaire.  
-**Charge (SP) : 3**
+**Justification**
 
-**Critères d’acceptation**
-
-- Un gift modifiable dans la période incluse peut être rouvert en édition.
-- La période gratuite de modification est limitée à 30 jours.
-- L’utilisateur voit qu’il peut encore modifier le gift pendant cette période.
+- La modification gratuite pendant 30 jours après activation n’apporte pas de démonstration technique significative supplémentaire pour le CDA.
+- La réouverture payante de l’édition ajoute un second parcours de paiement et de gestion d’état sans valeur prioritaire pour le MVP.
+- Le périmètre reste concentré sur les fonctionnalités centrales : création du gift, paiement, activation, suivi et déclenchement.
+- Cette suppression réduit la complexité fonctionnelle et limite les risques de dette technique sur une fonctionnalité non essentielle.
 
 ---
 
-### US-30 — Modifier le gift au-delà de 30 jours via une option payante
+## EPIC 8 — Déclenchement, check-in et escalade
 
-En tant qu’utilisateur, je veux pouvoir modifier mon gift après ce délai via une option payante afin de conserver une possibilité d’édition au-delà de la période incluse.  
-**Charge (SP) : 5**
-
-**Critères d’acceptation**
-
-- Une fois le délai de 30 jours dépassé, la modification gratuite n’est plus disponible.
-- Une option payante permet de réouvrir l’édition.
-- L’utilisateur comprend qu’une action payante est nécessaire pour modifier le gift après ce délai.
-
----
-
-## EPIC 9 — Déclenchement, check-in et escalade
-
-### US-31 — Détecter un retard de check-in
+### US-29 — Détecter un retard de check-in
 
 En tant que système, je veux détecter qu’un utilisateur n’a pas effectué son check-in dans le délai prévu afin d’identifier les gifts à surveiller.
 **Charge (SP) : 3**
@@ -455,7 +440,7 @@ En tant que système, je veux détecter qu’un utilisateur n’a pas effectué 
 
 ---
 
-### US-32 — Relancer l’utilisateur en cas de non-réponse
+### US-30 — Relancer l’utilisateur en cas de non-réponse
 
 En tant que système, je veux relancer l’utilisateur lorsqu’un retard de check-in est détecté afin de lui laisser une possibilité de confirmer sa situation avant toute escalade.
 **Charge (SP) : 3**
@@ -468,7 +453,7 @@ En tant que système, je veux relancer l’utilisateur lorsqu’un retard de che
 
 ---
 
-### US-33 — Escalader vers les tiers de confiance
+### US-31 — Escalader vers les tiers de confiance
 
 En tant que système, je veux notifier les tiers de confiance lorsque l’utilisateur ne répond pas après les relances prévues afin d’engager le processus de validation.
 **Charge (SP) : 5**
@@ -481,7 +466,7 @@ En tant que système, je veux notifier les tiers de confiance lorsque l’utilis
 
 ---
 
-### US-34 — Enregistrer la réponse des tiers de confiance
+### US-32 — Enregistrer la réponse des tiers de confiance
 
 En tant que système, je veux enregistrer la réponse des tiers de confiance afin de suivre l’avancement de la validation du déclenchement.
 **Charge (SP) : 3**
@@ -494,7 +479,7 @@ En tant que système, je veux enregistrer la réponse des tiers de confiance afi
 
 ---
 
-### US-35 — Déclencher l’envoi du gift après validation
+### US-33 — Déclencher l’envoi du gift après validation
 
 En tant que système, je veux déclencher l’envoi du gift lorsque les conditions de validation sont remplies afin de transmettre le contenu aux destinataires.
 **Charge (SP) : 5**
