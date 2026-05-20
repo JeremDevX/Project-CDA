@@ -603,7 +603,6 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
         create: {
           reference,
           giftId,
-          userId,
           offer: gift.offer,
           amountCents: selectedOffer.amount,
           currency: "eur",
@@ -639,7 +638,9 @@ giftsRouter.get("/payment-confirmations", async (req, res) => {
 
     const confirmations = await prisma.giftPaymentConfirmation.findMany({
       where: {
-        userId,
+        gift: {
+          userId,
+        },
       },
       orderBy: {
         paidAt: "desc",
@@ -697,7 +698,9 @@ giftsRouter.get("/:giftId/payment-confirmation/pdf", async (req, res) => {
     const paymentConfirmation = await prisma.giftPaymentConfirmation.findFirst({
       where: {
         giftId,
-        userId,
+        gift: {
+          userId,
+        },
       },
       include: {
         gift: {

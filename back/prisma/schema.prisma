@@ -11,14 +11,13 @@ datasource db {
 }
 
 model User {
-  id                     Int                       @id @default(autoincrement())
-  username               String
-  email                  String                    @unique
-  password               String
-  gifts                  Gift[]
-  paymentConfirmations   GiftPaymentConfirmation[]
-  createdAt              DateTime                  @default(now())
-  updatedAt              DateTime                  @updatedAt
+  id        Int      @id @default(autoincrement())
+  username  String
+  email     String   @unique
+  password  String
+  gifts     Gift[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
@@ -60,8 +59,6 @@ model GiftPaymentConfirmation {
   reference             String   @unique
   giftId                Int      @unique
   gift                  Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
-  userId                Int
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   offer                 String
   amountCents           Int
   currency              String
@@ -73,7 +70,6 @@ model GiftPaymentConfirmation {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  @@index([userId])
   @@map("gift_payment_confirmations")
 }
 
