@@ -9,12 +9,17 @@ import {
 } from "./api/gifts";
 import {
   deleteGiftMedia,
+  deleteGiftMediaAsset,
+  getGiftMediaLibrary,
   getGiftMedias,
+  reuseGiftMedia,
   uploadGiftMedia,
   type GiftMedia,
+  type GiftMediaLibraryImage,
   type GiftMediaType,
 } from "./api/giftMedia";
 import Button from "./components/Button/Button";
+import GiftMediaLibrary from "./components/GiftMediaLibrary/GiftMediaLibrary";
 import GiftStepNav from "./components/GiftStepNav/GiftStepNav";
 import { getErrorMessage } from "./helpers/helpers";
 import { getGiftSlotSummary } from "./helpers/offerLimits";
@@ -22,6 +27,7 @@ import { useUserState } from "./store/useAppStore";
 import "./GiftMediaPage.css";
 
 const MAX_MEDIA_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+type MediaSourceTab = "upload" | "library";
 
 function formatFileSize(sizeBytes: number) {
   return `${(sizeBytes / 1024 / 1024).toFixed(1)} MB`;
@@ -36,10 +42,21 @@ export default function GiftMediaPage() {
 
   const [gift, setGift] = useState<Gift | null>(null);
   const [medias, setMedias] = useState<GiftMedia[]>([]);
+  const [libraryImages, setLibraryImages] = useState<GiftMediaLibraryImage[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedLibraryImageId, setSelectedLibraryImageId] = useState<
+    number | null
+  >(null);
+  const [deletingLibraryImageId, setDeletingLibraryImageId] = useState<
+    number | null
+  >(null);
   const [isSavingStep, setIsSavingStep] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [activeSourceTab, setActiveSourceTab] =
+    useState<MediaSourceTab>("upload");
   const [errorMessage, setErrorMessage] = useState("");
   const [lastEditionStep, setLastEditionStep] =
     useState<GiftEditionStep | null>(null);
@@ -53,14 +70,17 @@ export default function GiftMediaPage() {
       }
 
       try {
-        const [giftResponse, mediaResponse] = await Promise.all([
-          getGiftById(token, numericGiftId),
-          getGiftMedias(token, numericGiftId),
-        ]);
+        const [giftResponse, mediaResponse, libraryResponse] =
+          await Promise.all([
+            getGiftById(token, numericGiftId),
+            getGiftMedias(token, numericGiftId),
+            getGiftMediaLibrary(token, numericGiftId),
+          ]);
 
         setGift(giftResponse.gift);
         setLastEditionStep(giftResponse.gift.lastEditionStep ?? null);
         setMedias(mediaResponse.medias);
+        setLibraryImages(libraryResponse.images);
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
       } finally {
@@ -70,6 +90,15 @@ export default function GiftMediaPage() {
 
     loadData();
   }, [token, numericGiftId]);
+
+  async function refreshLibraryImages() {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      return;
+    }
+
+    const response = await getGiftMediaLibrary(token, numericGiftId);
+    setLibraryImages(response.images);
+  }
 
   const limits = getGiftSlotSummary(gift?.offer);
   const imageCount = medias.filter((media) => media.type === "image").length;
@@ -98,6 +127,9 @@ export default function GiftMediaPage() {
   ]
     .filter(Boolean)
     .join(",");
+  const availableLibraryImages = libraryImages.filter(
+    (image) => !image.isAlreadyLinked,
+  );
 
   function getFileMediaType(file: File): GiftMediaType | null {
     if (file.type.startsWith("image/")) {
@@ -149,6 +181,7 @@ export default function GiftMediaPage() {
         file,
       );
       setMedias((currentMedias) => [...currentMedias, response.media]);
+      await refreshLibraryImages();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -176,8 +209,60 @@ export default function GiftMediaPage() {
       setMedias((currentMedias) =>
         currentMedias.filter((media) => media.id !== mediaId),
       );
+      await refreshLibraryImages();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
+    }
+  }
+
+  async function handleReuseImage(sourceMediaId: number) {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      return;
+    }
+
+    setSelectedLibraryImageId(sourceMediaId);
+    setErrorMessage("");
+
+    try {
+      const response = await reuseGiftMedia(
+        token,
+        numericGiftId,
+        sourceMediaId,
+      );
+      setMedias((currentMedias) => [...currentMedias, response.media]);
+      await refreshLibraryImages();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setSelectedLibraryImageId(null);
+    }
+  }
+
+  async function handleDeleteLibraryImage(mediaAssetId: number) {
+    if (!token || !Number.isInteger(numericGiftId)) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      "Supprimer cette image de la galerie ? Elle sera aussi retiree des autres gifts qui l'utilisent.",
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setDeletingLibraryImageId(mediaAssetId);
+    setErrorMessage("");
+
+    try {
+      await deleteGiftMediaAsset(token, numericGiftId, mediaAssetId);
+      setLibraryImages((currentImages) =>
+        currentImages.filter((image) => image.id !== mediaAssetId),
+      );
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setDeletingLibraryImageId(null);
     }
   }
 
@@ -231,67 +316,120 @@ export default function GiftMediaPage() {
         ) : null}
 
         {canUploadMedia ? (
-          <div
-            className={[
-              "gift-media-page__dropzone",
-              isDragging ? "gift-media-page__dropzone--active" : "",
-            ].join(" ")}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFiles(event.dataTransfer.files);
-            }}
-          >
-            <span className="gift-media-page__drop-icon">
-              <Upload size={28} />
-            </span>
-            <strong>Glissez vos plus beaux souvenirs ici</strong>
-            <p>Ou parcourez vos fichiers pour selectionner vos medias.</p>
-
-            <button
-              type="button"
-              className="gift-media-page__upload-button"
-              disabled={isUploading}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <ImageIcon size={16} />
-              {isUploading
-                ? "Ajout en cours"
-                : canUploadVideo
-                  ? "Choisir des medias"
-                  : "Choisir des photos"}
-            </button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={acceptedFormats}
-              multiple
-              disabled={isUploading}
-              onChange={(event) => {
-                handleFiles(event.target.files);
-                event.target.value = "";
-              }}
-            />
-
-            <div className="gift-media-page__drop-meta">
-              <span>
-                <FileImage size={14} />
-                Formats acceptes : JPG, PNG, HEIC
-                {canUploadVideo ? ", MP4, WebM, MOV" : ""}
-              </span>
-              <span>
-                <Info size={14} />
-                Taille max par fichier : 5 Mo
-              </span>
+          <section className="gift-media-page__source">
+            <div className="gift-media-page__tabs" role="tablist">
+              <button
+                type="button"
+                className={
+                  activeSourceTab === "upload"
+                    ? "gift-media-page__tab gift-media-page__tab--active"
+                    : "gift-media-page__tab"
+                }
+                aria-selected={activeSourceTab === "upload"}
+                onClick={() => setActiveSourceTab("upload")}
+              >
+                <Upload size={16} />
+                Importer
+              </button>
+              <button
+                type="button"
+                className={
+                  activeSourceTab === "library"
+                    ? "gift-media-page__tab gift-media-page__tab--active"
+                    : "gift-media-page__tab"
+                }
+                aria-selected={activeSourceTab === "library"}
+                disabled={!canUploadImage}
+                onClick={() => setActiveSourceTab("library")}
+              >
+                <ImageIcon size={16} />
+                Galerie
+              </button>
             </div>
-          </div>
-        ) : null}
+
+            {activeSourceTab === "upload" ? (
+              <div
+                className={[
+                  "gift-media-page__dropzone",
+                  isDragging ? "gift-media-page__dropzone--active" : "",
+                ].join(" ")}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setIsDragging(false);
+                  handleFiles(event.dataTransfer.files);
+                }}
+              >
+                <span className="gift-media-page__drop-icon">
+                  <Upload size={28} />
+                </span>
+                <strong>Glissez vos plus beaux souvenirs ici</strong>
+                <p>Ou parcourez vos fichiers pour selectionner vos medias.</p>
+
+                <button
+                  type="button"
+                  className="gift-media-page__upload-button"
+                  disabled={isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImageIcon size={16} />
+                  {isUploading
+                    ? "Ajout en cours"
+                    : canUploadVideo
+                      ? "Choisir des medias"
+                      : "Choisir des photos"}
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={acceptedFormats}
+                  multiple
+                  disabled={isUploading}
+                  onChange={(event) => {
+                    handleFiles(event.target.files);
+                    event.target.value = "";
+                  }}
+                />
+
+                <div className="gift-media-page__drop-meta">
+                  <span>
+                    <FileImage size={14} />
+                    Formats acceptes : JPG, PNG, HEIC
+                    {canUploadVideo ? ", MP4, WebM, MOV" : ""}
+                  </span>
+                  <span>
+                    <Info size={14} />
+                    Taille max par fichier : 5 Mo
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
+            {activeSourceTab === "library" ? (
+              <GiftMediaLibrary
+                images={availableLibraryImages}
+                selectedImageId={selectedLibraryImageId}
+                deletingImageId={deletingLibraryImageId}
+                onSelectImage={handleReuseImage}
+                onDeleteImage={handleDeleteLibraryImage}
+              />
+            ) : null}
+          </section>
+        ) : (
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={acceptedFormats}
+            multiple
+            disabled
+            className="gift-media-page__hidden-input"
+          />
+        )}
 
         <section className="gift-media-page__souvenirs">
           <div className="gift-media-page__souvenirs-header">
@@ -345,7 +483,10 @@ export default function GiftMediaPage() {
                 type="button"
                 className="gift-media-page__add-card"
                 disabled={isUploading}
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  setActiveSourceTab("upload");
+                  window.setTimeout(() => fileInputRef.current?.click(), 0);
+                }}
               >
                 <Upload size={24} />
                 <span>Ajouter une autre</span>

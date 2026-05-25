@@ -26,6 +26,50 @@ const allowedMimeTypes = {
   video: ["video/mp4", "video/webm", "video/quicktime"],
 } as const;
 
+async function buildMediaResponse(media: {
+  id: number;
+  createdAt: Date;
+  mediaAsset: {
+    type: string;
+    storagePath: string;
+    originalName: string | null;
+    mimeType: string;
+    sizeBytes: number;
+  };
+}) {
+  return {
+    id: media.id,
+    type: media.mediaAsset.type,
+    url: await createSignedStorageUrl(media.mediaAsset.storagePath),
+    originalName: media.mediaAsset.originalName,
+    mimeType: media.mediaAsset.mimeType,
+    sizeBytes: media.mediaAsset.sizeBytes,
+    createdAt: media.createdAt,
+  };
+}
+
+async function buildLibraryImageResponse(asset: {
+  id: number;
+  type: string;
+  storagePath: string;
+  originalName: string | null;
+  mimeType: string;
+  sizeBytes: number;
+  createdAt: Date;
+  giftMedias: { giftId: number }[];
+}) {
+  return {
+    id: asset.id,
+    type: asset.type,
+    url: await createSignedStorageUrl(asset.storagePath),
+    originalName: asset.originalName,
+    mimeType: asset.mimeType,
+    sizeBytes: asset.sizeBytes,
+    createdAt: asset.createdAt,
+    isAlreadyLinked: asset.giftMedias.length > 0,
+  };
+}
+
 giftMediaRouter.get("/:giftId/media", async (req, res) => {
   try {
     const userId = req.authUser?.id;
@@ -50,25 +94,62 @@ giftMediaRouter.get("/:giftId/media", async (req, res) => {
     const medias = await prisma.giftMedia.findMany({
       where: { giftId },
       orderBy: { createdAt: "asc" },
+      include: {
+        mediaAsset: true,
+      },
     });
 
-    const mediasWithUrls = await Promise.all(
-      medias.map(async (media) => {
-        return {
-          id: media.id,
-          type: media.type,
-          url: await createSignedStorageUrl(media.storagePath),
-          originalName: media.originalName,
-          mimeType: media.mimeType,
-          sizeBytes: media.sizeBytes,
-          createdAt: media.createdAt,
-        };
-      }),
-    );
+    const mediasWithUrls = await Promise.all(medias.map(buildMediaResponse));
 
     return res.json({ medias: mediasWithUrls });
   } catch (error) {
     console.error("Erreur lors de la recuperation des medias:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftMediaRouter.get("/:giftId/media/library", async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorise" });
+    }
+
+    if (!Number.isInteger(giftId)) {
+      return res.status(400).json({ message: "Gift invalide" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: { id: giftId, userId },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    const userImages = await prisma.mediaAsset.findMany({
+      where: {
+        userId,
+        type: "image",
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        giftMedias: {
+          where: { giftId },
+          select: { giftId: true },
+        },
+      },
+    });
+
+    const libraryImages = await Promise.all(
+      userImages.map(buildLibraryImageResponse),
+    );
+
+    return res.json({ images: libraryImages });
+  } catch (error) {
+    console.error("Erreur lors de la recuperation des images:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
 });
@@ -129,7 +210,7 @@ giftMediaRouter.post(
       }
 
       const currentCount = await prisma.giftMedia.count({
-        where: { giftId, type: mediaType },
+        where: { giftId, mediaAsset: { type: mediaType } },
       });
 
       if (limit !== null && currentCount >= limit) {
@@ -148,32 +229,165 @@ giftMediaRouter.post(
 
       const media = await prisma.giftMedia.create({
         data: {
-          giftId,
-          type: mediaType,
-          storagePath,
-          originalName: req.file.originalname,
-          mimeType: req.file.mimetype,
-          sizeBytes: req.file.size,
+          gift: {
+            connect: { id: giftId },
+          },
+          mediaAsset: {
+            create: {
+              userId,
+              type: mediaType,
+              storagePath,
+              originalName: req.file.originalname,
+              mimeType: req.file.mimetype,
+              sizeBytes: req.file.size,
+            },
+          },
+        },
+        include: {
+          mediaAsset: true,
         },
       });
 
-      return res.status(201).json({
-        media: {
-          id: media.id,
-          type: media.type,
-          url: await createSignedStorageUrl(media.storagePath),
-          originalName: media.originalName,
-          mimeType: media.mimeType,
-          sizeBytes: media.sizeBytes,
-          createdAt: media.createdAt,
-        },
-      });
+      return res.status(201).json({ media: await buildMediaResponse(media) });
     } catch (error) {
       if (uploadedStoragePath) {
         await removeStorageObjects([uploadedStoragePath]);
       }
 
       console.error("Erreur lors de l'upload du media:", error);
+      return res.status(500).json({ message: "Erreur interne de serveur" });
+    }
+  },
+);
+
+giftMediaRouter.post("/:giftId/media/reuse", async (req, res) => {
+  try {
+    const userId = req.authUser?.id;
+    const giftId = Number(req.params.giftId);
+    const sourceMediaId = Number(req.body?.sourceMediaId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorise" });
+    }
+
+    if (!Number.isInteger(giftId) || !Number.isInteger(sourceMediaId)) {
+      return res.status(400).json({ message: "Media invalide" });
+    }
+
+    const gift = await prisma.gift.findFirst({
+      where: { id: giftId, userId },
+    });
+
+    if (!gift) {
+      return res.status(404).json({ message: "Gift introuvable" });
+    }
+
+    const sourceMedia = await prisma.mediaAsset.findFirst({
+      where: {
+        id: sourceMediaId,
+        userId,
+        type: "image",
+      },
+    });
+
+    if (!sourceMedia) {
+      return res.status(404).json({ message: "Image introuvable" });
+    }
+
+    const limit = getMediaLimit(gift.offer, "image");
+
+    if (limit === undefined) {
+      return res
+        .status(400)
+        .json({ message: "Offre requise avant ajout de media" });
+    }
+
+    if (limit === 0) {
+      return res
+        .status(403)
+        .json({ message: "Image non autorisee par cette offre" });
+    }
+
+    const currentCount = await prisma.giftMedia.count({
+      where: { giftId, mediaAsset: { type: "image" } },
+    });
+
+    if (limit !== null && currentCount >= limit) {
+      return res.status(400).json({ message: "Limite de medias atteinte" });
+    }
+
+    const existingMedia = await prisma.giftMedia.findFirst({
+      where: {
+        giftId,
+        mediaAssetId: sourceMedia.id,
+      },
+    });
+
+    if (existingMedia) {
+      return res.status(400).json({ message: "Image deja ajoutee" });
+    }
+
+    const media = await prisma.giftMedia.create({
+      data: {
+        giftId,
+        mediaAssetId: sourceMedia.id,
+      },
+      include: {
+        mediaAsset: true,
+      },
+    });
+
+    return res.status(201).json({ media: await buildMediaResponse(media) });
+  } catch (error) {
+    console.error("Erreur lors de la reutilisation du media:", error);
+    return res.status(500).json({ message: "Erreur interne de serveur" });
+  }
+});
+
+giftMediaRouter.delete(
+  "/:giftId/media/library/:mediaAssetId",
+  async (req, res) => {
+    try {
+      const userId = req.authUser?.id;
+      const giftId = Number(req.params.giftId);
+      const mediaAssetId = Number(req.params.mediaAssetId);
+
+      if (!userId) {
+        return res.status(401).json({ message: "Non autorise" });
+      }
+
+      if (!Number.isInteger(giftId) || !Number.isInteger(mediaAssetId)) {
+        return res.status(400).json({ message: "Image invalide" });
+      }
+
+      const gift = await prisma.gift.findFirst({
+        where: { id: giftId, userId },
+      });
+
+      if (!gift) {
+        return res.status(404).json({ message: "Gift introuvable" });
+      }
+
+      const mediaAsset = await prisma.mediaAsset.findFirst({
+        where: {
+          id: mediaAssetId,
+          userId,
+          type: "image",
+        },
+      });
+
+      if (!mediaAsset) {
+        return res.status(404).json({ message: "Image introuvable" });
+      }
+
+      await removeStorageObjects([mediaAsset.storagePath]);
+      await prisma.mediaAsset.delete({
+        where: { id: mediaAsset.id },
+      });
+
+      return res.status(204).send();
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'image:", error);
       return res.status(500).json({ message: "Erreur interne de serveur" });
     }
   },
@@ -201,13 +415,14 @@ giftMediaRouter.delete(
           giftId,
           gift: { userId },
         },
+        include: {
+          mediaAsset: true,
+        },
       });
 
       if (!media) {
         return res.status(404).json({ message: "Media introuvable" });
       }
-
-      await removeStorageObjects([media.storagePath]);
 
       await prisma.giftMedia.delete({
         where: { id: media.id },
