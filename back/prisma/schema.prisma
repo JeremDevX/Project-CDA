@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String
-  email     String   @unique
-  password  String
-  gifts     Gift[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int          @id @default(autoincrement())
+  username    String
+  email       String       @unique
+  password    String
+  gifts       Gift[]
+  mediaAssets MediaAsset[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("users")
 }
@@ -31,24 +32,24 @@ model TokenBlacklist {
 }
 
 model Gift {
-  id                     Int                       @id @default(autoincrement())
-  title                  String                    @default("Nouveau gift")
-  message                String?
-  status                 String                    @default("brouillon")
-  offer                  String?
-  creationMode           String?
-  lastEditionStep        String?
-  draftExpiresAt         DateTime?
-  finalConfirmationsAt   DateTime?
-  paidAt                 DateTime?
-  userId                 Int
-  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt              DateTime                  @default(now())
-  updatedAt              DateTime                  @updatedAt
-  medias                 GiftMedia[]
-  recipients             GiftRecipient[]
-  trustedThirds          GiftTrustedThird[]
-  paymentConfirmation    GiftPaymentConfirmation?
+  id                   Int                      @id @default(autoincrement())
+  title                String                   @default("Nouveau gift")
+  message              String?
+  status               String                   @default("brouillon")
+  offer                String?
+  creationMode         String?
+  lastEditionStep      String?
+  draftExpiresAt       DateTime?
+  finalConfirmationsAt DateTime?
+  paidAt               DateTime?
+  userId               Int
+  user                 User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  medias               GiftMedia[]
+  recipients           GiftRecipient[]
+  trustedThirds        GiftTrustedThird[]
+  paymentConfirmation  GiftPaymentConfirmation?
 
   @@index([status, draftExpiresAt])
   @@map("gifts")
@@ -74,18 +75,33 @@ model GiftPaymentConfirmation {
 }
 
 model GiftMedia {
-  id           Int      @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   giftId       Int
-  gift         Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  gift         Gift       @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  mediaAssetId Int
+  mediaAsset   MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([giftId, mediaAssetId])
+  @@index([giftId])
+  @@index([mediaAssetId])
+  @@map("gift_media")
+}
+
+model MediaAsset {
+  id           Int         @id @default(autoincrement())
+  userId       Int
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   type         String
-  storagePath  String   @unique
+  storagePath  String      @unique
   originalName String?
   mimeType     String
   sizeBytes    Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime    @default(now())
+  giftMedias   GiftMedia[]
 
-  @@index([giftId, type])
-  @@map("gift_media")
+  @@index([userId, type])
+  @@map("media_assets")
 }
 
 model GiftRecipient {

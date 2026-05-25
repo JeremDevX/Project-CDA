@@ -221,7 +221,11 @@ giftsRouter.get("/", async (req, res) => {
       orderBy: { updatedAt: "desc" },
       include: {
         medias: {
-          select: { type: true },
+          include: {
+            mediaAsset: {
+              select: { type: true },
+            },
+          },
         },
         recipients: {
           select: { id: true },
@@ -232,8 +236,12 @@ giftsRouter.get("/", async (req, res) => {
     const giftsWithMediaCounts = gifts.map(
       ({ medias, recipients, ...gift }) => ({
         ...gift,
-        imageCount: medias.filter((media) => media.type === "image").length,
-        videoCount: medias.filter((media) => media.type === "video").length,
+        imageCount: medias.filter(
+          (media) => media.mediaAsset.type === "image",
+        ).length,
+        videoCount: medias.filter(
+          (media) => media.mediaAsset.type === "video",
+        ).length,
         recipientCount: recipients.length,
       }),
     );
