@@ -425,9 +425,24 @@ Les deux user stories liées à la modification d’un gift après activation so
 
 ---
 
+### US-29 — Choisir une image déjà uploadée
+
+En tant qu’utilisateur, je veux pouvoir sélectionner une image déjà uploadée lorsque j’ajoute un média à mon gift afin de réutiliser mes photos sans devoir les importer à nouveau.  
+**Charge (SP) : 3**
+
+**Critères d’acceptation**
+
+- Lorsque l’utilisateur ajoute une image à un gift, il peut choisir entre importer une nouvelle image ou sélectionner une image déjà uploadée.
+- Les images déjà uploadées par l’utilisateur sont visibles depuis le parcours de création d’un nouveau gift.
+- Une même image uploadée peut être associée à plusieurs gifts.
+- Une image sélectionnée est rattachée au gift en cours et apparaît dans l’aperçu.
+- Les limites liées à l’offre sélectionnée restent appliquées au nombre de médias associés au gift.
+
+---
+
 ## EPIC 8 — Déclenchement, check-in et escalade
 
-### US-29 — Détecter un retard de check-in
+### US-30 — Détecter un retard de check-in
 
 En tant que système, je veux détecter qu’un utilisateur n’a pas effectué son check-in dans le délai prévu afin d’identifier les gifts à surveiller.
 **Charge (SP) : 3**
@@ -440,7 +455,7 @@ En tant que système, je veux détecter qu’un utilisateur n’a pas effectué 
 
 ---
 
-### US-30 — Relancer l’utilisateur en cas de non-réponse
+### US-31 — Relancer l’utilisateur en cas de non-réponse
 
 En tant que système, je veux relancer l’utilisateur lorsqu’un retard de check-in est détecté afin de lui laisser une possibilité de confirmer sa situation avant toute escalade.
 **Charge (SP) : 3**
@@ -453,7 +468,7 @@ En tant que système, je veux relancer l’utilisateur lorsqu’un retard de che
 
 ---
 
-### US-31 — Escalader vers les tiers de confiance
+### US-32 — Escalader vers les tiers de confiance
 
 En tant que système, je veux notifier les tiers de confiance lorsque l’utilisateur ne répond pas après les relances prévues afin d’engager le processus de validation.
 **Charge (SP) : 5**
@@ -466,7 +481,7 @@ En tant que système, je veux notifier les tiers de confiance lorsque l’utilis
 
 ---
 
-### US-32 — Enregistrer la réponse des tiers de confiance
+### US-33 — Enregistrer la réponse des tiers de confiance
 
 En tant que système, je veux enregistrer la réponse des tiers de confiance afin de suivre l’avancement de la validation du déclenchement.
 **Charge (SP) : 3**
@@ -479,7 +494,7 @@ En tant que système, je veux enregistrer la réponse des tiers de confiance afi
 
 ---
 
-### US-33 — Déclencher l’envoi du gift après validation
+### US-34 — Déclencher l’envoi du gift après validation
 
 En tant que système, je veux déclencher l’envoi du gift lorsque les conditions de validation sont remplies afin de transmettre le contenu aux destinataires.
 **Charge (SP) : 5**

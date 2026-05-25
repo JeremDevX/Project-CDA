@@ -36,7 +36,7 @@ gantt
     US-24 — Valider les dernières confirmations                        :done, us24, 2026-05-11, 1d
     US-25 — Consulter le récapitulatif                                 :done, us25, 2026-05-11, 1d
     US-26 — Naviguer entre les étapes et voir l’étape en cours         :done, us26, 2026-05-12, 3d
-    US-27 — Payer le gift via Stripe                                  :done, us27, 2026-05-15, 1d
+    US-27 — Payer le gift via Stripe                                   :done, us27, 2026-05-15, 1d
     US-28 + ancienne US-29 — Confirmation paiement et écran de remerciement:done, us28_29, 2026-05-15, 1d
     Point d'avancement — EPIC Confirmations, paiement et activation validé:milestone, m5, 2026-05-15, 0d
 
@@ -77,13 +77,19 @@ gantt
     %% Le périmètre reste centré sur la création, l'activation, le suivi
     %% et le déclenchement du gift.
     %% Les US prévisionnelles sont renumérotées après cette suppression.
+    %% US-29 ajoute la relation many-to-many entre gifts et médias uploadés :
+    %% une image déjà importée peut être sélectionnée dans un nouveau gift
+    %% sans nouvel upload, tout en respectant les limites de l'offre.
+
+    section Médias réutilisables
+    US-29 — Choisir une image déjà uploadée                          :us29, after us28_29, 2d
 
     section Déclenchement, check-in et escalade
-    US-29 — Détecter un retard de check-in                           :us29, after us28_29, 2d
-    US-30 — Relancer l’utilisateur en cas de non-réponse             :us30, after us29, 2d
-    US-31 — Escalader vers les tiers de confiance                    :us31, after us30, 3d
-    US-32 — Enregistrer la réponse des tiers de confiance            :us32, after us31, 2d
-    US-33 — Déclencher l’envoi du gift après validation              :us33, after us32, 3d
+    US-30 — Détecter un retard de check-in                           :us30, after us29, 2d
+    US-31 — Relancer l’utilisateur en cas de non-réponse             :us31, after us30, 2d
+    US-32 — Escalader vers les tiers de confiance                    :us32, after us31, 3d
+    US-33 — Enregistrer la réponse des tiers de confiance            :us33, after us32, 2d
+    US-34 — Déclencher l’envoi du gift après validation              :us34, after us33, 3d
 
     section Jalons
-    MVP LegacyGift — Backlog fonctionnel implémenté                    :milestone, m6, after us33, 0d
+    MVP LegacyGift — Backlog fonctionnel implémenté                    :milestone, m6, after us34, 0d
