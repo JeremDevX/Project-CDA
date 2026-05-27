@@ -3,6 +3,7 @@ import { config } from "./config";
 import { initDatabase } from "./database";
 import {
   detectOverdueCheckIns,
+  sendCheckInFollowUps,
   scheduleCheckInReminders,
 } from "./jobs/checkInReminders";
 import { deleteExpiredDrafts } from "./jobs/deleteExpiredDrafts";
@@ -12,6 +13,9 @@ async function bootstrap() {
   deleteExpiredDrafts();
   detectOverdueCheckIns().catch((error) => {
     console.error("Erreur lors de la detection des check-ins : ", error);
+  });
+  sendCheckInFollowUps().catch((error) => {
+    console.error("Erreur lors de l'envoi des relances check-in : ", error);
   });
   scheduleCheckInReminders();
 
