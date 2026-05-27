@@ -4,6 +4,7 @@ import express, { Request, Response, Router } from "express";
 import { config } from "./config";
 import { requireAuth } from "./middlewares/requireAuth";
 import { authRouter } from "./router/auth";
+import { checkInsRouter } from "./router/checkIns";
 import { giftsRouter } from "./router/gifts";
 import { giftMediaRouter } from "./router/giftMedia";
 import { giftRecipientsRouter } from "./router/giftRecipients";
@@ -37,6 +38,7 @@ export function createApp() {
     res.json({ status: "ok" });
   });
 
+  apiRouter.use("/check-ins", checkInsRouter);
   apiRouter.use("/auth/logout", requireAuth);
   apiRouter.use("/auth", authRouter);
   apiRouter.use("/users", requireAuth, usersRouter);

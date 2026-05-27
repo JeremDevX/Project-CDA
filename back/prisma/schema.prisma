@@ -42,6 +42,8 @@ model Gift {
   draftExpiresAt       DateTime?
   finalConfirmationsAt DateTime?
   paidAt               DateTime?
+  nextCheckInDue       DateTime?
+  lastCheckInAt        DateTime?
   userId               Int
   user                 User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt            DateTime                 @default(now())
@@ -50,9 +52,37 @@ model Gift {
   recipients           GiftRecipient[]
   trustedThirds        GiftTrustedThird[]
   paymentConfirmation  GiftPaymentConfirmation?
+  checkInReminders     CheckInReminder[]
 
   @@index([status, draftExpiresAt])
+  @@index([status, nextCheckInDue])
   @@map("gifts")
+}
+
+model CheckInReminder {
+  id          Int              @id @default(autoincrement())
+  giftId      Int
+  gift        Gift             @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  dueDate     DateTime
+  token       String           @unique
+  status      String           @default("pending")
+  sentAt      DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  response    CheckInResponse?
+
+  @@index([giftId, status])
+  @@map("check_in_reminders")
+}
+
+model CheckInResponse {
+  id               Int             @id @default(autoincrement())
+  reminderId       Int             @unique
+  reminder         CheckInReminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+  respondedAt      DateTime        @default(now())
+  isConfirmedAlive Boolean
+
+  @@map("check_in_responses")
 }
 
 model GiftPaymentConfirmation {

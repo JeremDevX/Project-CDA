@@ -14,13 +14,21 @@ function readNumberEnv(name: string, fallback: number) {
   return value;
 }
 
+const port = readNumberEnv("PORT", 1337);
+
 export const config = {
-  port: readNumberEnv("PORT", 1337),
+  port,
   saltRounds: readNumberEnv("SALT_ROUNDS", 10),
   jwtSecret: process.env.JWT_SECRET ?? "change-me-in-production",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
   appBaseUrl: process.env.APP_BASE_URL ?? "http://localhost:5173",
+  apiBaseUrl: process.env.API_BASE_URL ?? `http://localhost:${port}/api`,
+  emailFrom: process.env.EMAIL_FROM ?? "LegacyGift <no-reply@legacygift.local>",
+  smtpHost: process.env.SMTP_HOST ?? "",
+  smtpPort: readNumberEnv("SMTP_PORT", 587),
+  smtpUser: process.env.SMTP_USER ?? "",
+  smtpPassword: process.env.SMTP_PASSWORD ?? "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   supabaseUrl: process.env.SUPABASE_URL ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",

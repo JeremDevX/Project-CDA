@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { config } from "../config";
 import { prisma } from "../database";
 import { normalizeTextInput } from "../helpers/validation";
+import { nextCheckInDueFrom } from "../jobs/checkInReminders";
 import sanitizeHtml from "sanitize-html";
 
 export const giftsRouter = Router();
@@ -578,6 +579,7 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
 
     const selectedOffer = offerPrices[gift.offer];
     const paidAt = gift.paidAt ?? new Date();
+    const nextCheckInDue = nextCheckInDueFrom(paidAt);
     const reference = buildPaymentReference(gift.user.username, gift.id, paidAt);
     const stripePaymentIntentId = getStripePaymentIntentId(session);
     const isSandbox = session.livemode === false;
@@ -598,6 +600,7 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
           status: "active",
           draftExpiresAt: null,
           paidAt,
+          nextCheckInDue,
           lastEditionStep: "summary",
         },
       }),
