@@ -9,6 +9,7 @@ import { giftsRouter } from "./router/gifts";
 import { giftMediaRouter } from "./router/giftMedia";
 import { giftRecipientsRouter } from "./router/giftRecipients";
 import { giftTrustedThirdsRouter } from "./router/giftTrustedThirds";
+import { thirdPartyValidationsRouter } from "./router/thirdPartyValidations";
 import { usersRouter } from "./router/users";
 
 function resolveCorsOrigin() {
@@ -39,6 +40,7 @@ export function createApp() {
   });
 
   apiRouter.use("/check-ins", checkInsRouter);
+  apiRouter.use("/third-party-validations", thirdPartyValidationsRouter);
   apiRouter.use("/auth/logout", requireAuth);
   apiRouter.use("/auth", authRouter);
   apiRouter.use("/users", requireAuth, usersRouter);

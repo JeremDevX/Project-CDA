@@ -53,6 +53,7 @@ model Gift {
   trustedThirds        GiftTrustedThird[]
   paymentConfirmation  GiftPaymentConfirmation?
   checkInReminders     CheckInReminder[]
+  thirdPartyValidations ThirdPartyValidation[]
 
   @@index([status, draftExpiresAt])
   @@index([status, nextCheckInDue])
@@ -158,7 +159,25 @@ model GiftTrustedThird {
   relation  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  validations ThirdPartyValidation[]
 
   @@index([giftId])
   @@map("gift_trusted_thirds")
+}
+
+model ThirdPartyValidation {
+  id             Int              @id @default(autoincrement())
+  giftId         Int
+  gift           Gift             @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  trustedThirdId Int
+  trustedThird   GiftTrustedThird @relation(fields: [trustedThirdId], references: [id], onDelete: Cascade)
+  token          String           @unique
+  status         String           @default("pending")
+  respondedAt    DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([giftId, trustedThirdId])
+  @@index([giftId, status])
+  @@map("third_party_validations")
 }
