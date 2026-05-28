@@ -468,9 +468,9 @@ En tant que système, je veux relancer l’utilisateur lorsqu’un retard de che
 
 ---
 
-### US-32 — Escalader vers les tiers de confiance
+### US-32 — Escalader vers les tiers de confiance et enregistrer leurs réponses
 
-En tant que système, je veux notifier les tiers de confiance lorsque l’utilisateur ne répond pas après les relances prévues afin d’engager le processus de validation.
+En tant que système, je veux notifier les tiers de confiance lorsque l’utilisateur ne répond pas après les relances prévues et enregistrer leurs réponses afin d’engager le processus de validation.
 **Charge (SP) : 5**
 
 **Critères d’acceptation**
@@ -478,19 +478,24 @@ En tant que système, je veux notifier les tiers de confiance lorsque l’utilis
 - Si l’utilisateur ne répond pas dans les conditions prévues, les tiers de confiance sont notifiés.
 - Les tiers contactés correspondent à ceux configurés pour le gift.
 - Le statut du gift reflète clairement le passage en phase d’escalade.
+- Chaque tiers peut répondre via un lien indiquant si l’utilisateur est décédé ou vivant.
+- L’absence de réponse reste possible et ne déclenche pas automatiquement la transmission.
+- La réponse de chaque tiers est enregistrée et rattachée au bon gift.
+- L’état de validation est mis à jour après chaque réponse reçue.
 
 ---
 
-### US-33 — Enregistrer la réponse des tiers de confiance
+### US-33 — Afficher une confirmation au tiers de confiance
 
-En tant que système, je veux enregistrer la réponse des tiers de confiance afin de suivre l’avancement de la validation du déclenchement.
-**Charge (SP) : 3**
+En tant que tiers de confiance, je veux voir une confirmation claire après avoir répondu afin de savoir que mon action a bien été prise en compte.
+**Charge (SP) : 2**
 
 **Critères d’acceptation**
 
-- La réponse de chaque tiers peut être prise en compte dans le processus.
-- L’état de validation est mis à jour après chaque réponse reçue.
-- Les réponses enregistrées sont rattachées au bon gift.
+- Après validation d’un décès, une page confirme que l’information a été prise en compte.
+- Après indication que l’utilisateur est vivant, une page confirme que l’information a été prise en compte.
+- Le message affiché est humain, clair et rassurant.
+- La page ne révèle aucun contenu personnel du gift.
 
 ---
 
