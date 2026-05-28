@@ -17,6 +17,14 @@ function buildCheckInLink(token: string) {
   return `${config.apiBaseUrl.replace(/\/$/, "")}/check-ins/${token}/confirm`;
 }
 
+function buildTrustedThirdValidationLink(token: string) {
+  return `${config.apiBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-death`;
+}
+
+function buildTrustedThirdAliveLink(token: string) {
+  return `${config.apiBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-alive`;
+}
+
 function createCheckInToken() {
   return crypto.randomBytes(32).toString("hex");
 }
@@ -34,6 +42,21 @@ async function createUniqueCheckInToken() {
   }
 
   throw new Error("Impossible de generer un token de check-in unique");
+}
+
+async function createUniqueThirdPartyValidationToken() {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const token = createCheckInToken();
+    const existingValidation = await prisma.thirdPartyValidation.findUnique({
+      where: { token },
+    });
+
+    if (!existingValidation) {
+      return token;
+    }
+  }
+
+  throw new Error("Impossible de generer un token de validation tiers unique");
 }
 
 async function sendCheckInReminderEmail(params: {
@@ -56,6 +79,43 @@ async function sendCheckInReminderEmail(params: {
         : `Votre gift "${params.giftTitle}" attend votre check-in.`,
       "Confirmez que vous etes toujours en vie via ce lien :",
       buildCheckInLink(params.token),
+    ].join("\n"),
+  });
+}
+
+async function sendTrustedThirdEscalationEmail(params: {
+  email: string;
+  fullName: string;
+  username: string;
+  validationToken: string;
+}) {
+  await sendEmail({
+    to: params.email,
+    subject: "Validation LegacyGift requise",
+    text: [
+      `Bonjour ${params.fullName},`,
+      "",
+      `${params.username} vous a désigné comme tiers de confiance sur LegacyGift.`,
+      "",
+      "LegacyGift permet à une personne de préparer un message destiné à ses proches, qui ne pourra être transmis qu'en cas de décès.",
+      "",
+      `Nous vous contactons car ${params.username} n'a pas répondu aux dernières confirmations demandées par le service.`,
+      "",
+      "Cela ne veut pas dire que son décès est certain. Avant d'aller plus loin, nous avons besoin de l'avis des personnes de confiance qu'il ou elle avait choisies, afin d'éviter toute erreur.",
+      "",
+      `Si vous savez avec certitude que ${params.username} est décédé, vous pouvez le confirmer avec ce lien sécurisé :`,
+      buildTrustedThirdValidationLink(params.validationToken),
+      "",
+      `Si au contraire vous savez que ${params.username} est vivant, vous pouvez nous l'indiquer ici :`,
+      buildTrustedThirdAliveLink(params.validationToken),
+      "",
+      "Si vous avez le moindre doute, ne faites rien. Votre absence de réponse ne déclenchera aucune transmission.",
+      "",
+      "Aucun contenu personnel ne vous est communiqué dans cet email, et aucun document ne vous sera demandé.",
+      "",
+      "Par mesure de sécurité, si vous souhaitez vérifier la légitimité de cette demande avant d'interagir avec les liens ci-dessus, vous pouvez consulter directement notre site officiel : https://legacygift.fr",
+      "",
+      "Merci pour votre attention.",
     ].join("\n"),
   });
 }
@@ -209,13 +269,113 @@ export async function sendCheckInFollowUps(now = new Date()) {
   return sentCount;
 }
 
+export async function escalateCheckInsToTrustedThirds(now = new Date()) {
+  const escalationCutoff = new Date(
+    now.getTime() - CHECK_IN_REMINDER_DELAY_DAYS * DAY_IN_MS,
+  );
+  const gifts = await prisma.gift.findMany({
+    where: {
+      status: "overdue",
+      checkInReminders: {
+        some: {
+          status: "sent",
+          sentAt: {
+            lte: escalationCutoff,
+          },
+        },
+        none: {
+          status: "pending",
+        },
+      },
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+      trustedThirds: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+      checkInReminders: {
+        orderBy: {
+          sentAt: "desc",
+        },
+      },
+    },
+  });
+
+  let escalatedCount = 0;
+
+  for (const gift of gifts) {
+    const hasResponse = gift.checkInReminders.some(
+      (reminder) => reminder.status === "responded",
+    );
+    const sentReminders = gift.checkInReminders.filter(
+      (reminder) => reminder.status === "sent" && reminder.sentAt,
+    );
+    const latestSentReminder = sentReminders[0];
+
+    if (
+      hasResponse ||
+      sentReminders.length < MAX_CHECK_IN_REMINDERS ||
+      !latestSentReminder?.sentAt ||
+      latestSentReminder.sentAt > escalationCutoff ||
+      gift.trustedThirds.length === 0
+    ) {
+      continue;
+    }
+
+    for (const trustedThird of gift.trustedThirds) {
+      const validationToken = await createUniqueThirdPartyValidationToken();
+      const validation = await prisma.thirdPartyValidation.upsert({
+        where: {
+          giftId_trustedThirdId: {
+            giftId: gift.id,
+            trustedThirdId: trustedThird.id,
+          },
+        },
+        update: {},
+        create: {
+          giftId: gift.id,
+          trustedThirdId: trustedThird.id,
+          token: validationToken,
+          status: "pending",
+        },
+      });
+
+      await sendTrustedThirdEscalationEmail({
+        email: trustedThird.email,
+        fullName: trustedThird.fullName,
+        username: gift.user.username,
+        validationToken: validation.token,
+      });
+    }
+
+    await prisma.gift.update({
+      where: { id: gift.id },
+      data: {
+        status: "in_escalation",
+      },
+    });
+
+    escalatedCount += 1;
+  }
+
+  return escalatedCount;
+}
+
 export function scheduleCheckInReminders() {
   nodeCron.schedule("0 2 * * *", async () => {
     try {
       const detectedCount = await detectOverdueCheckIns();
       const followUpCount = await sendCheckInFollowUps();
+      const escalatedCount = await escalateCheckInsToTrustedThirds();
       console.log("Check-ins en retard detectes : ", detectedCount);
       console.log("Relances check-in envoyees : ", followUpCount);
+      console.log("Escalades check-in declenchees : ", escalatedCount);
     } catch (error) {
       console.error("Erreur lors de la detection des check-ins : ", error);
     }

@@ -3,6 +3,7 @@ import { config } from "./config";
 import { initDatabase } from "./database";
 import {
   detectOverdueCheckIns,
+  escalateCheckInsToTrustedThirds,
   sendCheckInFollowUps,
   scheduleCheckInReminders,
 } from "./jobs/checkInReminders";
@@ -16,6 +17,9 @@ async function bootstrap() {
   });
   sendCheckInFollowUps().catch((error) => {
     console.error("Erreur lors de l'envoi des relances check-in : ", error);
+  });
+  escalateCheckInsToTrustedThirds().catch((error) => {
+    console.error("Erreur lors de l'escalade check-in : ", error);
   });
   scheduleCheckInReminders();
 
