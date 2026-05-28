@@ -18,11 +18,11 @@ function buildCheckInLink(token: string) {
 }
 
 function buildTrustedThirdValidationLink(token: string) {
-  return `${config.apiBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-death`;
+  return `${config.appBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-death`;
 }
 
 function buildTrustedThirdAliveLink(token: string) {
-  return `${config.apiBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-alive`;
+  return `${config.appBaseUrl.replace(/\/$/, "")}/third-party-validations/${token}/confirm-alive`;
 }
 
 function createCheckInToken() {
