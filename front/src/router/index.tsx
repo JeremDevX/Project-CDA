@@ -16,6 +16,7 @@ import GiftTrustedThirdsPage from "../GiftTrustedThirdsPage";
 import GiftConfirmationsPage from "../GiftConfirmationsPage";
 import GiftSummaryPage from "../GiftSummaryPage";
 import GiftActivatedPage from "../GiftActivatedPage";
+import ThirdPartyValidationPage from "../ThirdPartyValidationPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "register",
         element: <LoginPage />,
+      },
+      {
+        path: "third-party-validations/:token/:answer",
+        element: <ThirdPartyValidationPage />,
       },
       {
         element: <RequireAuth />,
