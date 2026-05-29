@@ -509,3 +509,17 @@ En tant que système, je veux déclencher l’envoi du gift lorsque les conditio
 - Lorsque les conditions de validation sont remplies, le gift est transmis aux destinataires configurés.
 - Le changement d’état final du gift est visible dans l’application.
 - L’envoi n’est déclenché qu’une seule fois pour le gift concerné.
+
+---
+
+### US-35 — Afficher une confirmation de check-in utilisateur
+
+En tant qu’utilisateur, je veux voir une confirmation claire après avoir validé mon check-in afin de savoir que ma réponse a bien été prise en compte.
+**Charge (SP) : 2**
+
+**Critères d’acceptation**
+
+- Après clic sur le lien de check-in, une page publique confirme que le check-in est validé.
+- Le message affiché indique que la prochaine échéance de check-in est repoussée.
+- Si le lien est invalide, expiré ou déjà utilisé, un message d’erreur clair est affiché.
+- La page ne nécessite pas de connexion utilisateur.
