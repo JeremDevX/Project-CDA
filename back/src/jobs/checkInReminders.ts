@@ -3,9 +3,11 @@ import nodeCron from "node-cron";
 import { config } from "../config";
 import { prisma } from "../database";
 import { sendEmail } from "../services/email";
+import { createSignedStorageUrl } from "../services/supabaseStorage";
 
 const CHECK_IN_INTERVAL_DAYS = 30;
 const CHECK_IN_REMINDER_DELAY_DAYS = 3;
+const THIRD_PARTY_VALIDATION_DELAY_DAYS = 7;
 const MAX_CHECK_IN_REMINDERS = 4;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -118,6 +120,200 @@ async function sendTrustedThirdEscalationEmail(params: {
       "Merci pour votre attention.",
     ].join("\n"),
   });
+}
+
+async function sendGiftToRecipients(params: {
+  senderName: string;
+  giftTitle: string;
+  giftMessage: string | null;
+  recipients: { email: string; fullName: string }[];
+  medias: {
+    mediaAsset: {
+      type: string;
+      storagePath: string;
+      originalName: string | null;
+    };
+  }[];
+}) {
+  const mediaLines = await Promise.all(
+    params.medias.map(async (media, index) => {
+      const url = await createSignedStorageUrl(media.mediaAsset.storagePath);
+      const mediaType = media.mediaAsset.type === "video" ? "Vidéo" : "Image";
+      const mediaName = media.mediaAsset.originalName ?? `Média ${index + 1}`;
+
+      return `${mediaType} - ${mediaName}\n${url}`;
+    }),
+  );
+
+  for (const recipient of params.recipients) {
+    await sendEmail({
+      to: recipient.email,
+      subject: `Votre gift "${params.giftTitle}" est disponible`,
+      text: [
+        `Bonjour ${recipient.fullName},`,
+        "",
+        "Vous avez reçu un présent de la part de :",
+        params.senderName,
+        "",
+        params.giftTitle,
+        "",
+        giftMessageToText(params.giftMessage),
+        ...(mediaLines.length > 0
+          ? ["", "Médias joints au présent :", ...mediaLines]
+          : []),
+      ].join("\n"),
+    });
+  }
+}
+
+function giftMessageToText(message: string | null) {
+  if (!message || message.replace(/<[^>]*>/g, "").trim().length === 0) {
+    return "Aucun message texte n'a été renseigné.";
+  }
+
+  return message
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|li|blockquote)>/gi, "\n")
+    .replace(/<li>/gi, "- ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+async function sendGiftExpiredEmail(params: {
+  email: string;
+  username: string;
+  giftTitle: string;
+}) {
+  await sendEmail({
+    to: params.email,
+    subject: `Gift "${params.giftTitle}" annulé`,
+    text: [
+      `Bonjour ${params.username},`,
+      "",
+      `Le gift "${params.giftTitle}" est annulé suite au processus de validation des tiers de confiance.`,
+      "Aucun contenu n'a été transmis aux destinataires.",
+    ].join("\n"),
+  });
+}
+
+export async function resolveThirdPartyValidationResult(
+  giftId: number,
+  now = new Date(),
+) {
+  const gift = await prisma.gift.findUnique({
+    where: { id: giftId },
+    include: {
+      user: {
+        select: {
+          email: true,
+          username: true,
+        },
+      },
+      recipients: {
+        select: {
+          email: true,
+          fullName: true,
+        },
+      },
+      medias: {
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          mediaAsset: {
+            select: {
+              type: true,
+              storagePath: true,
+              originalName: true,
+            },
+          },
+        },
+      },
+      thirdPartyValidations: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
+  });
+
+  if (!gift || gift.status !== "in_escalation") {
+    return "ignored";
+  }
+
+  const confirmedDeathCount = gift.thirdPartyValidations.filter(
+    (validation) => validation.status === "confirmed_death",
+  ).length;
+  const confirmedAliveCount = gift.thirdPartyValidations.filter(
+    (validation) => validation.status === "confirmed_alive",
+  ).length;
+  const firstValidation = gift.thirdPartyValidations[0];
+  const deadline = firstValidation
+    ? new Date(
+        firstValidation.createdAt.getTime() +
+          THIRD_PARTY_VALIDATION_DELAY_DAYS * DAY_IN_MS,
+      )
+    : null;
+
+  if (confirmedAliveCount >= 2) {
+    await prisma.gift.update({
+      where: { id: gift.id },
+      data: { status: "expired" },
+    });
+    await sendGiftExpiredEmail({
+      email: gift.user.email,
+      username: gift.user.username,
+      giftTitle: gift.title,
+    });
+    return "expired";
+  }
+
+  if (!deadline || deadline > now) {
+    return "pending";
+  }
+
+  await prisma.thirdPartyValidation.updateMany({
+    where: {
+      giftId: gift.id,
+      status: "pending",
+    },
+    data: {
+      status: "silent",
+    },
+  });
+
+  if (confirmedDeathCount >= 1) {
+    await sendGiftToRecipients({
+      senderName: gift.user.username,
+      giftTitle: gift.title,
+      giftMessage: gift.message,
+      recipients: gift.recipients,
+      medias: gift.medias,
+    });
+    await prisma.gift.update({
+      where: { id: gift.id },
+      data: { status: "delivered" },
+    });
+    return "delivered";
+  }
+
+  await prisma.gift.update({
+    where: { id: gift.id },
+    data: { status: "expired" },
+  });
+  await sendGiftExpiredEmail({
+    email: gift.user.email,
+    username: gift.user.username,
+    giftTitle: gift.title,
+  });
+  return "expired";
 }
 
 export async function detectOverdueCheckIns(now = new Date()) {
@@ -367,15 +563,50 @@ export async function escalateCheckInsToTrustedThirds(now = new Date()) {
   return escalatedCount;
 }
 
+export async function resolveExpiredThirdPartyValidations(now = new Date()) {
+  const cutoff = new Date(
+    now.getTime() - THIRD_PARTY_VALIDATION_DELAY_DAYS * DAY_IN_MS,
+  );
+  const gifts = await prisma.gift.findMany({
+    where: {
+      status: "in_escalation",
+      thirdPartyValidations: {
+        some: {
+          createdAt: {
+            lte: cutoff,
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  let resolvedCount = 0;
+
+  for (const gift of gifts) {
+    const result = await resolveThirdPartyValidationResult(gift.id, now);
+
+    if (result === "delivered" || result === "expired") {
+      resolvedCount += 1;
+    }
+  }
+
+  return resolvedCount;
+}
+
 export function scheduleCheckInReminders() {
   nodeCron.schedule("0 2 * * *", async () => {
     try {
       const detectedCount = await detectOverdueCheckIns();
       const followUpCount = await sendCheckInFollowUps();
       const escalatedCount = await escalateCheckInsToTrustedThirds();
+      const resolvedCount = await resolveExpiredThirdPartyValidations();
       console.log("Check-ins en retard detectes : ", detectedCount);
       console.log("Relances check-in envoyees : ", followUpCount);
       console.log("Escalades check-in declenchees : ", escalatedCount);
+      console.log("Validations tiers finalisées : ", resolvedCount);
     } catch (error) {
       console.error("Erreur lors de la detection des check-ins : ", error);
     }

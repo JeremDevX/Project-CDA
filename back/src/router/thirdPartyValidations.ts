@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../database";
+import { resolveThirdPartyValidationResult } from "../jobs/checkInReminders";
 
 export const thirdPartyValidationsRouter = Router();
 
@@ -36,13 +37,17 @@ async function answerThirdPartyValidation(
     };
   }
 
+  const now = new Date();
+
   await prisma.thirdPartyValidation.update({
     where: { id: validation.id },
     data: {
       status,
-      respondedAt: new Date(),
+      respondedAt: now,
     },
   });
+
+  await resolveThirdPartyValidationResult(validation.giftId, now);
 
   return {
     statusCode: 200,

@@ -4,6 +4,7 @@ import { initDatabase } from "./database";
 import {
   detectOverdueCheckIns,
   escalateCheckInsToTrustedThirds,
+  resolveExpiredThirdPartyValidations,
   sendCheckInFollowUps,
   scheduleCheckInReminders,
 } from "./jobs/checkInReminders";
@@ -20,6 +21,9 @@ async function bootstrap() {
   });
   escalateCheckInsToTrustedThirds().catch((error) => {
     console.error("Erreur lors de l'escalade check-in : ", error);
+  });
+  resolveExpiredThirdPartyValidations().catch((error) => {
+    console.error("Erreur lors de la finalisation des validations tiers : ", error);
   });
   scheduleCheckInReminders();
 
