@@ -1,0 +1,121 @@
+gantt
+    title Planification agile réajustée selon l'avancement — LegacyGift MVP (V35)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d/%m
+    todayMarker off
+
+    %% Réalisé
+    section Avancement réel
+    US-01 — Accéder à la landing page                                  :done, us01, 2026-03-30, 2d
+    US-02 — Consulter les informations importantes                     :done, us02, 2026-04-01, 1d
+    US-03 — Consulter les offres tarifaires                            :done, us03, 2026-04-01, 5d
+    Point d'avancement — EPIC découverte validé                        :milestone, m0, 2026-04-01, 0d
+    US-04 — Créer un compte                                            :done, us04, 2026-04-06, 2d
+    US-05 — Se connecter                                               :done, us05, 2026-04-08, 1d
+    US-06 — Se déconnecter                                             :done, us06, 2026-04-08, 1d
+    US-07 — Consulter les informations du compte                       :done, us07, 2026-04-08, 1d
+    US-08 — Accéder au dashboard                                       :done, us08, 2026-04-08, 2d
+    US-09 — Voir les gifts actifs et les brouillons                    :done, us09, 2026-04-10, 4d
+    FIX 01 — Ajout d'un reset CSS et lissage du CSS                    :done, fix01, 2026-04-10, 1d
+    Point d'avancement — EPIC Dashboard et gestion générale validé     :milestone, m1, 2026-04-10, 0d
+    US-10 — Créer un nouveau gift                                      :done, us10, 2026-04-14, 1d
+    US-11 + US-12 — Voir, comparer et sélectionner une offre           :done, us11_12, 2026-04-14, 6d
+    US-13 — Choisir le mode de création                                :done, us13, 2026-04-20, 1d
+    US-14 — Donner un titre au gift                                    :done, us14, 2026-04-20, 2d
+    US-15 — Rédiger le message principal                               :done, us15, 2026-04-22, 4d
+    US-16 — Sauvegarde automatique                                     :done, us16, 2026-04-26, 1d
+    US-17 — Afficher la date de suppression automatique des brouillons :done, us17, 2026-04-27, 2d
+    US-18 — Adapter automatiquement les emplacements disponibles       :done, us18, 2026-04-29, 5d
+    Point d'avancement — EPIC Création et configuration initiale validé:milestone, m2, 2026-04-29, 0d
+    US-19 — Ajouter des images / vidéos selon l’offre                  :done, us19, 2026-05-04, 3d
+    US-20 — Prévisualiser le gift                                      :done, us20, 2026-05-07, 3d
+    Point d'avancement — EPIC Médias et prévisualisation validé        :milestone, m3, 2026-05-07, 0d
+    US-21 — Définir les destinataires                                  :done, us21, 2026-05-10, 1d
+    US-22 + US-23 — Définir et renseigner les tiers de confiance       :done, us22_23, 2026-05-10, 1d
+    Point d'avancement — EPIC Destinataires et tiers de confiance validé:milestone, m4, 2026-05-10, 0d
+    US-24 — Valider les dernières confirmations                        :done, us24, 2026-05-11, 1d
+    US-25 — Consulter le récapitulatif                                 :done, us25, 2026-05-11, 1d
+    US-26 — Naviguer entre les étapes et voir l’étape en cours         :done, us26, 2026-05-12, 3d
+    US-27 — Payer le gift via Stripe                                   :done, us27, 2026-05-15, 1d
+    US-28 + ancienne US-29 — Confirmation paiement et écran de remerciement:done, us28_29, 2026-05-15, 1d
+    Point d'avancement — EPIC Confirmations, paiement et activation validé:milestone, m5, 2026-05-15, 0d
+    US-29 — Choisir une image déjà uploadée                            :done, us29, 2026-05-25, 1d
+    US-30 — Détecter un retard de check-in                             :done, us30, 2026-05-27, 1d
+    US-31 — Relancer l’utilisateur en cas de non-réponse               :done, us31, 2026-05-27, 1d
+    US-32 — Escalader vers les tiers et enregistrer leurs réponses     :done, us32, 2026-05-28, 1d
+    US-33 — Afficher une confirmation au tiers de confiance            :done, us33, 2026-05-28, 1d
+    US-34 — Déclencher l’envoi du gift après validation                :done, us34, 2026-05-29, 1d
+    US-35 — Afficher une confirmation de check-in utilisateur          :done, us35, 2026-05-31, 1d
+
+    %% Prévisionnel indicatif :
+    %% Le planning est ajusté selon le temps disponible à consacrer au projet.
+    %% Le projet est réalisé seul, donc certaines US couvrent aussi les périodes
+    %% où aucun développement n'a été fait.
+    %% Les durées restent des repères de suivi, pas des engagements calendaires fixes.
+    %%
+    %% Estimation de charge utilisée :
+    %% SP 1 = petite tâche
+    %% SP 2 = tâche courte
+    %% SP 3 = tâche moyenne
+    %% SP 5 = tâche plus lourde
+    %%
+    %% Note de suivi :
+    %% US-12 est fusionnée dans US-11 car les possibilités incluses
+    %% sont affichées et sélectionnées sur le même écran que les offres.
+    %% Les anciennes US-18 et US-19 sont fusionnées : la navigation entre étapes
+    %% inclut l'affichage de l'étape en cours et de la progression.
+    %% US-22 et US-23 sont fusionnées : la page tiers de confiance permet déjà
+    %% d'ajouter les tiers, de renseigner leurs informations obligatoires
+    %% et de les enregistrer dans le gift.
+    %% L'ancienne US-27 "Choisir un mode de paiement" est supprimée :
+    %% Stripe est le seul moyen de paiement prévu en version développement,
+    %% donc il n'y a pas de choix utilisateur à modéliser.
+    %% US-27 est validée avec Stripe Checkout en mode test/sandbox.
+    %% La date de paiement est enregistrée dans le gift via paidAt.
+    %% US-28 et l'ancienne US-29 sont fusionnées : la preuve de transaction,
+    %% le téléchargement PDF et l'écran de remerciement sont traités ensemble
+    %% après validation du paiement Stripe.
+    %% L'EPIC Confirmations, paiement et activation est terminé avec cette fusion.
+    %% Les US d'édition après activation sont supprimées du périmètre CDA :
+    %% - modification gratuite pendant 30 jours après activation ;
+    %% - réouverture de l'édition via paiement.
+    %% Motif : ces fonctionnalités ajoutent un second cycle d'édition/paiement
+    %% sans valeur technique prioritaire pour le MVP présenté au jury.
+    %% Le périmètre reste centré sur la création, l'activation, le suivi
+    %% et le déclenchement du gift.
+    %% Les US prévisionnelles sont renumérotées après cette suppression.
+    %% US-29 ajoute la relation many-to-many entre gifts et médias uploadés :
+    %% une image déjà importée peut être sélectionnée dans un nouveau gift
+    %% sans nouvel upload, tout en respectant les limites de l'offre.
+    %% US-30 est terminée : chaque gift activé reçoit une prochaine échéance
+    %% de check-in calculée depuis paidAt, les gifts actifs en retard sont
+    %% détectés par un job planifié, un email avec token est envoyé à l'utilisateur
+    %% et la confirmation du lien remet le gift actif avec une nouvelle échéance.
+    %% US-31 est terminée : les gifts en statut overdue peuvent recevoir des relances
+    %% utilisateur espacées de 3 jours, chaque relance est enregistrée dans
+    %% check_in_reminders et aucune transmission aux destinataires n'est déclenchée
+    %% tant que la validation finale des tiers n'est pas traitée.
+    %% US-32 est terminée : après les relances prévues sans réponse utilisateur,
+    %% le gift passe en in_escalation, les tiers de confiance configurés reçoivent
+    %% un email humain avec deux liens sécurisés (décès confirmé / personne vivante),
+    %% et chaque réponse est enregistrée dans third_party_validations avec le bon gift
+    %% et le bon tiers. L'absence de réponse reste représentée par le statut pending.
+    %% L'ancienne US-33 "Enregistrer la réponse des tiers de confiance" est fusionnée
+    %% dans l'US-32 car l'escalade et la collecte des réponses forment le même flux
+    %% backend. La nouvelle US-33 couvre uniquement la page web de confirmation
+    %% affichée au tiers après clic sur un lien.
+    %% US-33 est terminée : les liens envoyés aux tiers pointent vers une page front
+    %% publique, qui enregistre la réponse via le token puis affiche un message
+    %% différent selon la réponse donnée (décès confirmé ou personne vivante).
+    %% La page reste volontairement limitée : elle confirme la prise en compte
+    %% sans révéler le contenu personnel du gift.
+    %% US-34 est terminée fonctionnellement : le résultat des validations tiers
+    %% est résolu par le job, le gift est transmis aux destinataires configurés
+    %% lorsque les conditions sont remplies, puis son statut passe à delivered.
+    %% L'état delivered n'est posé qu'après préparation et envoi du contenu,
+    %% pour éviter de marquer un gift livré si l'envoi échoue.
+    %% US-35 est terminée : la page front publique de confirmation
+    %% s'affiche à l'utilisateur après clic sur son lien de check-in.
+
+    section Jalons
+    MVP LegacyGift — Backlog fonctionnel implémenté                    :milestone, m6, 2026-06-03, 0d
