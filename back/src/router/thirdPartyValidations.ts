@@ -4,9 +4,10 @@ import { resolveThirdPartyValidationResult } from "../jobs/checkInReminders";
 
 export const thirdPartyValidationsRouter = Router();
 
-async function answerThirdPartyValidation(
+export async function answerThirdPartyValidation(
   token: string,
   status: "confirmed_death" | "confirmed_alive",
+  now = new Date(),
 ) {
   const validation = await prisma.thirdPartyValidation.findUnique({
     where: { token },
@@ -36,8 +37,6 @@ async function answerThirdPartyValidation(
       message: "Votre validation a déjà été prise en compte",
     };
   }
-
-  const now = new Date();
 
   await prisma.thirdPartyValidation.update({
     where: { id: validation.id },
