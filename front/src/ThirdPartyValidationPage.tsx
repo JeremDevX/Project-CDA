@@ -1,9 +1,9 @@
 import { HeartHandshake, Info, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { answerThirdPartyValidation } from "./api/thirdPartyValidations";
+import PublicActionConfirmation from "./components/PublicActionConfirmation/PublicActionConfirmation";
 import { getErrorMessage } from "./helpers/helpers";
-import "./ThirdPartyValidationPage.css";
 
 type ValidationKind = "confirm-death" | "confirm-alive";
 
@@ -36,16 +36,10 @@ export default function ThirdPartyValidationPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const content = useMemo(() => {
-    if (
-      validationKind === "confirm-death" ||
-      validationKind === "confirm-alive"
-    ) {
-      return getValidationContent(validationKind);
-    }
-
-    return null;
-  }, [validationKind]);
+  const content =
+    validationKind === "confirm-death" || validationKind === "confirm-alive"
+      ? getValidationContent(validationKind)
+      : null;
 
   useEffect(() => {
     async function submitAnswer() {
@@ -72,41 +66,19 @@ export default function ThirdPartyValidationPage() {
   }, [token, content, validationKind]);
 
   return (
-    <section className="third-party-validation-page">
-      <div className="third-party-validation-page__content">
-        <span className="third-party-validation-page__icon" aria-hidden="true">
-          {isSubmitted && content ? content.icon : <Info size={34} />}
-        </span>
-
-        <header className="third-party-validation-page__header">
-          <h1>
-            {isSubmitted && content
-              ? content.title
-              : "Validation de votre réponse"}
-          </h1>
-          <p>
-            {isSubmitted && content
-              ? content.message
-              : "Nous avons enregistré votre réponse et nous vous en remercions."}
-          </p>
-        </header>
-
-        {isLoading ? (
-          <p className="third-party-validation-page__status">
-            Enregistrement de votre réponse...
-          </p>
-        ) : null}
-
-        {errorMessage ? (
-          <p className="third-party-validation-page__error">{errorMessage}</p>
-        ) : null}
-
-        {isSubmitted && content && !errorMessage && !isLoading ? (
-          <aside className="third-party-validation-page__notice">
-            {content.notice}
-          </aside>
-        ) : null}
-      </div>
-    </section>
+    <PublicActionConfirmation
+      icon={isSubmitted && content ? content.icon : <Info size={34} />}
+      title={
+        isSubmitted && content ? content.title : "Validation de votre réponse"
+      }
+      message={
+        isSubmitted && content
+          ? content.message
+          : "Nous avons enregistré votre réponse et nous vous en remercions."
+      }
+      statusMessage={isLoading ? "Enregistrement de votre réponse..." : undefined}
+      errorMessage={errorMessage}
+      notice={isSubmitted && content ? content.notice : undefined}
+    />
   );
 }

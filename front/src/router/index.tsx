@@ -17,6 +17,7 @@ import GiftConfirmationsPage from "../GiftConfirmationsPage";
 import GiftSummaryPage from "../GiftSummaryPage";
 import GiftActivatedPage from "../GiftActivatedPage";
 import ThirdPartyValidationPage from "../ThirdPartyValidationPage";
+import CheckInConfirmationPage from "../CheckInConfirmationPage";
 
 export const appRouter = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "third-party-validations/:token/:answer",
         element: <ThirdPartyValidationPage />,
+      },
+      {
+        path: "check-ins/:token/confirm",
+        element: <CheckInConfirmationPage />,
       },
       {
         element: <RequireAuth />,

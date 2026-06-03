@@ -31,11 +31,12 @@ sequenceDiagram
     end
 
     alt User répond au check-in dans les 3 jours
-        User->>System: Clique sur lien (avec token)
+        User->>Front: Clique sur lien public (avec token)
+        Front->>System: Confirme le check-in via API
         System->>DB: Vérifier token valide
         System->>DB: Enregistrer réponse
         System->>DB: Mettre à jour gift.nextCheckInDue = now + 30j
-        System-->>User: Confirmation OK
+        Front-->>User: Page de confirmation + prochaine échéance
     else Aucun check-in dans les 3 jours
         loop Tous les 3 jours, jusqu'à 3 rappels
             System->>DB: Créer CheckInReminder de rappel

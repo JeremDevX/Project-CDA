@@ -1,10 +1,10 @@
-.third-party-validation-page {
+.public-action-confirmation {
   display: flex;
   justify-content: center;
   padding: calc(var(--space-2xl) * 1.25) 0;
 }
 
-.third-party-validation-page__content {
+.public-action-confirmation__content {
   display: flex;
   width: min(100%, 672px);
   flex-direction: column;
@@ -12,7 +12,7 @@
   gap: calc(var(--space-xl) + var(--space-sm));
 }
 
-.third-party-validation-page__icon {
+.public-action-confirmation__icon {
   display: flex;
   width: 64px;
   height: 64px;
@@ -23,7 +23,7 @@
   color: var(--accent2);
 }
 
-.third-party-validation-page__header {
+.public-action-confirmation__header {
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -31,20 +31,20 @@
   text-align: center;
 }
 
-.third-party-validation-page__header h1 {
+.public-action-confirmation__header h1 {
   margin: 0;
   color: var(--text-primary);
   font-size: 2rem;
   line-height: 1.15;
 }
 
-.third-party-validation-page__header p {
+.public-action-confirmation__header p {
   margin: 0;
   color: var(--text-secondary);
   font-weight: 700;
 }
 
-.third-party-validation-page__notice {
+.public-action-confirmation__notice {
   width: 100%;
   padding: var(--space-xl);
   border: var(--border-width-sm) solid var(--border);
@@ -55,41 +55,41 @@
   text-align: center;
 }
 
-.third-party-validation-page__status,
-.third-party-validation-page__error {
+.public-action-confirmation__status,
+.public-action-confirmation__error {
   margin: 0;
   font-weight: 800;
   text-align: center;
 }
 
-.third-party-validation-page__status {
+.public-action-confirmation__status {
   color: var(--text-secondary);
 }
 
-.third-party-validation-page__error {
+.public-action-confirmation__error {
   color: var(--error);
 }
 
 @media (max-width: 640px) {
-  .third-party-validation-page {
+  .public-action-confirmation {
     padding: var(--space-2xl) 0;
   }
 
-  .third-party-validation-page__content {
+  .public-action-confirmation__content {
     gap: var(--space-xl);
   }
 
-  .third-party-validation-page__header h1 {
+  .public-action-confirmation__header h1 {
     font-size: 1.55rem;
   }
 }
 
 @media (max-width: 420px) {
-  .third-party-validation-page__notice {
+  .public-action-confirmation__notice {
     padding: var(--space-md);
   }
 
-  .third-party-validation-page__icon {
+  .public-action-confirmation__icon {
     width: 56px;
     height: 56px;
   }

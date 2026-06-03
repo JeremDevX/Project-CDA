@@ -16,7 +16,7 @@ export function nextCheckInDueFrom(date: Date) {
 }
 
 function buildCheckInLink(token: string) {
-  return `${config.apiBaseUrl.replace(/\/$/, "")}/check-ins/${token}/confirm`;
+  return `${config.appBaseUrl.replace(/\/$/, "")}/check-ins/${token}/confirm`;
 }
 
 function buildTrustedThirdValidationLink(token: string) {

@@ -9,7 +9,7 @@ checkInsRouter.get("/:token/confirm", async (req, res) => {
     const token = String(req.params.token ?? "");
 
     if (!/^[a-f0-9]{64}$/.test(token)) {
-      return res.status(400).json({ message: "Token de check-in invalide" });
+      return res.status(400).json({ message: "Lien de check-in invalide" });
     }
 
     const reminder = await prisma.checkInReminder.findUnique({
@@ -21,19 +21,27 @@ checkInsRouter.get("/:token/confirm", async (req, res) => {
     });
 
     if (!reminder) {
-      return res.status(404).json({ message: "Check-in introuvable" });
+      return res
+        .status(404)
+        .json({ message: "Lien de check-in introuvable ou expire" });
     }
 
     if (reminder.response || reminder.status === "responded") {
-      return res.status(409).json({ message: "Check-in deja confirme" });
+      return res
+        .status(409)
+        .json({ message: "Ce check-in a deja ete confirme" });
     }
 
     if (!["pending", "sent"].includes(reminder.status)) {
-      return res.status(400).json({ message: "Check-in non confirmable" });
+      return res
+        .status(400)
+        .json({ message: "Ce lien de check-in n'est plus utilisable" });
     }
 
     if (!["active", "overdue"].includes(reminder.gift.status)) {
-      return res.status(400).json({ message: "Gift non confirmable" });
+      return res
+        .status(400)
+        .json({ message: "Ce check-in n'est plus disponible pour ce gift" });
     }
 
     const now = new Date();
