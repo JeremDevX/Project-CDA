@@ -19,6 +19,7 @@ export default function GiftTitleForm({
       <input
         id="gift-title"
         type="text"
+        data-testid="gift-title-input"
         value={titleValue}
         maxLength={maxLength}
         disabled={disabled}

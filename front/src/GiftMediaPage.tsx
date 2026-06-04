@@ -373,6 +373,7 @@ export default function GiftMediaPage() {
                 <button
                   type="button"
                   className="gift-media-page__upload-button"
+                  data-testid="gift-media-upload-button"
                   disabled={isUploading}
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -511,6 +512,7 @@ export default function GiftMediaPage() {
           label={isSavingStep ? "Enregistrement" : "Suivant"}
           onClick={handleNext}
           disabled={isSavingStep}
+          dataTestId="gift-media-next"
         />
       </div>
     </section>

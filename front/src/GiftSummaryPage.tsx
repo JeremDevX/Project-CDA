@@ -311,6 +311,7 @@ export default function GiftSummaryPage() {
             icon={<CreditCard size={17} />}
             iconPosition="left"
             onClick={handleStartPayment}
+            dataTestId="gift-payment-start"
           />
 
           <p className="gift-summary-page__secure">

@@ -80,6 +80,7 @@ export default function GiftPricingPage() {
           label={isSaving ? "Enregistrement" : "Commencer"}
           onClick={handleStart}
           disabled={!selectedOffer || isLoading || isSaving}
+          dataTestId="gift-pricing-next"
         />
       </div>
     </section>

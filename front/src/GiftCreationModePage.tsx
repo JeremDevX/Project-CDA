@@ -89,6 +89,7 @@ export default function GiftCreationModePage() {
           label={isSaving ? "Enregistrement" : "Suivant"}
           onClick={handleNext}
           disabled={isSaving}
+          dataTestId="gift-creation-mode-next"
         />
       </div>
     </section>

@@ -198,6 +198,7 @@ export default function OfferSelection({
                 .filter(Boolean)
                 .join(" ")}
               type="button"
+              data-testid={`offer-plan-${plan.id}`}
               onClick={() => onSelectOffer(plan.id)}
             >
               <span className="offer-selection__plan-radio" />

@@ -39,6 +39,7 @@ export default function HowItWorksSection() {
               <button
                 key={step.title}
                 className={`how-it-works__step ${isActive ? "how-it-works__step--active" : ""}`}
+                data-testid={`landing-step-${index + 1}`}
                 type="button"
                 onClick={() => setActiveStepIndex(index)}
               >
@@ -57,7 +58,12 @@ export default function HowItWorksSection() {
         </div>
         <div className="how-it-works__preview">
           <div className="how-it-works__preview-image-placeholder">Image WIP</div>
-          <p className="how-it-works__preview-detail">{activeStep.detail}</p>
+          <p
+            className="how-it-works__preview-detail"
+            data-testid="landing-step-preview-detail"
+          >
+            {activeStep.detail}
+          </p>
         </div>
       </div>
     </section>

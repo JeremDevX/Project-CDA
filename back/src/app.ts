@@ -5,6 +5,7 @@ import { config } from "./config";
 import { requireAuth } from "./middlewares/requireAuth";
 import { authRouter } from "./router/auth";
 import { checkInsRouter } from "./router/checkIns";
+import { e2eCleanupRouter } from "./router/e2eCleanup";
 import { giftsRouter } from "./router/gifts";
 import { giftMediaRouter } from "./router/giftMedia";
 import { giftRecipientsRouter } from "./router/giftRecipients";
@@ -38,6 +39,10 @@ export function createApp() {
   apiRouter.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok" });
   });
+
+  if (config.e2eCleanupEnabled) {
+    apiRouter.use("/e2e", e2eCleanupRouter);
+  }
 
   apiRouter.use("/check-ins", checkInsRouter);
   apiRouter.use("/third-party-validations", thirdPartyValidationsRouter);

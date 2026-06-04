@@ -108,6 +108,7 @@ export default function AuthForm() {
         <button
           type="button"
           className={`auth-card__tab ${activeTab === "login" ? "auth-card__tab--active" : ""}`}
+          data-testid="auth-login-tab"
           onClick={() => navigate("/login")}
         >
           Connexion
@@ -115,6 +116,7 @@ export default function AuthForm() {
         <button
           type="button"
           className={`auth-card__tab ${activeTab === "register" ? "auth-card__tab--active" : ""}`}
+          data-testid="auth-register-tab"
           onClick={() => navigate("/register")}
         >
           Inscription
@@ -134,6 +136,7 @@ export default function AuthForm() {
               <input
                 className="auth-card__input"
                 type="text"
+                data-testid="register-username"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
               />
@@ -144,6 +147,7 @@ export default function AuthForm() {
               <input
                 className="auth-card__input"
                 type="email"
+                data-testid="register-email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
@@ -154,6 +158,7 @@ export default function AuthForm() {
               <input
                 className="auth-card__input"
                 type="password"
+                data-testid="register-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
@@ -164,6 +169,7 @@ export default function AuthForm() {
               <input
                 className="auth-card__input"
                 type="password"
+                data-testid="register-confirm-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
               />
@@ -174,6 +180,7 @@ export default function AuthForm() {
             <button
               type="submit"
               className="auth-card__submit"
+              data-testid="register-submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Création en cours..." : "Créer mon compte"}

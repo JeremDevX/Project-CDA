@@ -41,6 +41,7 @@ export default function CreationModeSelection({
                 .filter(Boolean)
                 .join(" ")}
               type="button"
+              data-testid={`creation-mode-${mode.id}`}
               disabled={!mode.isAvailable}
               onClick={() => onSelectMode(mode.id)}
             >

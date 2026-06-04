@@ -71,7 +71,7 @@ export default function GiftMessageEditor({
   }, [editor, value]);
 
   return (
-    <div className="gift-message-editor">
+    <div className="gift-message-editor" data-testid="gift-message-editor">
       <label>Votre témoignage *</label>
 
       <div className="gift-message-editor__box">

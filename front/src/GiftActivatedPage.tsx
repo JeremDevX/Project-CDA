@@ -177,6 +177,7 @@ export default function GiftActivatedPage() {
                   icon={<Download size={17} />}
                   iconPosition="left"
                   onClick={handleDownloadPdf}
+                  dataTestId="payment-confirmation-pdf"
                 />
                 <Button
                   type="secondary"

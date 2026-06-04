@@ -47,7 +47,9 @@ const pricingPlans = [
 export default function PricingSection() {
   return (
     <section className="pricing">
-      <h2 className="pricing__title">Tarification</h2>
+      <h2 className="pricing__title" data-testid="landing-pricing-title">
+        Tarification
+      </h2>
       <div className="pricing__list">
         {pricingPlans.map((plan) => (
           <div

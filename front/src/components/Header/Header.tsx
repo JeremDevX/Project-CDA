@@ -115,6 +115,7 @@ export default function Header() {
               href="/register"
               label="Inscription"
               className="header__button"
+              dataTestId="nav-register"
             />
           </>
         )}

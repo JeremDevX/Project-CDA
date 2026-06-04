@@ -163,6 +163,7 @@ export default function GiftPreviewPage() {
           icon={<Check size={18} />}
           iconPosition="right"
           disabled={isLoading || isSavingStep || !gift}
+          dataTestId="gift-preview-next"
         />
       </div>
     </section>

@@ -13,6 +13,7 @@ interface ButtonProps {
   disabled?: boolean;
   color?: "default" | "green" | "gold";
   className?: string;
+  dataTestId?: string;
 }
 
 function renderIcon(icon: ReactNode, shouldRender: boolean) {
@@ -49,14 +50,14 @@ export default function Button(props: ButtonProps) {
   if (props.href) {
     if (props.href.startsWith("/")) {
       return (
-        <Link className={className} to={props.href}>
+        <Link className={className} to={props.href} data-testid={props.dataTestId}>
           {content}
         </Link>
       );
     }
 
     return (
-      <a className={className} href={props.href}>
+      <a className={className} href={props.href} data-testid={props.dataTestId}>
         {content}
       </a>
     );
@@ -67,6 +68,7 @@ export default function Button(props: ButtonProps) {
       className={className}
       onClick={props.onClick}
       disabled={props.disabled}
+      data-testid={props.dataTestId}
       type="button"
     >
       {content}

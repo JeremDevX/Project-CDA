@@ -142,7 +142,11 @@ export default function GiftConfirmationsPage() {
 
         <div className="gift-confirmations-page__list">
           {confirmationItems.map((item) => (
-            <label className="gift-confirmations-page__item" key={item.key}>
+            <label
+              className="gift-confirmations-page__item"
+              data-testid={`confirmation-${item.key}`}
+              key={item.key}
+            >
               <input
                 type="checkbox"
                 checked={confirmations[item.key]}
@@ -186,6 +190,7 @@ export default function GiftConfirmationsPage() {
           icon={<ChevronRight size={16} />}
           iconPosition="right"
           disabled={isLoading || isSubmitting || !canContinue}
+          dataTestId="gift-confirmations-next"
         />
       </div>
     </section>

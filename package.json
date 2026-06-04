@@ -9,8 +9,15 @@
     "prepare": "node scripts/prepare-husky.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test:run --workspace front --if-present",
-    "check": "npm run lint && npm run test"
+    "test": "npm run test:all",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npm run test:front && npm run test:back",
+    "test:front": "npm run test --workspace front",
+    "test:back": "npm run test --workspace back",
+    "test:run": "npm run test:unit",
+    "test:e2e": "npm run test:e2e --workspace front --",
+    "test:e2e:list": "npm run test:e2e --workspace front -- --list",
+    "check": "npm run lint && npm run test:all"
   },
   "devDependencies": {
     "husky": "^9.1.7"

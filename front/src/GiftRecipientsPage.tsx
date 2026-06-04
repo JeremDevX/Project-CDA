@@ -211,6 +211,7 @@ export default function GiftRecipientsPage() {
                   <User size={18} />
                   <input
                     type="text"
+                    data-testid="recipient-full-name"
                     value={formData.fullName}
                     placeholder="ex: Sophie Martin"
                     maxLength={120}
@@ -227,6 +228,7 @@ export default function GiftRecipientsPage() {
                   <Mail size={18} />
                   <input
                     type="email"
+                    data-testid="recipient-email"
                     value={formData.email}
                     placeholder="sophie@email.com"
                     maxLength={254}
@@ -243,6 +245,7 @@ export default function GiftRecipientsPage() {
                   <Phone size={18} />
                   <input
                     type="tel"
+                    data-testid="recipient-phone"
                     value={formData.phone}
                     placeholder="+33 1 23 45 67 89"
                     maxLength={30}
@@ -256,6 +259,7 @@ export default function GiftRecipientsPage() {
               <button
                 type="submit"
                 className="gift-recipients-page__submit"
+                data-testid="recipient-add"
                 disabled={isSubmitting || !isFormComplete}
               >
                 Ajouter à la liste
@@ -338,6 +342,7 @@ export default function GiftRecipientsPage() {
           icon={<ChevronRight size={16} />}
           iconPosition="right"
           disabled={isLoading || isSavingStep || recipients.length === 0}
+          dataTestId="gift-recipients-next"
         />
       </div>
     </section>

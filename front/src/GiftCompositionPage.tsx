@@ -256,6 +256,7 @@ export default function GiftCompositionPage() {
           label={isSaving ? "Enregistrement" : "Enregistrer et Suivant"}
           onClick={handleNext}
           disabled={isSubmitDisabled}
+          dataTestId="gift-composition-next"
         />
       </div>
     </section>

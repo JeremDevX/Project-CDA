@@ -7,14 +7,23 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:4173",
+    baseURL: "http://localhost:5174",
     trace: "on-first-retry",
   },
-  webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4173",
-    url: "http://127.0.0.1:4173",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command:
+        "cd ../back && npm run build && PORT=1338 E2E_CLEANUP_ENABLED=true APP_BASE_URL=http://localhost:5174 CORS_ORIGIN=http://localhost:5174 npm run start",
+      url: "http://localhost:1338/api/health",
+      reuseExistingServer: false,
+    },
+    {
+      command:
+        "VITE_API_BASE_URL=http://localhost:1338/api npm run dev -- --host localhost --port 5174",
+      url: "http://localhost:5174",
+      reuseExistingServer: false,
+    },
+  ],
   projects: [
     {
       name: "chromium",

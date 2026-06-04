@@ -52,7 +52,7 @@ export default function LandingPage() {
     <>
       <section className="hero">
         <div className="hero__content">
-          <h1 className="hero__title">
+          <h1 className="hero__title" data-testid="landing-hero-title">
             Vos derniers mots, au moment où ils comptent le plus.
           </h1>
           <p className="hero__subtitle">
@@ -130,6 +130,7 @@ export default function LandingPage() {
           href="/login"
           label="Créer mon premier message"
           className="final-cta__button"
+          dataTestId="landing-create-message-link"
         />
       </section>
     </>

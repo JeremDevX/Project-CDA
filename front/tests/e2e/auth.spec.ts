@@ -2,24 +2,17 @@ import { expect, test } from "@playwright/test";
 
 test.describe("auth page", () => {
   test("displays the auth tabs and register form", async ({ page }) => {
+    // Smoke test volontairement court : il valide l'accès au formulaire sans lancer un parcours complet.
     await page.goto("/login");
 
-    await expect(page.getByRole("button", { name: "Connexion" })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Inscription" }),
-    ).toBeVisible();
+    await expect(page.getByTestId("auth-login-tab")).toBeVisible();
+    await expect(page.getByTestId("auth-register-tab")).toBeVisible();
 
-    await page.getByRole("button", { name: "Inscription" }).click();
+    await page.getByTestId("auth-register-tab").click();
 
-    await expect(
-      page.getByLabel("Nom d'utilisateur", { exact: true }),
-    ).toBeVisible();
-    await expect(page.getByLabel("Email", { exact: true })).toBeVisible();
-    await expect(
-      page.getByLabel("Mot de passe", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByLabel("Confirmer le mot de passe", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByTestId("register-username")).toBeVisible();
+    await expect(page.getByTestId("register-email")).toBeVisible();
+    await expect(page.getByTestId("register-password")).toBeVisible();
+    await expect(page.getByTestId("register-confirm-password")).toBeVisible();
   });
 });

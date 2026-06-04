@@ -145,6 +145,7 @@ export default function DashboardPage() {
               }
               onClick={handleCreateGift}
               disabled={isCreatingGift}
+              dataTestId="gift-create-first"
             />
           </div>
         )}

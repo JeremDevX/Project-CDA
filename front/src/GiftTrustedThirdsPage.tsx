@@ -215,6 +215,7 @@ export default function GiftTrustedThirdsPage() {
                 <User size={18} />
                 <input
                   type="text"
+                  data-testid="trusted-third-full-name"
                   value={formData.fullName}
                   placeholder="Jean Dupont"
                   maxLength={120}
@@ -231,6 +232,7 @@ export default function GiftTrustedThirdsPage() {
                 <Mail size={18} />
                 <input
                   type="email"
+                  data-testid="trusted-third-email"
                   value={formData.email}
                   placeholder="jean@exemple.fr"
                   maxLength={254}
@@ -245,6 +247,7 @@ export default function GiftTrustedThirdsPage() {
                 <Users size={18} />
                 <input
                   type="text"
+                  data-testid="trusted-third-relation"
                   value={formData.relation}
                   placeholder="Ex: Frère, Ami."
                   maxLength={80}
@@ -261,6 +264,7 @@ export default function GiftTrustedThirdsPage() {
                 <Phone size={18} />
                 <input
                   type="tel"
+                  data-testid="trusted-third-phone"
                   value={formData.phone}
                   placeholder="+33 1 23 45 67 89"
                   maxLength={30}
@@ -272,6 +276,7 @@ export default function GiftTrustedThirdsPage() {
             <button
               type="submit"
               className="gift-trusted-thirds-page__submit"
+              data-testid="trusted-third-add"
               disabled={isSubmitting || !isFormComplete || !canAddTrustedThird}
             >
               Ajouter
@@ -343,6 +348,7 @@ export default function GiftTrustedThirdsPage() {
           onClick={handleContinue}
           icon={<ChevronRight size={16} />}
           iconPosition="right"
+          dataTestId="gift-trusted-thirds-next"
           disabled={
             isLoading ||
             isSavingStep ||
