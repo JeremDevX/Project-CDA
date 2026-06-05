@@ -125,6 +125,7 @@ test.describe("gift creation tunnel", () => {
       await page.waitForLoadState("networkidle");
 
       await page.getByTestId("offer-plan-standard").click();
+      await expect(page.getByTestId("gift-pricing-next")).toBeEnabled();
       await page.getByTestId("gift-pricing-next").click();
       await expect(page).toHaveURL(/\/gifts\/\d+\/creation-mode$/);
       await page.waitForLoadState("networkidle");
@@ -134,11 +135,20 @@ test.describe("gift creation tunnel", () => {
       await expect(page).toHaveURL(/\/gifts\/\d+\/composition$/);
       await page.waitForLoadState("networkidle");
 
-      await page.getByTestId("gift-title-input").fill(giftTitle);
-      await page
+      const titleInput = page.getByTestId("gift-title-input");
+      await expect(titleInput).toBeEnabled();
+      await expect(titleInput).toHaveValue("Nouveau gift");
+      await titleInput.click();
+      await page.keyboard.press("Meta+A");
+      await page.keyboard.type(giftTitle);
+      await expect(titleInput).toHaveValue(giftTitle);
+      const messageEditor = page
         .getByTestId("gift-message-editor")
-        .locator(".ProseMirror")
-        .fill("Corps du gift E2E.");
+        .locator(".ProseMirror");
+      await messageEditor.click();
+      await page.keyboard.type("Corps du gift E2E.");
+      await expect(messageEditor).toContainText("Corps du gift E2E.");
+      await expect(page.getByTestId("gift-composition-next")).toBeEnabled();
       await page.getByTestId("gift-composition-next").click();
       await expect(page).toHaveURL(/\/gifts\/\d+\/images$/);
       await page.waitForLoadState("networkidle");
@@ -196,12 +206,15 @@ test.describe("gift creation tunnel", () => {
         .fill("Utilisateur E2E");
       await page.getByTestId("hosted-payment-submit-button").click();
 
-      await expect(page).toHaveURL(/\/gifts\/\d+\/activated/);
+      await expect(page).toHaveURL(/\/gifts\/\d+\/activated/, {
+        timeout: 30_000,
+      });
       await expect(
         page.getByRole("heading", {
           name: "Félicitations, votre Gift est prêt pour le futur",
         }),
       ).toBeVisible();
+      await expect(page.getByTestId("payment-confirmation-pdf")).toBeVisible();
 
       const downloadPromise = page.waitForEvent("download");
       await page.getByTestId("payment-confirmation-pdf").click();

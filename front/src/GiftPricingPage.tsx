@@ -13,7 +13,8 @@ export default function GiftPricingPage() {
   const navigate = useNavigate();
   const { giftId } = useParams();
   const token = useUserState((state) => state.token);
-  const [selectedOffer, setSelectedOffer] = useState<OfferPlanId | null>(null);
+  const [selectedOffer, setSelectedOffer] =
+    useState<OfferPlanId | null>("standard");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,7 +31,7 @@ export default function GiftPricingPage() {
 
       try {
         const response = await getGiftById(token, numericGiftId);
-        setSelectedOffer(response.gift.offer ?? null);
+        setSelectedOffer(response.gift.offer ?? "standard");
       } catch (error) {
         setErrorMessage(getErrorMessage(error));
       } finally {
