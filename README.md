@@ -123,7 +123,7 @@ Détails :
 - `lint` : lint workspaces.
 - `test:run` : tests unitaires front + back.
 - `test:e2e` : Playwright front.
-- `check` : lint + tous tests.
+- `check` : lint + tests unitaires.
 
 ## Scripts workspaces
 
@@ -232,7 +232,7 @@ Pour validation complète :
 npm run check
 ```
 
-E2E si flux UI/API touche :
+E2E :
 
 ```bash
 npm run test:e2e --workspace front
