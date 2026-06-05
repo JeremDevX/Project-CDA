@@ -1,5 +1,11 @@
 import { create } from "zustand";
 import type { AuthUser } from "../api/auth";
+import {
+  AUTH_TOKEN_STORAGE_KEY,
+  AUTH_USER_STORAGE_KEY,
+  clearStoredAuthData,
+  isAuthTokenExpired,
+} from "../helpers/authSession";
 
 export type UserState = {
   token: string | null;
@@ -9,7 +15,7 @@ export type UserState = {
 };
 
 function getStoredUser(): AuthUser | null {
-  const storedUser = localStorage.getItem("auth_user");
+  const storedUser = localStorage.getItem(AUTH_USER_STORAGE_KEY);
 
   if (!storedUser) {
     return null;
@@ -23,18 +29,33 @@ function getStoredUser(): AuthUser | null {
   }
 }
 
+function getStoredToken(): string | null {
+  const storedToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+
+  if (!storedToken) {
+    return null;
+  }
+
+  if (isAuthTokenExpired(storedToken)) {
+    clearStoredAuthData();
+    return null;
+  }
+
+  return storedToken;
+}
+
+const storedToken = getStoredToken();
+
 export const useUserState = create<UserState>((set) => ({
-  token: localStorage.getItem("auth_token"),
-  user: getStoredUser(),
+  token: storedToken,
+  user: storedToken ? getStoredUser() : null,
   setAuthData: (token, user) => {
-    localStorage.setItem("auth_token", token);
-    localStorage.setItem("auth_user", JSON.stringify(user));
+    localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+    localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user));
     set({ token, user });
   },
   clearAuthData: () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
-
+    clearStoredAuthData();
     set({ token: null, user: null });
   },
 }));

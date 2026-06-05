@@ -1,4 +1,5 @@
 import { getApiErrorMessage } from "../helpers/helpers";
+import { authFetch } from "./client";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,11 +20,10 @@ export type GiftMediaLibraryImage = GiftMedia & {
 };
 
 export async function getGiftMedias(token: string, giftId: number) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/media`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/media`,
+    token,
+  );
 
   if (!response.ok) {
     throw new Error(await getApiErrorMessage(response));
@@ -33,13 +33,9 @@ export async function getGiftMedias(token: string, giftId: number) {
 }
 
 export async function getGiftMediaLibrary(token: string, giftId: number) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/media/library`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    token,
   );
 
   if (!response.ok) {
@@ -59,13 +55,14 @@ export async function uploadGiftMedia(
   formData.append("type", type);
   formData.append("file", file);
 
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/media`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/media`,
+    token,
+    {
+      method: "POST",
+      body: formData,
     },
-    body: formData,
-  });
+  );
 
   if (!response.ok) {
     throw new Error(await getApiErrorMessage(response));
@@ -79,14 +76,17 @@ export async function reuseGiftMedia(
   giftId: number,
   sourceMediaId: number,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/media/reuse`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/media/reuse`,
+    token,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sourceMediaId }),
     },
-    body: JSON.stringify({ sourceMediaId }),
-  });
+  );
 
   if (!response.ok) {
     throw new Error(await getApiErrorMessage(response));
@@ -100,13 +100,11 @@ export async function deleteGiftMedia(
   giftId: number,
   mediaId: number,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/media/${mediaId}`,
+    token,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 
@@ -120,13 +118,11 @@ export async function deleteGiftMediaAsset(
   giftId: number,
   mediaAssetId: number,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/media/library/${mediaAssetId}`,
+    token,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 

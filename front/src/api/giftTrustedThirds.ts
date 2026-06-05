@@ -1,4 +1,5 @@
 import { getApiErrorMessage } from "../helpers/helpers";
+import { authFetch } from "./client";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -21,13 +22,9 @@ export type CreateGiftTrustedThirdPayload = {
 };
 
 export async function getGiftTrustedThirds(token: string, giftId: number) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/trusted-thirds`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    token,
   );
 
   if (!response.ok) {
@@ -47,13 +44,13 @@ export async function createGiftTrustedThird(
   giftId: number,
   payload: CreateGiftTrustedThirdPayload,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/trusted-thirds`,
+    token,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
     },
@@ -76,13 +73,11 @@ export async function deleteGiftTrustedThird(
   giftId: number,
   trustedThirdId: number,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/trusted-thirds/${trustedThirdId}`,
+    token,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 
@@ -97,13 +92,11 @@ export async function deleteGiftTrustedThird(
 }
 
 export async function validateGiftTrustedThirds(token: string, giftId: number) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/trusted-thirds/validate`,
+    token,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 

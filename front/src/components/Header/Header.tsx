@@ -6,13 +6,11 @@ import Button from "../Button/Button";
 import { useUserState } from "../../store/useAppStore";
 import { useEffect, useState } from "react";
 import { logoutUser } from "../../api/auth";
-import { getErrorMessage } from "../../helpers/helpers";
 
 export default function Header() {
   const user = useUserState((state) => state.user);
   const token = useUserState((state) => state.token);
   const clearAuthData = useUserState((state) => state.clearAuthData);
-  const [logoutError, setLogoutError] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,8 +21,6 @@ export default function Header() {
   }, [location.pathname]);
 
   async function handleLogout() {
-    setLogoutError("");
-
     if (!token) {
       clearAuthData();
       setIsMenuOpen(false);
@@ -35,13 +31,13 @@ export default function Header() {
     try {
       setIsLoggingOut(true);
       await logoutUser(token);
+    } catch {
+      // Session locale supprimée même si le serveur refuse un token expiré.
+    } finally {
       clearAuthData();
       setIsMenuOpen(false);
-      navigate("/login", { replace: true });
-    } catch (error) {
-      setLogoutError(getErrorMessage(error));
-    } finally {
       setIsLoggingOut(false);
+      navigate("/login", { replace: true });
     }
   }
 
@@ -119,8 +115,6 @@ export default function Header() {
             />
           </>
         )}
-
-        {logoutError && <p className="header__error">{logoutError}</p>}
       </div>
     </header>
   );

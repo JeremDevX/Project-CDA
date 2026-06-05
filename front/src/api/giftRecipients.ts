@@ -1,4 +1,5 @@
 import { getApiErrorMessage } from "../helpers/helpers";
+import { authFetch } from "./client";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,11 +20,10 @@ export type CreateGiftRecipientPayload = {
 };
 
 export async function getGiftRecipients(token: string, giftId: number) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/recipients`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/recipients`,
+    token,
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -42,14 +42,17 @@ export async function createGiftRecipient(
   giftId: number,
   payload: CreateGiftRecipientPayload,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/recipients`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/recipients`,
+    token,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  });
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -68,13 +71,11 @@ export async function deleteGiftRecipient(
   giftId: number,
   recipientId: number,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/recipients/${recipientId}`,
+    token,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 

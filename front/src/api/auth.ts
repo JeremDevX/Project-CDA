@@ -1,3 +1,5 @@
+import { authFetch } from "./client";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export interface RegisterPayload {
@@ -30,7 +32,7 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
-export interface LougoutResponse {
+export interface LogoutResponse {
   message: string;
 }
 
@@ -70,12 +72,11 @@ export async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
   return data;
 }
 
-export async function logoutUser(token: string): Promise<LougoutResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+export async function logoutUser(token: string): Promise<LogoutResponse> {
+  const response = await authFetch(`${API_BASE_URL}/auth/logout`, token, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
   });
 

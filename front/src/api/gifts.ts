@@ -1,6 +1,7 @@
 import { getApiErrorMessage } from "../helpers/helpers";
 import type { OfferPlanId } from "../data/offerPlans";
 import type { CreationModeId } from "../data/creationModes";
+import { authFetch } from "./client";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -71,11 +72,10 @@ type ConfirmGiftPayload = {
 };
 
 export async function createGift(token: string, title?: string) {
-  const response = await fetch(`${API_BASE_URL}/gifts`, {
+  const response = await authFetch(`${API_BASE_URL}/gifts`, token, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ title }),
   });
@@ -87,11 +87,7 @@ export async function createGift(token: string, title?: string) {
 }
 
 export async function getGifts(token: string) {
-  const response = await fetch(`${API_BASE_URL}/gifts`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await authFetch(`${API_BASE_URL}/gifts`, token);
 
   if (!response.ok) {
     throw new Error(
@@ -106,11 +102,10 @@ export async function updateGift(
   giftId: number,
   payload: UpdateGiftPayload,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}`, {
+  const response = await authFetch(`${API_BASE_URL}/gifts/${giftId}`, token, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });
@@ -125,11 +120,7 @@ export async function updateGift(
 }
 
 export async function getGiftById(token: string, giftId: number) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await authFetch(`${API_BASE_URL}/gifts/${giftId}`, token);
 
   if (!response.ok) {
     throw new Error(
@@ -145,14 +136,17 @@ export async function confirmGift(
   giftId: number,
   payload: ConfirmGiftPayload,
 ) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/confirmations`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/confirmations`,
+    token,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  });
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -167,12 +161,13 @@ export async function confirmGift(
 }
 
 export async function createGiftCheckoutSession(token: string, giftId: number) {
-  const response = await fetch(`${API_BASE_URL}/gifts/${giftId}/checkout-session`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/${giftId}/checkout-session`,
+    token,
+    {
+      method: "POST",
     },
-  });
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -191,13 +186,13 @@ export async function validateGiftPayment(
   giftId: number,
   sessionId: string,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/payment-confirmation`,
+    token,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ sessionId }),
     },
@@ -213,11 +208,10 @@ export async function validateGiftPayment(
 }
 
 export async function getGiftPaymentConfirmations(token: string) {
-  const response = await fetch(`${API_BASE_URL}/gifts/payment-confirmations`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await authFetch(
+    `${API_BASE_URL}/gifts/payment-confirmations`,
+    token,
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -237,13 +231,9 @@ export async function downloadGiftPaymentConfirmationPdf(
   token: string,
   giftId: number,
 ) {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/gifts/${giftId}/payment-confirmation/pdf`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    token,
   );
 
   if (!response.ok) {
