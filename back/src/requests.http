@@ -1,21 +1,73 @@
+# LegacyGift API manual tests
+#
+# Non automatique / à remplir :
+# - @token : récupérer dans réponse `Auth - login` ou `Auth - register`.
+# - @giftId : récupérer dans réponse `Gifts - create` ou `Gifts - list`.
+# - @recipientId : récupérer dans réponse `Gift recipients - create/list`.
+# - @trustedThirdId : récupérer dans réponse `Gift trusted thirds - create/list`.
+# - @mediaId : récupérer dans réponse `Gift media - upload/list`.
+# - @mediaAssetId : récupérer dans `Gift media - image library`, champ `id`.
+# - @checkoutSessionId : ID `cs_test_...` d'une session Stripe PAYÉE.
+# - @checkInToken / @thirdPartyToken : générés par jobs, en DB ou dans logs email.
+#
+# Ne pas commiter de vrai JWT.
+# Si valeur Stripe contient `#fid...`, garder seulement partie avant `#`.
+#
+# Tunnel normal :
+# register/login -> create gift -> pricing -> creation mode -> composition
+# -> medias -> preview -> recipients -> trusted thirds -> confirmations
+# -> checkout session -> paiement Stripe -> payment confirmation.
+#
+# SQL utile tokens check-in :
+# SELECT token, status, sent_at
+# FROM check_in_reminders
+# WHERE gift_id = 24
+# ORDER BY created_at DESC;
+#
+# SQL utile tokens tiers :
+# SELECT token, trusted_third_id, status
+# FROM third_party_validations
+# WHERE gift_id = 24
+# ORDER BY created_at DESC;
+#
+# Jobs check-in :
+# - lancés au démarrage serveur + cron 02:00.
+# - check-in créé si gift active et `nextCheckInDue <= now`.
+# - relances tous les 3 jours, 4 mails max.
+# - validations tiers créées après 4 relances sans réponse.
+# - sans SMTP, liens visibles dans logs serveur (`Email envoye`).
+
 @host = http://localhost:1337
 @baseUrl = {{host}}/api
-@token = REPLACE_WITH_TOKEN
+@token = REPLACE_WITH_JWT
+@giftId = 1
+@recipientId = 1
+@trustedThirdId = 1
+@mediaId = 1
+@mediaAssetId = 1
+@checkoutSessionId = REPLACE_WITH_PAID_CS_TEST_SESSION_ID
+@checkInToken = REPLACE_WITH_CHECK_IN_TOKEN
+@thirdPartyToken = REPLACE_WITH_THIRD_PARTY_TOKEN
+@e2eEmail = legacygift.e2e.demo@example.test
 
 ### Healthcheck
 GET {{baseUrl}}/health
 
-### Register
+### Auth - register
+# `confirmPassword` est utilisé côté front, ignoré côté back.
+# Réponse contient `token` + `user`.
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
   "username": "demo",
   "email": "demo@example.com",
-  "password": "password123"
+  "password": "password123",
+  "confirmPassword": "password123"
 }
 
-### Login
+### Auth - login
+# Copier `token` réponse dans @token.
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -24,12 +76,29 @@ Content-Type: application/json
   "password": "password123"
 }
 
-### Current user
-GET {{baseUrl}}/auth/me
+### Auth - login alias identifier
+# Back accepte aussi `identifier` comme alias email.
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "demo@example.com",
+  "password": "password123"
+}
+
+### Auth - logout
+# Blacklist le JWT courant. Après ça, refaire login pour nouveau @token.
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
 Authorization: Bearer {{token}}
 
-### Change password
-POST {{baseUrl}}/auth/change-password
+### Users - current user
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Users - change password
+# Après succès, prochains logins doivent utiliser `newPassword`.
+POST {{baseUrl}}/users/change-password
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -39,6 +108,343 @@ Authorization: Bearer {{token}}
   "confirmPassword": "password456"
 }
 
-### Logout
-POST {{baseUrl}}/auth/logout
+### Gifts - create
+# Copier `gift.id` réponse dans @giftId.
+POST {{baseUrl}}/gifts
+Content-Type: application/json
 Authorization: Bearer {{token}}
+
+{
+  "title": "Gift demo"
+}
+
+### Gifts - list
+# Utile pour retrouver giftId, compte médias, compte destinataires.
+GET {{baseUrl}}/gifts
+Authorization: Bearer {{token}}
+
+### Gifts - detail
+GET {{baseUrl}}/gifts/{{giftId}}
+Authorization: Bearer {{token}}
+
+### Gifts - pricing step
+# Offres valides : `essentiel`, `standard`, `premium`.
+# Limites :
+# - essentiel : 1 destinataire, 0 image, 0 vidéo.
+# - standard : 5 destinataires, 10 images, 0 vidéo.
+# - premium : destinataires illimités, images illimitées, 1 vidéo.
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "offer": "standard",
+  "lastEditionStep": "creation-mode"
+}
+
+### Gifts - creation mode step
+# Mode valide actuellement : `free`.
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "creationMode": "free",
+  "lastEditionStep": "composition"
+}
+
+### Gifts - composition step
+# `message` accepte HTML limité : p, strong/em/b/i, ul/ol/li, blockquote, br.
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Gift demo final",
+  "message": "<p>Message demo</p>",
+  "lastEditionStep": "images"
+}
+
+### Gift media - list
+# Copier `media.id` dans @mediaId si suppression du lien média.
+GET {{baseUrl}}/gifts/{{giftId}}/media
+Authorization: Bearer {{token}}
+
+### Gift media - image library
+# Retourne tous media assets image utilisateur.
+# Copier `images[].id` dans @mediaAssetId pour reuse/delete library.
+GET {{baseUrl}}/gifts/{{giftId}}/media/library
+Authorization: Bearer {{token}}
+
+### Gift media - upload image
+# Nécessite :
+# - offre standard ou premium.
+# - Supabase/storage env configuré.
+# - fichier local existant : `back/src/fixtures/test-image.png`.
+# MIME autorisés back : image/jpeg, image/png, image/webp.
+POST {{baseUrl}}/gifts/{{giftId}}/media
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=legacygift
+
+--legacygift
+Content-Disposition: form-data; name="type"
+
+image
+--legacygift
+Content-Disposition: form-data; name="file"; filename="test-image.png"
+Content-Type: image/png
+
+< ./fixtures/test-image.png
+--legacygift--
+
+### Gifts - optional premium offer for video upload
+# À lancer seulement si test upload vidéo.
+# Change l'offre du gift vers premium.
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "offer": "premium",
+  "lastEditionStep": "images"
+}
+
+### Gift media - upload video
+# Nécessite :
+# - offre premium.
+# - pas déjà une vidéo sur ce gift.
+# - Supabase/storage env configuré.
+# - fichier local existant : `back/src/fixtures/test-video.mp4`.
+# MIME autorisés back : video/mp4, video/webm, video/quicktime.
+POST {{baseUrl}}/gifts/{{giftId}}/media
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=legacygift
+
+--legacygift
+Content-Disposition: form-data; name="type"
+
+video
+--legacygift
+Content-Disposition: form-data; name="file"; filename="test-video.mp4"
+Content-Type: video/mp4
+
+< ./fixtures/test-video.mp4
+--legacygift--
+
+### Gift media - reuse library image
+# @mediaAssetId doit être une image appartenant à user courant.
+# Si image déjà liée au gift : 400.
+POST {{baseUrl}}/gifts/{{giftId}}/media/reuse
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "sourceMediaId": {{mediaAssetId}}
+}
+
+### Gift media - delete linked media
+# Supprime seulement lien gift <-> media asset.
+# Ne supprime pas fichier storage ni asset global.
+DELETE {{baseUrl}}/gifts/{{giftId}}/media/{{mediaId}}
+Authorization: Bearer {{token}}
+
+### Gift media - delete library image asset
+# Supprime asset image global + fichier storage.
+# Retire aussi image des autres gifts qui l'utilisent.
+DELETE {{baseUrl}}/gifts/{{giftId}}/media/library/{{mediaAssetId}}
+Authorization: Bearer {{token}}
+
+### Gifts - media step
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lastEditionStep": "preview"
+}
+
+### Gifts - preview step
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lastEditionStep": "recipients"
+}
+
+### Gift recipients - list
+# Copier `recipients[].id` dans @recipientId si suppression.
+GET {{baseUrl}}/gifts/{{giftId}}/recipients
+Authorization: Bearer {{token}}
+
+### Gift recipients - create
+# Nécessite offre déjà choisie.
+# Limite selon offre : essentiel 1, standard 5, premium illimité.
+POST {{baseUrl}}/gifts/{{giftId}}/recipients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "Alice Martin",
+  "email": "alice@example.com",
+  "phone": "+33601020304"
+}
+
+### Gift recipients - delete
+DELETE {{baseUrl}}/gifts/{{giftId}}/recipients/{{recipientId}}
+Authorization: Bearer {{token}}
+
+### Gifts - recipients step
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lastEditionStep": "trusted-thirds"
+}
+
+### Gift trusted thirds - list
+# Copier `trustedThirds[].id` dans @trustedThirdId si suppression.
+GET {{baseUrl}}/gifts/{{giftId}}/trusted-thirds
+Authorization: Bearer {{token}}
+
+### Gift trusted thirds - create 1
+# Il faut exactement 3 tiers pour passer confirmations finales.
+POST {{baseUrl}}/gifts/{{giftId}}/trusted-thirds
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "Bob Durand",
+  "email": "bob@example.com",
+  "phone": "+33611111111",
+  "relation": "Ami"
+}
+
+### Gift trusted thirds - create 2
+POST {{baseUrl}}/gifts/{{giftId}}/trusted-thirds
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "Claire Petit",
+  "email": "claire@example.com",
+  "phone": "+33622222222",
+  "relation": "Soeur"
+}
+
+### Gift trusted thirds - create 3
+POST {{baseUrl}}/gifts/{{giftId}}/trusted-thirds
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "David Leroy",
+  "email": "david@example.com",
+  "phone": "+33633333333",
+  "relation": "Collegue"
+}
+
+### Gift trusted thirds - validate count
+# Vérifie uniquement que le gift possède exactement 3 tiers.
+POST {{baseUrl}}/gifts/{{giftId}}/trusted-thirds/validate
+Authorization: Bearer {{token}}
+
+### Gift trusted thirds - delete
+DELETE {{baseUrl}}/gifts/{{giftId}}/trusted-thirds/{{trustedThirdId}}
+Authorization: Bearer {{token}}
+
+### Gifts - trusted thirds step
+PATCH {{baseUrl}}/gifts/{{giftId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lastEditionStep": "confirmations"
+}
+
+### Gifts - final confirmations
+# Nécessite :
+# - au moins 1 destinataire.
+# - exactement 3 tiers de confiance.
+# Après succès, `finalConfirmationsAt` est défini.
+POST {{baseUrl}}/gifts/{{giftId}}/confirmations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "finalConfirmationsAccepted": true
+}
+
+### Gifts - create Stripe checkout session
+# Nécessite :
+# - STRIPE_SECRET_KEY configurée.
+# - gift avec offre valide.
+# - confirmations finales validées.
+# Réponse : `{ "url": "https://checkout.stripe.com/..." }`.
+# Ouvrir URL, payer carte test `4242 4242 4242 4242`, date future, CVC 424.
+POST {{baseUrl}}/gifts/{{giftId}}/checkout-session
+Authorization: Bearer {{token}}
+
+### Gifts - confirm Stripe payment
+# Ne pas utiliser URL checkout entière.
+# Utiliser seulement `cs_test_...`, sans `#fid...`.
+# La session doit être payée, sinon réponse : `Paiement non validé`.
+# Le `session_id` est dans URL retour :
+# `/gifts/:giftId/activated?payment=success&session_id=cs_test_...`
+# Après succès, gift passe `active`, `paidAt` et `nextCheckInDue` sont définis.
+POST {{baseUrl}}/gifts/{{giftId}}/payment-confirmation
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "sessionId": "{{checkoutSessionId}}"
+}
+
+### Gifts - payment confirmations list
+# Liste justificatifs paiement du user courant.
+GET {{baseUrl}}/gifts/payment-confirmations
+Authorization: Bearer {{token}}
+
+### Gifts - payment confirmation PDF
+# Nécessite confirmation paiement existante pour ce gift.
+# Réponse binaire PDF.
+GET {{baseUrl}}/gifts/{{giftId}}/payment-confirmation/pdf
+Authorization: Bearer {{token}}
+
+### Check-ins - confirm alive by token
+# Route publique, pas de JWT.
+# Token généré par job `detectOverdueCheckIns`.
+# Conditions :
+# - gift `active` avec `nextCheckInDue <= now`.
+# - serveur lancé au démarrage ou cron 02:00.
+# Token récupérable via mail/log ou SQL `check_in_reminders`.
+# Succès : reminder `responded`, gift redevient `active`, prochain check-in J+30.
+GET {{baseUrl}}/check-ins/{{checkInToken}}/confirm
+
+### Third-party validations - confirm death
+# Route publique, pas de JWT.
+# Token généré par job `escalateCheckInsToTrustedThirds`.
+# Conditions :
+# - 4 check-ins envoyés sans réponse.
+# - dernière relance envoyée il y a 3 jours ou plus.
+# - gift en statut `in_escalation`.
+# Token récupérable via mail/log ou SQL `third_party_validations`.
+# `confirm-death` peut livrer le gift après délai tiers de 7 jours.
+GET {{baseUrl}}/third-party-validations/{{thirdPartyToken}}/confirm-death
+
+### Third-party validations - confirm alive
+# Même token que confirm-death.
+# Deux validations `confirmed_alive` expirent/annulent le gift.
+GET {{baseUrl}}/third-party-validations/{{thirdPartyToken}}/confirm-alive
+
+### E2E cleanup - delete test user
+# Nécessite E2E_CLEANUP_ENABLED=true.
+# Refuse emails hors pattern `legacygift.e2e.*@example.test`.
+# Supprime user + objets storage associés.
+DELETE {{baseUrl}}/e2e/users
+Content-Type: application/json
+
+{
+  "email": "{{e2eEmail}}"
+}

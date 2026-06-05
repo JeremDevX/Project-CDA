@@ -139,6 +139,21 @@ function getStripeClient() {
   return new Stripe(config.stripeSecretKey);
 }
 
+function isMissingStripeResourceError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    ((error as { code?: unknown }).code === "resource_missing" ||
+      (error as { type?: unknown }).type === "StripeInvalidRequestError") &&
+    (error as { code?: unknown; statusCode?: unknown }).statusCode === 404
+  );
+}
+
+function normalizeStripeCheckoutSessionId(value: string) {
+  return value.split("#")[0].split("?")[0];
+}
+
 function isAllowedOffer(value: unknown): value is AllowedOffer {
   return typeof value === "string" && allowedOffers.includes(value as never);
 }
@@ -523,7 +538,9 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
-    const sessionId = normalizeTextInput(req.body?.sessionId);
+    const sessionId = normalizeStripeCheckoutSessionId(
+      normalizeTextInput(req.body?.sessionId),
+    );
     const stripe = getStripeClient();
 
     if (!userId) {
@@ -631,6 +648,10 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
 
     return res.json({ gift: updatedGift });
   } catch (error) {
+    if (isMissingStripeResourceError(error)) {
+      return res.status(400).json({ message: "Session Stripe invalide" });
+    }
+
     console.error("Erreur lors de la validation du paiement Stripe:", error);
     return res.status(500).json({ message: "Erreur interne de serveur" });
   }
