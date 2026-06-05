@@ -76,9 +76,15 @@
   color: var(--text-emphasis);
 }
 
-@media (max-width: 640px) {
+.gift-message-editor .ProseMirror {
+  min-height: 20rem;
+  padding: var(--space-lg);
+}
+
+@media (min-width: 641px) {
+
   .gift-message-editor .ProseMirror {
-    min-height: 20rem;
-    padding: var(--space-lg);
+    min-height: 28rem;
+    padding: var(--space-xl);
   }
 }

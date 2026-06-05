@@ -290,106 +290,208 @@
   border-top: var(--border-width-sm) solid var(--border);
 }
 
-@media (max-width: 920px) {
+.gift-trusted-thirds-page__form-grid {
+  grid-template-columns: 1fr;
+}
+
+.gift-trusted-thirds-page__phone-field {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.gift-trusted-thirds-page__submit {
+  grid-column: auto;
+}
+
+.gift-trusted-thirds-page {
+  align-items: stretch;
+}
+
+.gift-trusted-thirds-page__content {
+  max-width: none;
+}
+
+.gift-trusted-thirds-page__footer {
+  max-width: none;
+  flex-direction: column-reverse;
+}
+
+.gift-trusted-thirds-page__header {
+  text-align: left;
+}
+
+.gift-trusted-thirds-page__notice {
+  grid-template-columns: 1fr;
+}
+
+.gift-trusted-thirds-page__table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  border-bottom: 0;
+}
+
+.gift-trusted-thirds-page__row {
+  grid-template-columns: 1fr auto;
+  justify-items: stretch;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, white 4%, var(--surface));
+  text-align: left;
+}
+
+.gift-trusted-thirds-page__person {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.gift-trusted-thirds-page__person span {
+  justify-content: flex-start;
+}
+
+.gift-trusted-thirds-page__detail {
+  align-items: flex-start;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.gift-trusted-thirds-page__detail:nth-of-type(2) {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.gift-trusted-thirds-page__detail:nth-of-type(3) {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.gift-trusted-thirds-page__detail span {
+  color: var(--text-primary);
+}
+
+.gift-trusted-thirds-page__row button {
+  grid-column: 2;
+  grid-row: 1;
+  width: 2rem;
+  height: 2rem;
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, white 3%, transparent);
+}
+
+.gift-trusted-thirds-page__footer .app-button {
+  width: 100%;
+}
+
+@media (min-width: 761px) {
+
   .gift-trusted-thirds-page__form-grid {
     grid-template-columns: 1fr 1fr;
   }
 
-  .gift-trusted-thirds-page__phone-field {
+  .gift-trusted-thirds-page {
+    align-items: center;
+  }
+
+  .gift-trusted-thirds-page__content {
+    max-width: 1400px;
+  }
+
+  .gift-trusted-thirds-page__footer {
+    max-width: 1400px;
+    flex-direction: row;
+  }
+
+  .gift-trusted-thirds-page__header {
+    text-align: center;
+  }
+
+  .gift-trusted-thirds-page__notice {
+    grid-template-columns: auto 1fr;
+  }
+
+  .gift-trusted-thirds-page__table {
+    display: block;
+    flex-direction: row;
+    gap: 0;
+    border-bottom: var(--border-width-sm) solid var(--border);
+  }
+
+  .gift-trusted-thirds-page__row {
+    grid-template-columns: minmax(260px, 1.5fr) minmax(150px, 0.7fr) minmax(
+      180px,
+      0.8fr
+    ) auto;
+    gap: var(--space-lg);
+    padding: var(--space-lg) 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    text-align: start;
+  }
+
+  .gift-trusted-thirds-page__person {
+    display: block;
+    flex-direction: row;
+    align-items: stretch;
     grid-column: auto;
     grid-row: auto;
   }
 
-  .gift-trusted-thirds-page__submit {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 760px) {
-  .gift-trusted-thirds-page {
-    align-items: stretch;
-  }
-
-  .gift-trusted-thirds-page__content,
-  .gift-trusted-thirds-page__footer {
-    max-width: none;
-  }
-
-  .gift-trusted-thirds-page__header {
-    text-align: left;
-  }
-
-  .gift-trusted-thirds-page__form-grid,
-  .gift-trusted-thirds-page__notice {
-    grid-template-columns: 1fr;
-  }
-
-  .gift-trusted-thirds-page__table {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    border-bottom: 0;
-  }
-
-  .gift-trusted-thirds-page__row {
-    grid-template-columns: 1fr auto;
-    justify-items: stretch;
-    gap: var(--space-md);
-    padding: var(--space-lg);
-    border: var(--border-width-sm) solid var(--border);
-    border-radius: var(--radius-lg);
-    background: color-mix(in srgb, white 4%, var(--surface));
-    text-align: left;
-  }
-
-  .gift-trusted-thirds-page__person {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .gift-trusted-thirds-page__person span {
-    justify-content: flex-start;
-  }
-
   .gift-trusted-thirds-page__detail {
-    align-items: flex-start;
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    align-items: stretch;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .gift-trusted-thirds-page__detail:nth-of-type(2) {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .gift-trusted-thirds-page__detail:nth-of-type(3) {
-    grid-column: 1 / -1;
-    grid-row: 3;
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .gift-trusted-thirds-page__detail span {
-    color: var(--text-primary);
+    color: var(--accent);
   }
 
   .gift-trusted-thirds-page__row button {
-    grid-column: 2;
-    grid-row: 1;
-    width: 2rem;
-    height: 2rem;
-    border: var(--border-width-sm) solid var(--border);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, white 3%, transparent);
-  }
-
-  .gift-trusted-thirds-page__footer {
-    flex-direction: column-reverse;
+    grid-column: auto;
+    grid-row: auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .gift-trusted-thirds-page__footer .app-button {
-    width: 100%;
+    width: fit-content;
+  }
+}
+
+@media (min-width: 921px) {
+
+  .gift-trusted-thirds-page__form-grid {
+    grid-template-columns: 1.1fr 1.1fr minmax(190px, 0.6fr) auto;
+  }
+
+  .gift-trusted-thirds-page__phone-field {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .gift-trusted-thirds-page__submit {
+    grid-column: 2;
   }
 }

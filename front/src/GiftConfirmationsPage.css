@@ -163,30 +163,57 @@
   border-top: var(--border-width-sm) solid var(--border);
 }
 
-@media (max-width: 760px) {
+.gift-confirmations-page {
+  align-items: stretch;
+}
+
+.gift-confirmations-page__content {
+  max-width: none;
+}
+
+.gift-confirmations-page__footer {
+  max-width: none;
+  flex-direction: column-reverse;
+}
+
+.gift-confirmations-page__header {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.gift-confirmations-page__item {
+  padding: var(--space-lg);
+}
+
+.gift-confirmations-page__footer .app-button {
+  width: 100%;
+}
+
+@media (min-width: 761px) {
+
   .gift-confirmations-page {
-    align-items: stretch;
+    align-items: center;
   }
 
-  .gift-confirmations-page__content,
+  .gift-confirmations-page__content {
+    max-width: 760px;
+  }
+
   .gift-confirmations-page__footer {
-    max-width: none;
+    max-width: 760px;
+    flex-direction: row;
   }
 
   .gift-confirmations-page__header {
-    align-items: flex-start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
   }
 
   .gift-confirmations-page__item {
-    padding: var(--space-lg);
-  }
-
-  .gift-confirmations-page__footer {
-    flex-direction: column-reverse;
+    padding: var(--space-lg) var(--space-xl);
   }
 
   .gift-confirmations-page__footer .app-button {
-    width: 100%;
+    width: fit-content;
   }
 }

@@ -118,9 +118,15 @@
   font-weight: 700;
 }
 
-@media (max-width: 760px) {
+.gift-media-library__grid {
+  grid-template-columns: 1fr;
+  max-height: 28rem;
+}
+
+@media (min-width: 761px) {
+
   .gift-media-library__grid {
-    grid-template-columns: 1fr;
-    max-height: 28rem;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    max-height: 34rem;
   }
 }

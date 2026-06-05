@@ -95,16 +95,29 @@
   margin: 0;
 }
 
-@media (max-width: 640px) {
+.gift-composition-page {
+  align-items: stretch;
+}
+
+.gift-composition-page__actions {
+  flex-direction: column-reverse;
+}
+
+.gift-composition-page__actions .app-button {
+  width: 100%;
+}
+
+@media (min-width: 641px) {
+
   .gift-composition-page {
-    align-items: stretch;
+    align-items: center;
   }
 
   .gift-composition-page__actions {
-    flex-direction: column-reverse;
+    flex-direction: row;
   }
 
   .gift-composition-page__actions .app-button {
-    width: 100%;
+    width: fit-content;
   }
 }

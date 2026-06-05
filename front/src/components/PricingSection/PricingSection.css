@@ -159,8 +159,6 @@
   color: var(--accent2);
 }
 
-@media (max-width: 767px) {
-  .pricing__card {
-    padding: var(--card-padding);
-  }
+.pricing__card {
+  padding: var(--card-padding);
 }

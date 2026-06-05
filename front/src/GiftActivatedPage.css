@@ -142,43 +142,88 @@
   font-weight: 800;
 }
 
-@media (max-width: 640px) {
-  .gift-activated-page {
-    padding: var(--space-2xl) 0;
-  }
-
-  .gift-activated-page__content {
-    gap: var(--space-xl);
-  }
-
-  .gift-activated-page__header h1 {
-    font-size: 1.55rem;
-  }
-
-  .gift-activated-page__secondary-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .gift-activated-page__summary div {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-  }
-
-  .gift-activated-page__summary dd {
-    max-width: 100%;
-    text-align: left;
-  }
+.gift-activated-page {
+  padding: var(--space-2xl) 0;
 }
 
-@media (max-width: 420px) {
-  .gift-activated-page__summary,
+.gift-activated-page__content {
+  gap: var(--space-xl);
+}
+
+.gift-activated-page__header h1 {
+  font-size: 1.55rem;
+}
+
+.gift-activated-page__secondary-actions {
+  grid-template-columns: 1fr;
+}
+
+.gift-activated-page__summary div {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.gift-activated-page__summary dd {
+  max-width: 100%;
+  text-align: left;
+}
+
+.gift-activated-page__summary {
+  padding: var(--space-md);
+}
+
+.gift-activated-page__notice {
+  padding: var(--space-md);
+}
+
+.gift-activated-page__icon {
+  width: 56px;
+  height: 56px;
+}
+
+@media (min-width: 421px) {
+
+  .gift-activated-page__summary {
+    padding: var(--space-lg) var(--space-xl);
+  }
+
   .gift-activated-page__notice {
-    padding: var(--space-md);
+    padding: var(--space-xl);
   }
 
   .gift-activated-page__icon {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (min-width: 641px) {
+
+  .gift-activated-page {
+    padding: calc(var(--space-2xl) * 1.25) 0;
+  }
+
+  .gift-activated-page__content {
+    gap: calc(var(--space-xl) + var(--space-sm));
+  }
+
+  .gift-activated-page__header h1 {
+    font-size: 2rem;
+  }
+
+  .gift-activated-page__secondary-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-activated-page__summary div {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .gift-activated-page__summary dd {
+    max-width: 52%;
+    text-align: right;
   }
 }

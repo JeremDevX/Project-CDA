@@ -122,56 +122,6 @@
   color: var(--accent);
 }
 
-@media (max-width: 767px) {
-  .header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    padding: var(--space-md) 0;
-  }
-
-  .header__brand {
-    align-self: center;
-  }
-
-  .header__menu-button {
-    display: grid;
-  }
-
-  .header__actions {
-    display: none;
-    grid-column: 1 / -1;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    width: 100%;
-    margin-top: var(--space-xs);
-    padding: var(--space-md);
-    border: var(--border-width-sm) solid var(--border);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--surface) 94%, var(--bg));
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
-  }
-
-  .header__actions--open {
-    display: flex;
-  }
-
-  .header__user {
-    width: 100%;
-    max-width: none;
-    justify-content: center;
-  }
-
-  .header__welcome {
-    justify-items: center;
-    text-align: center;
-  }
-
-  .header__actions .app-button {
-    width: 100%;
-  }
-}
-
 .header__error {
   width: 100%;
   margin: 0;
@@ -180,8 +130,97 @@
   text-align: right;
 }
 
-@media (max-width: 767px) {
-  .header__error {
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: var(--space-md) 0;
+}
+
+.header__brand {
+  align-self: center;
+}
+
+.header__menu-button {
+  display: grid;
+}
+
+.header__actions {
+  display: none;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: var(--space-xs);
+  padding: var(--space-md);
+  border: var(--border-width-sm) solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg));
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+}
+
+.header__actions--open {
+  display: flex;
+}
+
+.header__user {
+  width: 100%;
+  max-width: none;
+  justify-content: center;
+}
+
+.header__welcome {
+  justify-items: center;
+  text-align: center;
+}
+
+.header__actions .app-button {
+  width: 100%;
+}
+
+.header__error {
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .header {
+    display: flex;
+    grid-template-columns: none;
+    padding: var(--space-lg) 0;
+  }
+  .header__brand {
+    align-self: auto;
+  }
+  .header__menu-button {
+    display: none;
+  }
+  .header__actions {
+    display: flex;
+    grid-column: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
+    margin-top: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .header__user {
+    width: auto;
+    max-width: 220px;
+    justify-content: flex-start;
+  }
+  .header__welcome {
+    justify-items: start;
     text-align: left;
+  }
+  .header__actions .app-button {
+    width: fit-content;
+  }
+  .header__error {
+    text-align: right;
   }
 }

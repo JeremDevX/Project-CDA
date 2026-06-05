@@ -15,8 +15,13 @@
   margin-top: var(--space-xl);
 }
 
-@media (max-width: 640px) {
+.gift-pricing-page__actions {
+  flex-direction: column-reverse;
+}
+
+@media (min-width: 641px) {
+
   .gift-pricing-page__actions {
-    flex-direction: column-reverse;
+    flex-direction: row;
   }
 }

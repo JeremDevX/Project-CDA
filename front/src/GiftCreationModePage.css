@@ -24,16 +24,29 @@
   border-top: var(--border-width-sm) solid var(--border);
 }
 
-@media (max-width: 640px) {
+.gift-creation-mode-page {
+  align-items: stretch;
+}
+
+.gift-creation-mode-page__actions {
+  flex-direction: column-reverse;
+}
+
+.gift-creation-mode-page__actions .app-button {
+  width: 100%;
+}
+
+@media (min-width: 641px) {
+
   .gift-creation-mode-page {
-    align-items: stretch;
+    align-items: center;
   }
 
   .gift-creation-mode-page__actions {
-    flex-direction: column-reverse;
+    flex-direction: row;
   }
 
   .gift-creation-mode-page__actions .app-button {
-    width: 100%;
+    width: fit-content;
   }
 }

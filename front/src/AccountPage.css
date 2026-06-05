@@ -231,47 +231,87 @@
   font-weight: 700;
 }
 
-@media (max-width: 767px) {
+.account {
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.account__item {
+  flex-direction: column;
+}
+
+.account__term {
+  flex-basis: auto;
+}
+
+.account__payment {
+  padding: var(--space-lg);
+}
+
+.account__payment-top {
+  grid-template-columns: 1fr;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+.account__payment-footer {
+  grid-template-columns: 1fr;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.account__payment-amount {
+  white-space: normal;
+}
+
+.account__payment-details {
+  grid-template-columns: 1fr;
+}
+
+.account__payment-footer .app-button {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+
   .account {
-    padding: var(--space-xl) var(--space-lg);
+    padding: var(--space-2xl) var(--space-xl);
   }
 
   .account__item {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .account__term {
-    flex-basis: auto;
+    flex-basis: clamp(180px, 28%, 220px);
   }
 
   .account__payment {
-    padding: var(--space-lg);
-  }
-
-  .account__payment-top,
-  .account__payment-footer {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
+    padding: var(--space-xl);
   }
 
   .account__payment-top {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .account__payment-amount {
-    white-space: normal;
-  }
-
-  .account__payment-details {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    display: grid;
+    flex-direction: row;
   }
 
   .account__payment-footer {
-    flex-direction: column;
+    grid-template-columns: none;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .account__payment-amount {
+    white-space: nowrap;
+  }
+
+  .account__payment-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .account__payment-footer .app-button {
-    width: 100%;
+    width: fit-content;
   }
 }

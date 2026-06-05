@@ -107,12 +107,21 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 760px) {
+.gift-preview-player__body {
+  padding: var(--space-xl);
+}
+
+.gift-preview-player__gallery {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 761px) {
+
   .gift-preview-player__body {
-    padding: var(--space-xl);
+    padding: var(--space-2xl);
   }
 
   .gift-preview-player__gallery {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }

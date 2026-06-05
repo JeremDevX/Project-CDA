@@ -238,20 +238,31 @@
   background-color: color-mix(in srgb, var(--accent2) 8%, transparent);
 }
 
-@media (max-width: 767px) {
-  .gift-card {
-    min-height: 0;
-    padding: var(--space-lg);
-  }
+.gift-card {
+  min-height: 0;
+  padding: var(--space-lg);
+}
+
+.gift-card__stats {
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
+@media (min-width: 421px) {
 
   .gift-card__stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-height: 0;
   }
 }
 
-@media (max-width: 420px) {
+@media (min-width: 768px) {
+
+  .gift-card {
+    min-height: 376px;
+    padding: var(--space-xl);
+  }
+
   .gift-card__stats {
-    grid-template-columns: 1fr;
+    min-height: 96px;
   }
 }

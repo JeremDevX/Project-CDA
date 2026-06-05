@@ -54,8 +54,13 @@ body,
   padding: 0 var(--space-xl);
 }
 
-@media (max-width: 767px) {
+.app {
+  padding: 0 var(--space-lg);
+}
+
+@media (min-width: 768px) {
+
   .app {
-    padding: 0 var(--space-lg);
+    padding: 0 var(--space-xl);
   }
 }
