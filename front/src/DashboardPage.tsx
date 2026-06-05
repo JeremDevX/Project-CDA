@@ -73,8 +73,8 @@ export default function DashboardPage() {
           <div>
             <h2 className="dashboard-page__section-title">Mes gifts</h2>
             <p className="dashboard-page__section-subtitle">
-              Gérez vos messages posthumes en toute sécurité. Vos brouillons
-              sont conservés gratuitement jusqu'à 30 jours.
+              Gérez vos messages posthumes depuis votre espace personnel. Vos
+              brouillons sont conservés gratuitement jusqu'à 30 jours.
             </p>
           </div>
 

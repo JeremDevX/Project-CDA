@@ -22,8 +22,8 @@ export default function LandingPage() {
     {
       icon: EyeOff,
       iconTone: "orange" as const,
-      title: "Confidentialité maîtrisée",
-      text: "Vos données sont limitées au strict nécessaire et utilisées uniquement pour assurer la transmission de vos messages, selon vos paramètres.",
+      title: "Paramètres maîtrisés",
+      text: "Vous choisissez les destinataires, les tiers de confiance et les conditions de transmission de vos messages.",
     },
   ];
 
@@ -32,7 +32,7 @@ export default function LandingPage() {
       icon: Scale,
       iconTone: "teal" as const,
       title: "Simplicité juridique",
-      text: "Pas de notaire, pas de procédure complexe. Un service privé qui complète vos dispositions existantes.",
+      text: "Pas de notaire, pas de procédure complexe. Un service personnel qui complète vos dispositions existantes.",
     },
     {
       icon: ShieldCheck,
@@ -44,7 +44,7 @@ export default function LandingPage() {
       icon: FileText,
       iconTone: "orange" as const,
       title: "Éthique et transparence",
-      text: "Un processus clair, sans exploitation de données, conçu pour respecter votre intention.",
+      text: "Un processus clair, conçu pour respecter votre intention.",
     },
   ];
 
@@ -102,7 +102,7 @@ export default function LandingPage() {
       <PricingSection />
 
       <section className="value-prop">
-        <h2 className="value-prop__title">Confiance et sécurité</h2>
+        <h2 className="value-prop__title">Confiance et clarté</h2>
         <div className="value-prop__list">
           {trustItems.map((item) => (
             <InfoCard

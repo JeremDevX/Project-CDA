@@ -315,10 +315,9 @@ export default function GiftRecipientsPage() {
         <aside className="gift-recipients-page__notice">
           <Info size={20} />
           <p>
-            Les coordonnées de vos proches sont chiffrées et sécurisées. Aucune
-            notification ne leur sera envoyée avant le déclenchement officiel de
-            la transmission par vos tiers de confiance. Votre démarche reste
-            totalement privée.
+            Les coordonnées de vos proches servent à préparer l'envoi du message.
+            Aucune notification ne leur sera envoyée avant le déclenchement
+            officiel de la transmission par vos tiers de confiance.
           </p>
         </aside>
 

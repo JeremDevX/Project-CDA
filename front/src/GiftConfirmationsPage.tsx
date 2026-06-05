@@ -31,7 +31,7 @@ const confirmationItems: {
   {
     key: "activationConfirmed",
     title: "Finalisation et activation",
-    text: "Je comprends que ma création est actuellement enregistrée en tant que brouillon (valable 30 jours) et qu'elle ne sera activée et protégée pour le futur qu'après mon choix d'offre finale.",
+    text: "Je comprends que ma création est actuellement enregistrée en tant que brouillon (valable 30 jours) et qu'elle ne sera activée pour le futur qu'après mon choix d'offre finale.",
   },
 ];
 
@@ -130,7 +130,7 @@ export default function GiftConfirmationsPage() {
           </span>
           <h1>Dernières confirmations</h1>
           <p>
-            Avant de sécuriser votre héritage numérique, merci de confirmer
+            Avant de finaliser votre héritage numérique, merci de confirmer
             votre accord sur ces points essentiels. Cela garantit le respect et
             la bonne transmission de votre message.
           </p>
@@ -164,9 +164,8 @@ export default function GiftConfirmationsPage() {
         <aside className="gift-confirmations-page__notice">
           <Info size={20} />
           <p>
-            Vos données sont intégralement chiffrées. Conformément à notre
-            politique de confidentialité, personne n'y aura accès avant la
-            validation de vos tiers de confiance, le moment venu.
+            Vos informations restent associées à votre compte. Elles servent à
+            préparer la transmission le moment venu.
           </p>
         </aside>
 

@@ -120,8 +120,8 @@ export default function GiftActivatedPage() {
           <h1>Félicitations, votre Gift est prêt pour le futur</h1>
           <p>
             Merci de nous confier ce témoignage précieux. Nous sommes honorés
-            de garantir la protection et la transmission de vos mots à ceux qui
-            comptent pour vous.
+            d'accompagner la transmission de vos mots à ceux qui comptent pour
+            vous.
           </p>
         </header>
 
@@ -194,8 +194,7 @@ export default function GiftActivatedPage() {
               <strong>Un doute sur la suite ?</strong>
               <span>
                 Redécouvrez à tout moment le fonctionnement détaillé de votre
-                transmission sécurisée sur la page "Comprendre le
-                fonctionnement".
+                transmission sur la page "Comprendre le fonctionnement".
               </span>
             </aside>
           </>

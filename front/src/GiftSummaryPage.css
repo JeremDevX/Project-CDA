@@ -239,7 +239,7 @@
   font-size: 1.8rem;
 }
 
-.gift-summary-page__secure {
+.gift-summary-page__payment-note {
   display: flex;
   gap: var(--space-sm);
   align-items: center;

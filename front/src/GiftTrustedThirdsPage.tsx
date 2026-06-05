@@ -172,8 +172,8 @@ export default function GiftTrustedThirdsPage() {
           <h1>Désignez vos tiers de confiance</h1>
           <p>
             Choisissez les personnes qui confirmeront le moment venu le
-            déclenchement de votre transmission. Par sécurité, elles n'auront
-            jamais accès au contenu de votre message.
+            déclenchement de votre transmission. Elles n'interviennent que sur
+            cette validation et ne consultent pas votre message.
           </p>
         </header>
 
@@ -182,12 +182,11 @@ export default function GiftTrustedThirdsPage() {
             <ShieldCheck size={22} />
           </span>
           <div>
-            <strong>Sécurité et Vie Privée</strong>
+            <strong>Rôle des tiers</strong>
             <p>
               Le rôle d'un tiers est strictement administratif. Ils reçoivent un
-              lien de confirmation uniquement le moment venu. Votre message
-              reste chiffré et strictement privé : aucun contenu personnel ne
-              leur est partagé.
+              lien de confirmation uniquement le moment venu. Aucun contenu
+              personnel ne leur est partagé.
             </p>
           </div>
         </aside>

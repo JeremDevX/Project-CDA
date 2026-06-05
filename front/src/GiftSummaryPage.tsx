@@ -1,10 +1,7 @@
 import { Check, CreditCard, ShieldCheck, UserRound, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
-import {
-  getGiftRecipients,
-  type GiftRecipient,
-} from "./api/giftRecipients";
+import { getGiftRecipients, type GiftRecipient } from "./api/giftRecipients";
 import {
   getGiftTrustedThirds,
   type GiftTrustedThird,
@@ -159,7 +156,7 @@ export default function GiftSummaryPage() {
             <h1>Vérifiez et activez votre Gift</h1>
             <p>
               Relisez une dernière fois les détails de votre message avant de
-              sécuriser sa transmission pour le futur.
+              préparer sa transmission pour le futur.
             </p>
           </header>
 
@@ -314,21 +311,19 @@ export default function GiftSummaryPage() {
             dataTestId="gift-payment-start"
           />
 
-          <p className="gift-summary-page__secure">
+          <p className="gift-summary-page__payment-note">
             <CreditCard size={16} />
-            PAIEMENT 100% SÉCURISÉ
+            PAIEMENT PAR STRIPE
           </p>
 
           <section className="gift-summary-page__notice">
             <h2>
               <ShieldCheck size={18} />
-              RAPPEL DE SÉCURITÉ
+              RAPPEL
             </h2>
             <p>
-              Votre création est actuellement un brouillon temporaire. Une fois
-              le paiement validé, votre contenu est immédiatement crypté et mis
-              à l'abri sur nos serveurs haute sécurité. Il restera modifiable à
-              tout moment depuis votre espace personnel.
+              Votre création est actuellement un brouillon temporaire. Il
+              restera modifiable à tout moment depuis votre espace personnel.
             </p>
           </section>
 
