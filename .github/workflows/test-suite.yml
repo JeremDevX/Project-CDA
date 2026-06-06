@@ -108,7 +108,7 @@ jobs:
     name: E2E
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
     needs: changes
     if: needs.changes.outputs.e2e == 'true' || needs.changes.outputs.ci == 'true'
     services:
