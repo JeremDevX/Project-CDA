@@ -139,9 +139,7 @@ test.describe("gift creation tunnel", () => {
       const titleInput = page.getByTestId("gift-title-input");
       await expect(titleInput).toBeEnabled();
       await expect(titleInput).toHaveValue("Nouveau gift");
-      await titleInput.click();
-      await page.keyboard.press("Meta+A");
-      await page.keyboard.type(giftTitle);
+      await titleInput.fill(giftTitle);
       await expect(titleInput).toHaveValue(giftTitle);
       const messageEditor = page
         .getByTestId("gift-message-editor")
