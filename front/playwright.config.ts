@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const e2eMockExternalServices = process.env.E2E_MOCK_EXTERNALS ?? "true";
+process.env.E2E_MOCK_EXTERNALS = e2eMockExternalServices;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -13,7 +16,7 @@ export default defineConfig({
   webServer: [
     {
       command:
-        "cd ../back && npm run build && PORT=1338 E2E_CLEANUP_ENABLED=true APP_BASE_URL=http://localhost:5174 CORS_ORIGIN=http://localhost:5174 npm run start",
+        `cd ../back && npm run build && PORT=1338 E2E_CLEANUP_ENABLED=true E2E_MOCK_EXTERNALS=${e2eMockExternalServices} APP_BASE_URL=http://localhost:5174 CORS_ORIGIN=http://localhost:5174 npm run start`,
       url: "http://localhost:1338/api/health",
       reuseExistingServer: false,
     },

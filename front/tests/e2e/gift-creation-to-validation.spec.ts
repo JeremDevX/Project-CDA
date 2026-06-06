@@ -8,6 +8,7 @@ import { Buffer } from "buffer";
 
 const password = "JohnDoe123";
 const apiBaseUrl = "http://localhost:1338/api";
+const mockExternalServices = process.env.E2E_MOCK_EXTERNALS === "true";
 // Image minimale embarquée pour garder le test indépendant du système de fichiers.
 const testImageBase64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
@@ -189,22 +190,25 @@ test.describe("gift creation tunnel", () => {
 
       // Paiement hébergé : carte de test puis contrôle de la page d'activation et du justificatif.
       await page.getByTestId("gift-payment-start").click();
-      await page.getByRole("radio", { name: "Card" }).click({ force: true });
-      await page
-        .getByRole("textbox", { name: /Numéro de carte|Card number/ })
-        .fill("4242 4242 4242 4242");
-      await page
-        .getByRole("textbox", { name: /Date d'expiration|Expiration/ })
-        .fill("04 / 29");
-      await page
-        .getByRole("textbox", { name: /Code de sécurité|Security code|CVC/ })
-        .fill("424");
-      await page
-        .getByRole("textbox", {
-          name: /Nom du titulaire de la carte|Cardholder name/,
-        })
-        .fill("Utilisateur E2E");
-      await page.getByTestId("hosted-payment-submit-button").click();
+
+      if (!mockExternalServices) {
+        await page.getByRole("radio", { name: "Card" }).click({ force: true });
+        await page
+          .getByRole("textbox", { name: /Numéro de carte|Card number/ })
+          .fill("4242 4242 4242 4242");
+        await page
+          .getByRole("textbox", { name: /Date d'expiration|Expiration/ })
+          .fill("04 / 29");
+        await page
+          .getByRole("textbox", { name: /Code de sécurité|Security code|CVC/ })
+          .fill("424");
+        await page
+          .getByRole("textbox", {
+            name: /Nom du titulaire de la carte|Cardholder name/,
+          })
+          .fill("Utilisateur E2E");
+        await page.getByTestId("hosted-payment-submit-button").click();
+      }
 
       await expect(page).toHaveURL(/\/gifts\/\d+\/activated/, {
         timeout: 30_000,

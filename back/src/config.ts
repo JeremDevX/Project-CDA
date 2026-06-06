@@ -23,6 +23,7 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
   e2eCleanupEnabled: process.env.E2E_CLEANUP_ENABLED === "true",
+  e2eMockExternalServices: process.env.E2E_MOCK_EXTERNALS === "true",
   appBaseUrl: process.env.APP_BASE_URL ?? "http://localhost:5173",
   apiBaseUrl: process.env.API_BASE_URL ?? `http://localhost:${port}/api`,
   emailFrom: process.env.EMAIL_FROM ?? "LegacyGift <no-reply@legacygift.local>",

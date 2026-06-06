@@ -2,22 +2,54 @@ name: Tests
 
 on:
   push:
-    branches:
-      - main
   pull_request:
     branches:
       - dev
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
-  front-unit-tests:
-    name: Front unit tests
+  changes:
+    name: Detect changes
     runs-on: ubuntu-latest
+    outputs:
+      front: ${{ steps.filter.outputs.front }}
+      back: ${{ steps.filter.outputs.back }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+      ci: ${{ steps.filter.outputs.ci }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    defaults:
-      run:
-        working-directory: front
+      - name: Detect changed areas
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            front:
+              - 'front/**'
+              - 'package.json'
+              - 'package-lock.json'
+            back:
+              - 'back/**'
+              - 'package.json'
+              - 'package-lock.json'
+            e2e:
+              - 'front/**'
+              - 'back/**'
+              - 'package.json'
+              - 'package-lock.json'
+            ci:
+              - '.github/workflows/**'
 
+  front:
+    name: Front
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.front == 'true' || needs.changes.outputs.ci == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,22 +59,25 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: front/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Vitest
-        run: npm run test:run
+      - name: Lint front
+        run: npm run lint --workspace front
 
-  e2e-tests:
-    name: E2E tests
+      - name: Build front
+        run: npm run build --workspace front
+
+      - name: Test front
+        run: npm run test:run --workspace front
+
+  back:
+    name: Back
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: front
-
+    needs: changes
+    if: needs.changes.outputs.back == 'true' || needs.changes.outputs.ci == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,13 +87,67 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: front/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate --workspace back
+
+      - name: Lint back
+        run: npm run lint --workspace back
+
+      - name: Build back
+        run: npm run build --workspace back
+
+      - name: Test back
+        run: npm run test:run --workspace back
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true' || needs.changes.outputs.ci == 'true'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: legacygift_ci
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/legacygift_ci?schema=public
+      E2E_MOCK_EXTERNALS: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate --workspace back
+
+      - name: Prepare database
+        run: npm run prisma:push --workspace back
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: npm run test:e2e --workspace front

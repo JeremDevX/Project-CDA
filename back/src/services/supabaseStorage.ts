@@ -8,6 +8,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config } from "../config";
 
 let storageClient: S3Client | null = null;
+const e2eStorageObjects = new Map<
+  string,
+  { body: Buffer; contentType: string }
+>();
 
 function getStorageClient() {
   if (
@@ -38,6 +42,11 @@ export async function uploadStorageObject(
   body: Buffer,
   contentType: string,
 ) {
+  if (config.e2eMockExternalServices) {
+    e2eStorageObjects.set(storagePath, { body, contentType });
+    return;
+  }
+
   const client = getStorageClient();
 
   await client.send(
@@ -51,6 +60,16 @@ export async function uploadStorageObject(
 }
 
 export async function createSignedStorageUrl(storagePath: string) {
+  if (config.e2eMockExternalServices) {
+    const object = e2eStorageObjects.get(storagePath);
+
+    if (!object) {
+      return null;
+    }
+
+    return `data:${object.contentType};base64,${object.body.toString("base64")}`;
+  }
+
   const client = getStorageClient();
 
   return getSignedUrl(
@@ -65,6 +84,11 @@ export async function createSignedStorageUrl(storagePath: string) {
 
 export async function removeStorageObjects(storagePaths: string[]) {
   if (storagePaths.length === 0) {
+    return;
+  }
+
+  if (config.e2eMockExternalServices) {
+    storagePaths.forEach((storagePath) => e2eStorageObjects.delete(storagePath));
     return;
   }
 

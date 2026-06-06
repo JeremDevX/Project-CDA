@@ -12,6 +12,15 @@ const MAX_GIFT_TITLE_LENGTH = 250;
 const MAX_GIFT_MESSAGE_LENGTH = 25000;
 const allowedOffers = ["essentiel", "standard", "premium"] as const;
 type AllowedOffer = (typeof allowedOffers)[number];
+type CheckoutSessionLike = {
+  id: string;
+  metadata?: Record<string, string> | null;
+  payment_status: string;
+  currency?: string | null;
+  amount_total?: number | null;
+  payment_intent?: string | { id: string } | null;
+  livemode: boolean;
+};
 const allowedCreationModes = ["free"] as const;
 const allowedEditionSteps = [
   "creation-mode",
@@ -137,6 +146,32 @@ function getStripeClient() {
   }
 
   return new Stripe(config.stripeSecretKey);
+}
+
+function buildE2eCheckoutSessionUrl(giftId: number, userId: number) {
+  const appBaseUrl = config.appBaseUrl.replace(/\/$/, "");
+
+  return `${appBaseUrl}/gifts/${giftId}/activated?payment=success&session_id=e2e_${giftId}_${userId}_${Date.now()}`;
+}
+
+function buildE2eCheckoutSession(
+  sessionId: string,
+  giftId: number,
+  userId: number,
+  amount: number,
+): CheckoutSessionLike {
+  return {
+    id: sessionId,
+    metadata: {
+      giftId: String(giftId),
+      userId: String(userId),
+    },
+    payment_status: "paid",
+    currency: "eur",
+    amount_total: amount,
+    payment_intent: `pi_${sessionId}`,
+    livemode: false,
+  };
 }
 
 function isMissingStripeResourceError(error: unknown) {
@@ -449,7 +484,6 @@ giftsRouter.post("/:giftId/checkout-session", async (req, res) => {
   try {
     const userId = req.authUser?.id;
     const giftId = Number(req.params.giftId);
-    const stripe = getStripeClient();
 
     if (!userId) {
       return res.status(401).json({ message: "Non autorisé" });
@@ -457,10 +491,6 @@ giftsRouter.post("/:giftId/checkout-session", async (req, res) => {
 
     if (!Number.isInteger(giftId)) {
       return res.status(400).json({ message: "Gift invalide" });
-    }
-
-    if (!stripe) {
-      return res.status(500).json({ message: "Stripe n'est pas configuré" });
     }
 
     const gift = await prisma.gift.findFirst({
@@ -497,6 +527,18 @@ giftsRouter.post("/:giftId/checkout-session", async (req, res) => {
 
     const selectedOffer = offerPrices[gift.offer];
     const appBaseUrl = config.appBaseUrl.replace(/\/$/, "");
+
+    if (config.e2eMockExternalServices) {
+      return res.status(201).json({
+        url: buildE2eCheckoutSessionUrl(gift.id, userId),
+      });
+    }
+
+    const stripe = getStripeClient();
+
+    if (!stripe) {
+      return res.status(500).json({ message: "Stripe n'est pas configuré" });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -541,7 +583,6 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
     const sessionId = normalizeStripeCheckoutSessionId(
       normalizeTextInput(req.body?.sessionId),
     );
-    const stripe = getStripeClient();
 
     if (!userId) {
       return res.status(401).json({ message: "Non autorisé" });
@@ -553,23 +594,6 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
 
     if (!sessionId) {
       return res.status(400).json({ message: "Session Stripe manquante" });
-    }
-
-    if (!stripe) {
-      return res.status(500).json({ message: "Stripe n'est pas configuré" });
-    }
-
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    if (
-      session.metadata?.giftId !== String(giftId) ||
-      session.metadata?.userId !== String(userId)
-    ) {
-      return res.status(400).json({ message: "Session Stripe invalide" });
-    }
-
-    if (session.payment_status !== "paid") {
-      return res.status(400).json({ message: "Paiement non validé" });
     }
 
     const gift = await prisma.gift.findFirst({
@@ -595,6 +619,36 @@ giftsRouter.post("/:giftId/payment-confirmation", async (req, res) => {
     }
 
     const selectedOffer = offerPrices[gift.offer];
+    let session: CheckoutSessionLike;
+
+    if (config.e2eMockExternalServices && sessionId.startsWith("e2e_")) {
+      session = buildE2eCheckoutSession(
+        sessionId,
+        giftId,
+        userId,
+        selectedOffer.amount,
+      );
+    } else {
+      const stripe = getStripeClient();
+
+      if (!stripe) {
+        return res.status(500).json({ message: "Stripe n'est pas configuré" });
+      }
+
+      session = await stripe.checkout.sessions.retrieve(sessionId);
+    }
+
+    if (
+      session.metadata?.giftId !== String(giftId) ||
+      session.metadata?.userId !== String(userId)
+    ) {
+      return res.status(400).json({ message: "Session Stripe invalide" });
+    }
+
+    if (session.payment_status !== "paid") {
+      return res.status(400).json({ message: "Paiement non validé" });
+    }
+
     const paidAt = gift.paidAt ?? new Date();
     const nextCheckInDue = nextCheckInDueFrom(paidAt);
     const reference = buildPaymentReference(gift.user.username, gift.id, paidAt);
