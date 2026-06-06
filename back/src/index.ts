@@ -29,7 +29,7 @@ async function bootstrap() {
 
   const app = createApp();
   app.listen(config.port, () => {
-    console.log(`API auth template running on http://localhost:${config.port}`);
+    console.log(`LegacyGift API running on http://localhost:${config.port}`);
   });
 }
 

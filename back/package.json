@@ -1,7 +1,7 @@
 {
-  "name": "auth-api-template",
+  "name": "legacygift-back",
   "version": "1.0.0",
-  "description": "Express + TypeScript auth API starter (JWT + SQLite + Prisma)",
+  "description": "LegacyGift API with Express, TypeScript, Prisma and PostgreSQL",
   "main": "dist/index.js",
   "scripts": {
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch --preserveWatchOutput\" \"nodemon dist/index.js\"",
@@ -20,7 +20,6 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/bcrypt": "^6.0.0",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.5",
@@ -44,11 +43,9 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1042.0",
     "@aws-sdk/s3-request-presigner": "^3.1042.0",
-    "@prisma/adapter-better-sqlite3": "^7.6.0",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "bcrypt": "^6.0.0",
-    "better-sqlite3": "^12.4.1",
     "cors": "^2.8.5",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
