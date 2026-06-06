@@ -69,7 +69,14 @@ npm install
 npm run prisma:generate --workspace back
 ```
 
-Variables minimales :
+Copier les exemples d'environnement :
+
+```bash
+cp back/.env.example back/.env
+cp front/.env.example front/.env
+```
+
+Variables minimales à vérifier :
 
 ```env
 # back/.env
@@ -79,9 +86,30 @@ JWT_SECRET=change-me-before-production
 APP_BASE_URL=http://localhost:5173
 CORS_ORIGIN=http://localhost:5173
 STRIPE_SECRET_KEY=sk_test_xxx
+SUPABASE_STORAGE_ENDPOINT=https://your-project.supabase.co/storage/v1/s3
+SUPABASE_S3_ACCESS_KEY_ID=your-access-key
+SUPABASE_S3_SECRET_ACCESS_KEY=your-secret-key
 
 # front/.env
 VITE_API_BASE_URL=http://localhost:1337/api
+```
+
+Générer un secret local :
+
+```bash
+openssl rand -base64 32
+```
+
+Voir :
+
+- `back/.env.example` pour toutes les variables back.
+- `front/.env.example` pour les variables front.
+- `back/README.md` pour origine des secrets Stripe, SMTP et Supabase.
+
+Initialiser la base :
+
+```bash
+npm run prisma:push --workspace back
 ```
 
 ## Lancement local
@@ -104,6 +132,32 @@ URLs :
 Front : http://localhost:5173
 API   : http://localhost:1337/api
 Health: http://localhost:1337/api/health
+```
+
+## How to
+
+Créer l'environnement local :
+
+```bash
+npm install
+cp back/.env.example back/.env
+cp front/.env.example front/.env
+npm run prisma:generate --workspace back
+npm run prisma:push --workspace back
+```
+
+Lancer l'app :
+
+```bash
+npm run dev --workspace back
+npm run dev --workspace front
+```
+
+Tester avant livraison :
+
+```bash
+npm run check
+npm run build
 ```
 
 ## Scripts racine
@@ -240,7 +294,7 @@ npm run test:e2e --workspace front
 
 ## Notes projet
 
-- `back/.env.example` est minimal ; `back/src/config.ts` reste la source des variables prises en charge.
+- `back/.env.example` et `front/.env.example` documentent les variables attendues.
 - Les migrations Prisma existantes documentent l'évolution du modèle.
 - `_gantt-version/` contient versions planning.
 - `User-stories.md` contient le cadrage fonctionnel.

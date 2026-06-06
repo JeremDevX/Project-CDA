@@ -45,6 +45,14 @@ Configurer `front/.env` :
 VITE_API_BASE_URL=http://localhost:1337/api
 ```
 
+Ou copier l'exemple :
+
+```bash
+cp front/.env.example front/.env
+```
+
+Le front ne doit contenir aucun secret. Toute variable `VITE_*` est exposée au navigateur.
+
 Lancer en dev :
 
 ```bash

@@ -58,21 +58,23 @@ Variables lues par `src/config.ts` et Prisma :
 
 ```env
 PORT=1337
+CORS_ORIGIN=http://localhost:5173
+APP_BASE_URL=http://localhost:5173
+API_BASE_URL=http://localhost:1337/api
 DATABASE_URL="postgresql://user:password@localhost:5432/legacygift"
 SALT_ROUNDS=10
 JWT_SECRET=change-me-before-production
 JWT_EXPIRES_IN=7d
-CORS_ORIGIN=http://localhost:5173
-APP_BASE_URL=http://localhost:5173
-API_BASE_URL=http://localhost:1337/api
 EMAIL_FROM="LegacyGift <no-reply@legacygift.local>"
 SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASSWORD=
 STRIPE_SECRET_KEY=sk_test_xxx
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_STORAGE_BUCKET=gift-media
-SUPABASE_STORAGE_ENDPOINT=
+SUPABASE_STORAGE_ENDPOINT=https://your-project.supabase.co/storage/v1/s3
 SUPABASE_S3_REGION=eu-west-1
 SUPABASE_S3_ACCESS_KEY_ID=
 SUPABASE_S3_SECRET_ACCESS_KEY=
@@ -87,6 +89,26 @@ Notes :
 - sans `STRIPE_SECRET_KEY`, les routes paiement retournent une erreur de config ;
 - sans config Supabase/S3, upload et URLs signées médias ne peuvent pas fonctionner ;
 - `E2E_CLEANUP_ENABLED=true` uniquement pour tests e2e.
+- `SUPABASE_S3_ACCESS_KEY_ID` peut aussi venir de l'ancien alias `ACCESS_KEY_ID`.
+
+## Générer les secrets
+
+Local :
+
+```bash
+openssl rand -base64 32
+```
+
+Utilisation :
+
+- `JWT_SECRET` : coller la valeur générée.
+- `DATABASE_URL` : URL PostgreSQL locale ou hébergée.
+- `STRIPE_SECRET_KEY` : clé secrète test Stripe, format `sk_test_...`.
+- `SMTP_PASSWORD` : mot de passe SMTP ou app password du fournisseur mail.
+- `SUPABASE_S3_ACCESS_KEY_ID` et `SUPABASE_S3_SECRET_ACCESS_KEY` : access key S3 Supabase Storage.
+- `SUPABASE_SERVICE_ROLE_KEY` : clé serveur Supabase uniquement si utilisée comme fallback local.
+
+Ne jamais mettre ces valeurs dans Git.
 
 ## Scripts
 
