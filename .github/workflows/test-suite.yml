@@ -107,6 +107,8 @@ jobs:
   e2e:
     name: E2E
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
     needs: changes
     if: needs.changes.outputs.e2e == 'true' || needs.changes.outputs.ci == 'true'
     services:
@@ -124,7 +126,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/legacygift_ci?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/legacygift_ci?schema=public
       E2E_MOCK_EXTERNALS: "true"
     steps:
       - name: Checkout repository
@@ -145,9 +147,6 @@ jobs:
 
       - name: Prepare database
         run: npm run prisma:push --workspace back
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         run: npm run test:e2e --workspace front
