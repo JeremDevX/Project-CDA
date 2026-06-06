@@ -34,13 +34,21 @@ Services externes :
 
 ```txt
 .
+├── .github/
+│   ├── workflows/
+├── .husky/
+├── _gantt-version/
 ├── back/
-├── front/
 ├── docs/
+│   ├── backlog/
 │   ├── tests/
 │   └── uml/
-├── _gantt-version/
+├── front/
 ├── scripts/
+├── .gitignore
+├── .nvmrc
+├── README.md
+├── package-lock.json
 └── package.json
 ```
 
@@ -48,9 +56,12 @@ Docs spécifiques :
 
 - `back/README.md`
 - `front/README.md`
-- `docs/tests/front-e2e-tests.md`
+- `docs/backlog/user-stories-final.md`
+- `docs/backlog/user-stories-original.md`
 - `docs/tests/checkin-system-tests.md`
-- `docs/uml/`
+- `docs/tests/front-e2e-tests.md`
+- `docs/tests/test-mails-local.md`
+- `docs/uml/checkin-system-functionnal.md`
 
 ## Installation
 
@@ -247,11 +258,11 @@ Statuts gift principaux :
 
 Offres :
 
-| Offre | Prix | Destinataires | Images | Vidéo |
-| --- | ---: | ---: | ---: | --- |
-| `essentiel` | 19 EUR | 1 | 0 | non |
-| `standard` | 39 EUR | 5 | 10 | non |
-| `premium` | 49 EUR | illimité | illimité | 1 |
+| Offre       |   Prix | Destinataires |   Images | Vidéo |
+| ----------- | -----: | ------------: | -------: | ----- |
+| `essentiel` | 19 EUR |             1 |        0 | non   |
+| `standard`  | 39 EUR |             5 |       10 | non   |
+| `premium`   | 49 EUR |      illimité | illimité | 1     |
 
 ## Conventions globales
 
@@ -297,4 +308,5 @@ npm run test:e2e --workspace front
 - `back/.env.example` et `front/.env.example` documentent les variables attendues.
 - Les migrations Prisma existantes documentent l'évolution du modèle.
 - `_gantt-version/` contient versions planning.
-- `User-stories.md` contient le cadrage fonctionnel.
+- `docs/backlog/` contient le cadrage fonctionnel.
+- `docs/tests/test-mails-local.md` documente la recette locale des emails.
