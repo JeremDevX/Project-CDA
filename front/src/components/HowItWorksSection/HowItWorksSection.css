@@ -65,7 +65,7 @@
 
 .how-it-works__step-number {
   background-color: var(--accent);
-  color: var(--text-primary);
+  color: var(--text-contrast-strong);
   width: 32px;
   height: 32px;
   border-radius: 50%;

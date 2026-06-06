@@ -86,7 +86,9 @@ export default function AccountPage() {
     <section className="account" aria-labelledby="account_eyebrow">
       <article className="account__panel">
         <header className="account__header">
-          <p className="account__eyebrow">Mon compte</p>
+          <p className="account__eyebrow" id="account_eyebrow">
+            Mon compte
+          </p>
           <p className="account__subtitle">
             Consultez les informations associées a votre session.
           </p>

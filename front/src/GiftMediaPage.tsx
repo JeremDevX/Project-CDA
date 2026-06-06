@@ -387,6 +387,7 @@ export default function GiftMediaPage() {
 
                 <input
                   ref={fileInputRef}
+                  aria-label="Choisir des medias a importer"
                   type="file"
                   accept={acceptedFormats}
                   multiple
@@ -424,6 +425,7 @@ export default function GiftMediaPage() {
         ) : (
           <input
             ref={fileInputRef}
+            aria-label="Import de medias indisponible"
             type="file"
             accept={acceptedFormats}
             multiple

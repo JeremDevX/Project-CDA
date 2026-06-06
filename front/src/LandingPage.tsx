@@ -74,7 +74,7 @@ export default function LandingPage() {
           <div className="hero__glow hero__glow--secondary"></div>
           <div className="hero__card">
             <Gift className="hero__card-icon" size={24} />
-            <h3 className="hero__card-title">Message personnel</h3>
+            <p className="hero__card-title">Message personnel</p>
             <p className="hero__card-text">
               Une parole importante, écrite aujourd'hui, préservée et transmise
               avec attention demain.
@@ -118,9 +118,9 @@ export default function LandingPage() {
 
       <section className="final-cta">
         <span className="final-cta__kicker">Prêt à commencer</span>
-        <h1 className="final-cta__title">
+        <h2 className="final-cta__title">
           Préparez l'avenir, libérez votre présent.
-        </h1>
+        </h2>
         <p className="final-cta__text">
           Commencez simplement avec un premier message, puis faites évoluer le à
           votre rythme.
