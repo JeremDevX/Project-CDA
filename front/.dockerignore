@@ -1,0 +1,9 @@
+node_modules
+.gitignore
+dist
+test-results
+tests
+Dockerfile
+Readme.md
+playwright.config.ts
+vitest.config.ts
