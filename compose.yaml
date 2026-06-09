@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  back:
+    image: jeremdev74/lgback
+    ports:
+      - "1337:1337"
+    restart: always
+
+  front:
+    image: jeremdev74/lgfront
+    ports:
+      - "5173:4173"
+    restart: always
+    depends_on:
+      - back
