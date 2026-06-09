@@ -29,8 +29,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./back
-          env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
           push: true
           tags: |
             ${{ env.IMAGE_BACK }}:latest
@@ -54,6 +52,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./front
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           push: true
           tags: |
             ${{ env.IMAGE_FRONT }}:latest
@@ -74,13 +74,37 @@ jobs:
           script: |
             mkdir -p ${{ secrets.VPS_PATH }}
 
-      - name: Upload compose.yaml to VPS
+      - name: Generate deploy env file
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SUPABASE_STORAGE_BUCKET: ${{ secrets.SUPABASE_STORAGE_BUCKET }}
+          MEDIA_MAX_FILE_SIZE_BYTES: ${{ secrets.MEDIA_MAX_FILE_SIZE_BYTES }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: |
+          {
+            printf 'DATABASE_URL=%s\n' "$DATABASE_URL"
+            printf 'SUPABASE_URL=%s\n' "$SUPABASE_URL"
+            printf 'SUPABASE_SERVICE_ROLE_KEY=%s\n' "$SUPABASE_SERVICE_ROLE_KEY"
+            printf 'ACCESS_KEY_ID=%s\n' "$ACCESS_KEY_ID"
+            printf 'SUPABASE_STORAGE_BUCKET=%s\n' "$SUPABASE_STORAGE_BUCKET"
+            printf 'MEDIA_MAX_FILE_SIZE_BYTES=%s\n' "$MEDIA_MAX_FILE_SIZE_BYTES"
+            printf 'STRIPE_SECRET_KEY=%s\n' "$STRIPE_SECRET_KEY"
+            printf 'CORS_ORIGIN=%s\n' "$CORS_ORIGIN"
+            printf 'VITE_API_BASE_URL=%s\n' "$VITE_API_BASE_URL"
+          } > .env
+
+      - name: Upload compose.yaml and .env to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
-          source: "compose.yaml"
+          source: "compose.yaml,.env"
           target: ${{ secrets.VPS_PATH }}
           overwrite: true
 
@@ -93,10 +117,8 @@ jobs:
           script: |
             set -e
             cd ${{ secrets.VPS_PATH }}
-            if [ ! -f .env ]; then
-              echo "ERREUR: .env manquant dans ${{ secrets.VPS_PATH }}. Crée-le puis relance."
-              exit 1
-            fi
+            test -f .env
             docker compose -f compose.yaml pull
+            docker compose -f compose.yaml run --rm back npm run prisma:cd
             docker compose -f compose.yaml up -d --remove-orphans
             docker system prune -f

@@ -3,12 +3,16 @@ version: "3.8"
 services:
   back:
     image: jeremdev74/lgback
+    env_file:
+      - .env
     ports:
       - "1337:1337"
     restart: always
 
   front:
     image: jeremdev74/lgfront
+    env_file:
+      - .env
     ports:
       - "5173:4173"
     restart: always
