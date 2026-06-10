@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     ports:
-      - "1337:1337"
+      - "40112:1337"
     restart: always
 
   front:
